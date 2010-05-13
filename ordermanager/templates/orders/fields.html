@@ -1,0 +1,27 @@
+${h.field(
+    u"Выберите надкатегорию работ",
+    h.select(name="upcat_id", selected_values=c.upcat, options=c.upcategory),
+    required=True,
+)}
+${h.field(
+    u"Выберите категорию работ",
+    h.select(name="cat_id", selected_values=c.curcat, options=c.category),
+    required=True,
+)}
+${h.field(
+    u"Выберите вид работ",
+    h.select(name="work_id", selected_values=c.curwork, options=c.work),
+    required=True,
+)}
+${h.field(
+    u"Место выполнения работ",
+    h.text(name="place", maxlength="250"),
+    required=False,
+    field_desc=u"Укажите здесь, где именно необходимо сделать работу в формате: " + h.strong(u"корпус, кабинет, номер телефона")
+)}
+${h.field(
+    u"Дополнительная информация",
+    h.textarea(name='title', cols="40", rows="7",  maxlength="500"),
+    required=False,
+    field_desc=u"Укажите здесь сведения, если сведений, указанных для вашего подразделения, недостаточно"
+)}

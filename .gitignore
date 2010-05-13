@@ -1,0 +1,37 @@
+# Python Pylons project GIT Ignore
+
+# PYLONS STRUCTURE
+/data
+/build
+/dist
+
+# Python pre-compiled
+*.pyc
+
+# log-files
+*.log
+
+# SQLite database
+*.db
+
+# PID-files, created by running application
+*.pid
+
+# WSGI (for running, may be?)
+*.wsgi
+
+# Генерируемые Windows гадости
+Thumbs.db
+desktop.ini
+
+# Mac-specific things (thanks to Michael Aaron Safyan)
+.DS_Store
+
+# Редактируемые файлы и временные файлы
+*~
+*.bak
+*.tmp
+
+# other
+*_tmpl
+

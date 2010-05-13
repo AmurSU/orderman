@@ -1,0 +1,17 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Добавление новой заявки</%def>
+<%def name="title()">Добавление новой заявки</%def>
+<%inherit file="menu.html"/>
+<%namespace file="fields.html" name="fields" import="*"/>
+<p class="attention">Пожалуйста, указывайте в поле &laquo;Место работ&raquo; адрес для выполнения заявки (если он отличается от контактной информации, указанной в информации о подразделении или при её отсутствии), а в поле &laquo;Доп. информация&raquo; &mdash; всю прочую дополнительную информацию!</p>
+${h.form_start(h.url_for(controller='order', action='create'), method="post", id="orderform")}
+${fields.body()}
+${h.field(
+    u"Введите инвентарный номер",
+    h.literal(u'<div id="invs"><button type="button" id="addinv">Добавить инвентарный номер</button></div>'),
+    required=True,
+)}
+${h.field(field=h.submit(value=u"Заявить!", name='submit'))}
+${h.form_end()}
+
+<p class="note">Вашу заявку должны взять в течение одного рабочего дня и выполнить (обычно) в течение трёх рабочих дней.</p>

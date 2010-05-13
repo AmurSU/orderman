@@ -1,0 +1,14 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Переключение пользователя</%def>\
+<%def name="title()">Переключение пользователя</%def>\
+<%inherit file="menu.html"/>\
+
+${h.form_start(h.url_for(controller='usercontrol', action='doswitch', id=None), method="post")}
+${h.field(
+    u"Пользователь",
+    h.select(name="user_id", selected_values=c.selected, options=c.users),
+    required=True,
+    label_desc = u"Выберите пользователя, от имени которого будете действовать."
+)}
+${h.field(field=h.submit(value=u"Сменить", name='submit'))}
+${h.form_end()}

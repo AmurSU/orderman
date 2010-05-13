@@ -1,0 +1,3 @@
+include ordermanager/config/deployment.ini_tmpl
+recursive-include ordermanager/public *
+recursive-include ordermanager/templates *

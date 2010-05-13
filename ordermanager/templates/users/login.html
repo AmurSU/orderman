@@ -1,0 +1,18 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Вход</%def>
+<%def name="title()">Вход</%def>
+<%inherit file="menu.html"/>
+
+${h.form_start(h.url_for(controller='usercontrol', action='dologin'), method="post")}
+${h.field(
+    u"Логин",
+    h.text(name='login', maxlengt="32"),
+    required=True,
+)}
+${h.field(
+    u"Пароль",
+    h.password(name='password', maxlength="32"),
+    required=True,
+)}
+${h.field(field=h.submit(value=u"Войти", name='submit'))}
+${h.form_end()}

@@ -1,0 +1,219 @@
+body, p, div, ol, ul, img, h1, h2, h3, h4 {
+ margin: 0;
+ padding: 0;
+ border: 0px transparent none;
+}
+
+body {
+ font-family: 'Helvetica', 'Colibri', 'Arial', sans-serif;
+ font-size: 100%;
+ font-weight: normal;
+ color: black;
+ background: #FFFFEE;
+ padding: 0 25px;
+}
+
+h3 {margin-top: 1em;}
+
+a:link {
+ color: blue;
+ background: transparent;  
+ text-decoration: none;
+}
+
+a:visited {
+ color: purple;
+ background: transparent;  
+ text-decoration: none;
+}
+
+a:link:hover, a:visited:hover {
+ text-decoration: underline;
+}
+
+table {
+ border-collapse: collapse;
+ width: 100%;
+}
+
+th {
+ background: navy;
+ font-weight: bold;
+ font-size: 0.8em;
+ color: white;
+ border: 1px solid silver;
+}
+
+td {
+ font-size: 0.8em;
+ border: 1px solid gray;
+}
+
+/* "ШАПКА" */
+#header {
+   color: white;
+   background: navy;
+   padding: 10px 25px 2.5em 150px;
+   border-bottom: 1px solid gray;
+   margin: 0 -25px;
+}
+
+#userloginmenu {
+ position: absolute;
+ top: 0; right: 0;
+ padding: 5px 15px;
+ color: white;
+ background: transparent;     
+}
+
+#userloginmenu a {
+ color: yellow;
+ background: transparent;       
+}
+
+/***** ГЛАВНОЕ МЕНЮ *****/
+
+#menu {
+position: relative;
+height: 2em;
+margin-top: -1.5em;
+}
+
+#menu li {
+ display: block;
+ float: left;
+ height: 100%;
+ margin-top: -2px;
+}
+
+#menu a {
+ display: block;
+ border: 1px solid gray;
+ border-bottom: none;
+ padding: 4px 5px;
+ margin: -1px 2px 0;
+ color: black;
+ background: #FFFFEE;
+}
+
+#menu a:link, #menu a:visited {
+ padding: 2px 5px;
+ margin: 2px;
+ border: 1px solid gray;
+ color: navy;
+ background: #EEEEEE;
+}
+
+#menu a:link:hover, #menu a:visited:hover {
+ background: white;
+}
+
+/***** Вторичное меню *****/
+ 
+#sectionmenu {
+ position: relative;
+ height: 1em;
+ margin-bottom: 1em;
+}
+
+#sectionmenu li {
+ display: block;
+ float: left;
+ height: 100%;
+ margin: 0 1em;
+}
+
+#sectionmenu a {
+ display: block;
+ padding: 4px 5px;
+ color: black;
+ background: #FFFFEE;
+}
+
+#sectionmenu a:link, #sectionmenu a:visited {
+ border: 1px solid silver;
+ color: navy;
+}
+
+#sectionmenu a:link:hover, #sectionmenu a:visited:hover {
+ background: white;
+}
+
+
+
+/****** ФОРМЫ ******/
+form table { border: none; }
+form td { border: none; }
+.required { color: red; }
+.label { width: 15em; }
+.field input {font-size: 120%; width: 15em;}
+input[type="submit"] {
+ padding: 5px 20px;
+ font-size: 120%;
+ font-weight: bold;
+}
+.error-message {color: red;}
+.backbutton {margin-top: -10em;}
+.label_desc, .field_desc {
+ color: gray;
+ font-size: 75%;
+ padding-top: 0;
+}
+/****** РАЗНОЕ ******/
+#flash {
+    background: #ffc;
+    padding: 5px;
+    border: 1px dotted #000;
+    margin-bottom: 20px;
+}
+#flash p { margin: 0px; padding: 0px; }
+
+#actions { float: right; margin: -1em 1em 1em; }
+#actions li {display: block;}
+#actions a {
+ display: block;
+ background: navy;
+ color: white;
+ font-size: 110%;
+ font-weight: bold;
+ padding: 0.5em 1em;
+}
+
+#actions a:hover {
+  background: white;
+  color: navy;
+}
+
+
+
+
+/******** FOOTER **********/
+#footer {
+ border-top: 1px solid gray;
+ padding: 0.3em 25px;
+ margin: 0 -25px;
+}
+
+/* Всё ниже прилепляет "подвал" к низу страницы */
+html { height: 100%; }
+body { height: 100%; }
+
+#allbutfooter {
+ position: relative;
+ min-height: 100%;
+ margin-bottom: 5em;
+}
+
+* html #allbutfooter {
+ height: 100%;
+}
+
+#footer {
+ position: relative;
+ margin-top: -3em;
+ margin-bottom: 0;
+}
+
+/* A CSS hack that only applies to IE -- specifies a different height for the footer */
+
+* html #footer { margin-top: -2.9em; }

@@ -1,0 +1,90 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">${h.name(c.person)}</%def>\
+<%def name="title()">${h.name(c.person)}</%def>\
+<%inherit file="menu.html"/>\
+
+${self.actmenu()}
+
+<h3>Информация о пользователе</h3>
+<dl>
+% if session.has_key('admin') and session['admin']:
+<dt>Логин</dt><dd>${c.person.login}</dd>
+% endif
+<dt>Фамилия</dt><dd>${c.person.surname}</dd>
+<dt>Имя</dt><dd>${c.person.name}</dd>
+<dt>Отчество</dt><dd>${c.person.patronymic}</dd>
+% if c.person.division:
+<dt>Подразделение</dt><dd>${h.link_to(c.person.division.title, h.url_for(controller="division", action="view", id=c.person.division.id))} \
+% if c.person.chief:
+ (Начальник)\
+% endif
+% if c.person.responsible:
+ (Ответственный)\
+% endif
+</dd>
+% endif
+% if c.person.email:
+<dt>E-mail</dt><dd>${h.link_to(c.person.email, ("mailto:"+c.person.email))}</dd>
+% endif
+% if c.person.phone:
+<dt>Контактный телефон</dt><dd>${c.person.phone}</dd>
+% endif
+<dt>Может</dt>\
+% if c.person.creator:
+<dd>Создавать заявки</dd>\
+% endif
+% if c.person.performer:
+<dd>Исполнять заявки</dd>\
+% endif
+% if c.person.appointer:
+<dd>Забирать заявки на исполнение и назначать исполнителей</dd>\
+% endif
+% if c.person.admin:
+<dd>Администрировать систему заявок</dd>\
+% endif
+% if c.person.operator:
+<dd>Создавать заявки и претензии от имени других пользователей</dd>\
+% endif
+</dl>
+\
+## Статистика!
+\
+<h4>Заявки, созданные пользователем</h4>
+% if c.createdorders:
+<p>Пользователь создал ${h.get_plural(c.creatednum, u"заявку, заявки, заявок")}.</p>
+${self.orderstable(c.createdorders)}
+% if c.givememore:
+<p><a href="${h.url_for(controller='usercontrol', action='view', showallorders='True')}">Показать все заявки&hellip;</a></p>
+% endif
+% else:
+<p>Не создал ни одной заявки</p>
+% endif
+\
+% if h.have_role('performer') and c.performing:
+<h4>Заявки, выполняемые пользователем</h4>
+<p>Пользователь принимал участие в выполнении ${h.get_plural(c.performingnum, u"заявки, заявок, заявок")}.</p>
+${self.orderstable(c.performing)}
+% if c.givememore:
+<p><a href="${h.url_for(controller='usercontrol', action='view', showallorders='True')}">Показать все заявки&hellip;</a></p>
+% endif
+% endif
+\
+% if h.have_role('performer') and c.performed:
+<h4>Заявки, выполненные пользователем</h4>
+${self.orderstable(c.performed)}
+% endif
+\
+## Меню действий!
+<%def name="actmenu()">\
+<div id="actions">
+<ul>
+% if ((session.has_key('admin') and session['admin']) or (session.has_key('id') and ((session['id'] == c.person.id)))):
+<li class="edit_link">${h.link_to(u'Редактировать', h.url_for(controller='usercontrol', action='edit', id=c.person.id), class_="edit_link")}</li>
+% endif
+\
+% if (session.has_key('admin') and session['admin']):
+<li class="delete_link">${h.link_to(u'Удалить', h.url_for(controller='usercontrol', action='delete', id=c.person.id), class_="delete_link")}</li>
+% endif
+</ul>\
+</div>
+</%def>

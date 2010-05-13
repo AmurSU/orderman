@@ -1,0 +1,43 @@
+<h3>Информация о заявке</h3>
+<dl>
+<dt>Тип:</dt><dd>${c.order.upper_category.title}</dd>
+<dt>Вид работы:</dt><dd>${c.order.work.title}</dd>
+<dt>Категория:</dt><dd>${c.order.category.title}</dd>
+% if len(c.order.inventories):
+<dt>Инвентарные номера:</dt><dd><ul>
+${h.literal(u"\n").join([h.literal("<li>") + unicode(item.id) + h.literal(" &mdash; ") + unicode(item.title or "") + h.literal("</li>") for item in c.order.inventories])}
+</ul></dd>
+% endif
+<dt>Заказчик</dt><dd>${h.link(controller="division", action="view", id=c.order.customer.id, text=c.order.customer.title)}</dd>
+<dd>${c.order.customer.address}</dd>
+<dd>${c.order.customer.email}</dd>
+<dd>${c.order.customer.phone}</dd>
+% if c.order.place:
+<dt>Место выполнения работ:</dt><dd>${c.order.place}</dd>
+% endif
+% if c.order.title:
+<dt>Подробности:</dt><dd>${h.literal("<br />").join(c.order.title.split(u"\n"))}</dd>
+% endif
+<dt>Подана</dt><dd>${c.order.created.strftime('%Y.%m.%d %H:%M')}<span class="noprint"> (${h.ago(c.order.created)})</span></dd>
+<dt>Текущий статус:</dt><dd>${c.order.status.title}</dd>
+% if c.order.edited:
+<dt>Посл. редактирование</dt><dd>${c.order.edited}</dd>
+% endif
+</dl>
+<h3>Активность над заявкой</h3>
+% if c.order.actions:
+<table>
+<tr><th>Подразделение</th><th>Действие</th><th>Время</th><th>Исполнитель</th><th>Комментарий</th></tr>
+% for i,entry in enumerate(c.order.actions):
+${h.tr(i)}\
+<td>${entry.division.title}</td>\
+<td>${entry.status.title}</td>\
+<td>${entry.created.strftime('%Y.%m.%d %H:%M')}</td>\
+<td>${u", ".join([h.name(person) for person in entry.performers])}</td>\
+<td>${entry.description}</td>\
+</tr>
+% endfor
+</table>
+% else:
+<p>Над заявкой ещё не проводилось никаких действий.</p>
+% endif

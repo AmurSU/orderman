@@ -1,0 +1,10 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Ошибка: Необходима авторизация</%def>\
+<%def name="title()">Ошибка 401</%def>\
+<%inherit file="/base.html"/>\
+
+<p>Для доступа к этой части системы необходимо быть авторизованным пользователем.</p>
+<p>Пожалуйста, ${h.link_to(u"войдите в диспетчер заявок", h.url_for (controller="usercontrol", action="login"))}, используя ваш логин и пароль (если есть).</p>
+
+<%def name="submenu()"></%def>\
+

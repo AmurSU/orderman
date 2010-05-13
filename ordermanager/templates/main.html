@@ -1,0 +1,73 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Обзорная страница</%def>\
+<%def name="title()">Обзорная страница</%def>\
+<%inherit file="/base.html"/>\
+\
+${self.actions()}\
+\
+<p>Пожалуйста, ознакомьтесь с руководством по использованию диспетчера заявок. <a href="/ordermanager_manual.pdf">Скачать руководство</a>.</p>
+\
+% if not session.has_key('user'):
+<div class="warning">
+<form action="${h.url_for(controller='usercontrol', action='login')}" method="GET"><button type="submit">Войти &gt;</button></form>
+<p class="wleft">Вы не вошли в систему заявок. Сейчас вы можете только просматривать информацию. Для полноценной работы ${h.link(controller="usercontrol", action="login", text=u"войдите")} в систему, используя выданные вам логин и пароль.</p>
+</div>
+% endif
+\
+% if c.orderstoapprove:
+<h3>Нужно подтвердить выполнение!</h3>
+<table class="orderlist">
+<tr><th>№</th><th>Задача</th><th>Подразделение</th><th>Доп. информация</th><th>Время подачи</th><th>Статус</th><th>Действие</th></tr>
+% for i,order in enumerate(c.orderstoapprove):
+${h.tr(i)}<td>${order.id}</td><td>${h.link(controller="order", action='view', id=order.id, text=order.work.title + h.literal(" &mdash; ") + order.category.title)}</td><td>${order.customer.title}</td><td>${h.link_to(order.title or h.literal("&nbsp;&mdash;"), h.url_for(controller='order', action='view', id=order.id))}</td><td>${order.created.strftime('%Y.%m.%d %H:%M')}</td><td>${order.status.title}</td><td>${h.link(controller="action", action='approve', id=order.id, text=u"Подтвердить")}</td></tr>
+% endfor
+</table>
+% endif
+\
+<h3>Новые заявки</h3>
+% if c.freeorders:
+<p class="ordertablesummary"><a href="${h.url_for(controller='order', action='list', upcat=(session.get('preferences') or dict()).get('upcat'), cat='any', work='any', status=1)}">Всего ${h.get_plural(c.numfree, (u"свободная заявка", u"свободных заявки", u"свободных заявок"))}</a></p>
+${self.orderstable(c.freeorders)}
+% else:
+<p>Хорошо! Непринятых заявок нет.</p>
+% endif
+% if c.complaints:
+<h3>Жалобы!</h3>
+${self.orderstable(c.complaints)}
+% endif
+\
+% if c.myperforming:
+<h3>Заявки, которые я выполняю</h3>
+${self.orderstable(c.myperforming)}
+% endif
+\
+% if c.mydivorders:
+<h3>Заявки, которые выполняет моё подразделение</h3>
+${self.orderstable(c.mydivorders)}
+% endif
+\
+% if c.myownorders:
+<h3>Заявки моего подразделения</h3>
+${self.orderstable(c.myownorders)}
+% endif
+
+<h3>Статистика</h3>
+<dl id="statistics">
+% for stat in c.statistics:
+<dt>${stat[0]}:</dt><dd>${stat[1]}</dd>
+% endfor
+</dl>
+
+\
+<%def name="submenu()"></%def>\
+\
+<%def name="actions()">
+<ul id="mainactions">
+% if session.has_key('creator') and session.get('creator'):
+<li><a href="${h.url_for(controller='order', action='add')}">Создать <span class="small">новую заявку</span></a></li>
+% endif
+% if session.has_key('creator') and session.get('creator'):
+<li><a href="${h.url_for(controller='action', action='complain')}">Пожаловаться <span class="small">на плохое исполнение заявки</span></a></li>
+% endif
+</ul>
+</%def>

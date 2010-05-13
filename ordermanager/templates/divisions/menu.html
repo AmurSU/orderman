@@ -1,0 +1,12 @@
+## -*- coding: utf-8 -*-
+<%def name="title()">${next.title()} :: Подразделения</%def>
+<%inherit file="/base.html"/>
+<%def name="submenu()">
+<ul id="sectionmenu">
+<li>${h.link(controller="division", action='list', text=u"Все подразделения")}</li>
+% if session.has_key('admin') and session.get('admin'):
+<li>${h.link(controller="division", action='add', text=u"Добавить", id_="smenu_create")}</li>
+% endif
+</ul>
+</%def>
+${next.body()}

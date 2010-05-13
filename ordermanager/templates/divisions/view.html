@@ -1,0 +1,57 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">${c.division.title}</%def>\
+<%def name="title()">${c.division.title}</%def>\
+<%inherit file="menu.html"/>\
+\
+${self.actmenu()}
+\
+<h3>Информация о подразделении</h3>
+<dl>
+<dt>Название</dt><dd>${c.division.title}</dd>
+<dt>Адрес</dt><dd>${c.division.address}</dd>
+% if c.division.phone:
+<dt>Телефон</dt><dd>${c.division.phone}</dd>
+% endif
+% if c.division.email:
+<dt>E-mail</dt><dd>${h.link_to(c.division.email, "mailto:"+c.division.email)}</dd>
+% endif
+% if c.division.responsible:
+<dt>Ответственный</dt>\
+% for person in c.division.responsible:
+<dd>${h.link_to(h.name(person), h.url_for(controller="usercontrol", action="view", id=person.id))}</dd>
+% endfor
+% endif
+% if c.division.chief:
+<dt>Начальник</dt>\
+% for person in c.division.chief:
+<dd>${h.link_to(h.name(person), h.url_for(controller="usercontrol", action="view", id=person.id))}</dd>
+% endfor
+% endif
+</dl>
+
+<h3>Сотрудники</h3>
+% if c.division.people:
+<ul>
+% for user in c.division.people:
+<li>${h.link_to(h.name(user), h.url_for(controller="usercontrol", action="view", id=user.id))}</li>
+% endfor
+</ul>
+% else:
+<p>В этом подразделении нет пользователей.</p>
+% endif
+
+\
+## Меню действий!
+<%def name="actmenu()">\
+<div id="actions">
+<ul>
+% if (h.have_role('admin') or (session.get('division')==c.division.id and (session.get['chief'] or session.get['responsible']))):
+<li class="edit_link">${h.link_to(u'Редактировать', h.url_for(controller='division', action='edit', id=c.division.id), class_="edit_link")}</li>
+% endif
+\
+% if h.have_role('admin'):
+<li class="delete_link">${h.link_to(u'Удалить', h.url_for(controller='division', action='delete', id=c.division.id), class_="delete_link")}</li>
+% endif
+</ul>\
+</div>
+</%def>

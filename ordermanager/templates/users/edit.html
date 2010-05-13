@@ -1,0 +1,35 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Редактирование пользователя</%def>
+<%def name="title()">Редактирование пользователя</%def>
+<%inherit file="menu.html"/>
+<%namespace file="fields.html" name="fields" import="*"/>
+
+${h.form_start(h.url_for(controller='usercontrol', action='save', id=request.urlvars['id']), method="post")}
+${fields.body()}
+${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
+${h.form_end()}
+
+<h3>Смена пароля</h3>
+${h.form_start(h.url_for(controller='usercontrol', action='changepassword', id=request.urlvars['id']), method="post")}
+% if not h.have_role('admin'):
+${h.field(
+    u"Пароль",
+    h.password(name='oldpass'),
+    required=True,
+    label_desc = u"Для принятия изменений необходимо, чтобы вы ввели свой пароль"
+)}
+% endif
+${h.field(
+    u"Новый пароль",
+    h.password(name='newpass'),
+    required=False,
+    label_desc = u"Введите новый пароль, если хотите его изменить"
+)}
+${h.field(
+    u"Новый пароль ещё раз",
+    h.password(name='chkpass'),
+    required=False,
+    label_desc = u"И введите его ещё раз, чтобы избежать ошибок."
+)}
+${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
+${h.form_end()}

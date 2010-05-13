@@ -1,0 +1,15 @@
+## -*- coding: utf-8 -*-
+<%def name="title()">${next.title()} :: Заявки</%def>\
+<%inherit file="/base.html"/>\
+<%def name="submenu()">\
+<ul id="sectionmenu">
+% if h.have_role('creator'):
+<li>${h.link(controller="order", action='add', text=u"Создать", id_="smenu_create")}</li>
+% endif
+<li>${h.link2(h.url_for(controller="order", action='list', show=None, id=None, upcat=None), text=u"Все заявки")}</li>
+% for upcat in c.upcats:
+<li>${h.link2(h.url_for(controller="order", action='list', show=None, id=None, upcat=upcat.url_text), text=upcat.title)}</li>
+% endfor
+</ul>
+</%def>\
+${next.body()}

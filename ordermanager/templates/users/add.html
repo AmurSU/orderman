@@ -1,0 +1,25 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Добавление нового пользователя</%def>
+<%def name="title()">Добавление нового пользователя</%def>
+<%inherit file="menu.html"/>
+<%namespace file="fields.html" name="fields" import="*"/>
+
+${h.form_start(h.url_for(controller='usercontrol', action='create'), method="post", id="usercreationform")}
+${h.field(
+    u"Логин",
+    h.text(name='login'),
+    required=True,
+)}
+${fields.body()}
+${h.field(
+    u"Пароль",
+    h.password(name='password'),
+    required=True,
+)}
+${h.field(
+    u"Пароль ещё раз",
+    h.password(name='passcheck'),
+    required=True,
+)}
+${h.field(field=h.submit(value=u"Создать", name='submit'))}
+${h.form_end()}

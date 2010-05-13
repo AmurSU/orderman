@@ -1,0 +1,35 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Подразделения</%def>\
+<%def name="title()">Все</%def>\
+<%inherit file="menu.html"/>\
+% if len(c.paginator):
+<p>${c.paginator.pager(u'$link_first $link_previous от $first_item до $last_item из $item_count $link_next $link_last')}</p>
+<table id="divisionlist">
+<tr><th>Название</th><th>Адрес</th><th>Сотрудники</th><th>Действия</th></tr>
+% for counter,item in enumerate(c.paginator):
+    ${self.buildrow(item, counter%2)}\
+% endfor
+</table>
+<p>${ c.paginator.pager('~2~') }</p>
+% else:
+<p>
+    Нет подразделений.
+    <a href="${h.url_for(controller='division', action='add')}">Создать</a>.
+</p>
+% endif
+<p>Всего подразделений: ${c.divcount}</p>
+
+<%def name="buildrow(div,odd=True)">\
+% if odd:
+<tr class="odd">\
+% else:
+<tr class="even">\
+% endif
+<td>${h.link_to(div.title, h.url_for(controller='division', action='view', id=div.id))}</td><td>${div.address}</td><td>${len(div.people)}</td>\
+<td>\
+% if h.have_role('admin'):
+[${h.link_to(u'Отредактировать', h.url_for(controller='division', action='edit', id=div.id))}] \
+[${h.link_to(u'Удалить', h.url_for(controller='division', action='delete', id=div.id))}]\
+% endif
+</td></tr>
+</%def>\

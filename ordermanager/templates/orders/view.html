@@ -1,0 +1,36 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Заявка № ${c.order.id}</%def>\
+<%def name="title()">Заявка № ${c.order.id}</%def>\
+<%inherit file="menu.html"/>\
+\
+## Меню действий!
+<div id="actions">
+<ul>
+% if session.has_key('division') and (c.order.cust_id == session['division'] and c.order.status_id==3) and (h.have_role('appointer') or h.have_role('responsible') or h.have_role('chief')):
+<li>${h.link_to(u'Подтвердить выполнение', h.url_for(controller='action', action='approve', id=c.order.id), class_="approve_link")}</li>
+% endif
+\
+% if h.have_role('appointer') and c.order.status_id==1:
+<li>${h.link_to(u'Взять себе', h.url_for(controller='order', action='takerequest', id=c.order.id), class_="take_link")}</li>
+% elif (h.have_role('performer') and c.order.status_id not in [1,4,6] and session.has_key('division') and (c.order.perf_id == session['division'])) or (h.have_role('admin')) or (h.have_role('appointer') and c.order.status_id not in [1,4,6] and session.has_key('division') and (c.order.perf_id == session['division'])):
+<li>${h.link_to(u'Изменить статус', h.url_for(controller='action', action='choose', id=c.order.id), class_="action_link")}</li>
+% endif
+\
+% if h.can_complain(c.order):
+<li>${h.link_to(u'Пожаловаться', h.url_for(controller='action', action='complain', id=c.order.id), class_="complaint_link")}</li>
+% endif
+\
+% if (h.have_role('admin') or h.have_role('operator') or (session.has_key('division') and h.have_role('creator') and c.order.cust_id==session['division'])):
+<li>${h.link_to(u'Отредактировать', h.url_for(controller='order', action='edit', id=c.order.id), class_="edit_link")}</li>
+% endif
+\
+% if h.have_role('admin'):
+<li>${h.link_to(u'Удалить', h.url_for(controller='order', action='delete', id=c.order.id), class_="delete_link")}</li>
+% endif
+</ul>\
+</div>
+\
+${self.info()}
+\
+<%def name="info()"><%include file="info.html"/></%def>\
+

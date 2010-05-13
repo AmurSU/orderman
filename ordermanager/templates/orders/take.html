@@ -1,0 +1,21 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Взятие заявки</%def>\
+<%def name="title()">Взятие заявки</%def>\
+<%inherit file="menu.html"/>\
+<%namespace file="fields.html" name="fields" import="*"/>\
+<%def name="info()"><%include file="info.html"/></%def>\
+\
+<p>Вы действительно хотите взять себе на выполнение заявку № ${c.order.id}?</p>
+<p>Если да, то выберите непосредственных исполнителей:</p>
+${h.form_start(h.url_for(controller='order', action='take', id=request.urlvars['id']), method="post")}
+<%doc>${h.field(
+    u"Исполнители",
+    
+)}</%doc>\
+${h.checkbox_group('performers', selected_values=None, align="vert", options=c.performers)}
+
+<tr><td colspan="2">${h.literal(u'<button type="button" class="backbutton">&lt; Не брать</button>')} &nbsp; ${h.submit(value=u"Взять >", name='submit')}</td></tr>
+${h.form_end()}
+\
+${self.info()}
+

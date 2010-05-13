@@ -1,0 +1,19 @@
+## -*- coding: utf-8 -*-
+<%def name="title()">${next.title()} :: Пользователи</%def>
+<%inherit file="/base.html"/>
+<%def name="submenu()">
+<ul id="sectionmenu">
+% if h.have_role('admin'):
+<li>${h.link(controller="usercontrol", action='add', text=u"Создать", id_="smenu_create")}</li>
+% endif
+<li>${h.link2(h.url_for(controller="usercontrol", action='list', show=None, id=None), text=u"Все")}</li>
+<li>${h.link2(h.url_for(controller="usercontrol", action='list', show="customers", id=None), text=u"Заказчики")}</li>
+<li>${h.link2(h.url_for(controller="usercontrol", action='list', show="performers", id=None), text=u"Исполнители")}</li>
+<li>${h.link2(h.url_for(controller="usercontrol", action='list', show="appointers", id=None), text=u"Назначители")}</li>
+<li>${h.link2(h.url_for(controller="usercontrol", action='list', show="responsibles", id=None), text=u"Ответственные")}</li>
+<li>${h.link2(h.url_for(controller="usercontrol", action='list', show="chiefs", id=None), text=u"Начальники")}</li>
+<li>${h.link2(h.url_for(controller="usercontrol", action='list', show="administrators", id=None), text=u"Администраторы")}</li>
+<li>${h.link2(h.url_for(controller="usercontrol", action='list', show="operators", id=None), text=u"Операторы")}</li>
+</ul>
+</%def>
+${next.body()}

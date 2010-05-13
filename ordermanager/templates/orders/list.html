@@ -1,0 +1,47 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Заявки</%def>\
+<%def name="title()">Все</%def>\
+<%inherit file="menu.html"/>\
+<form action="${h.url_for(controller='order', action='filter')}" method="get" id="orderfilter">
+Категория: ${h.select(name="cat", selected_values=c.mcategory, options=c.mcat)} &nbsp;
+Вид работ: ${h.select(name="work", selected_values=c.mdefwork, options=c.mwork)} &nbsp;
+Состояние: ${h.select(name="status", selected_values=c.mstatus, options=c.mstat)} &nbsp;
+<button type="submit">Показать</button>
+</form>
+<form action="${h.url_for(controller='order', action='goto')}" method="post">
+<p>Перейти к заявке № <input type="text" name="id" id="id" /> <button type="submit">Перейти</button></p>
+</form>
+% if len(c.paginator):
+<p>${c.paginator.pager(u'$link_first $link_previous от $first_item до $last_item из $item_count $link_next $link_last')}</p>
+${self.orderstable(c.paginator)}
+<%doc><table class="orderlist">
+<tr><th>№</th><th>Задача</th><th>Подразделение</th><th>Подробности</th><th>Время подачи</th><th>Статус</th><th>Действие</th></tr>
+% for counter,item in enumerate(c.paginator):
+    ${self.buildrow(item, counter%2)}\
+% endfor
+</table>
+</%doc>
+<p>${ c.paginator.pager('~2~') }</p>
+% else:
+<p>
+   Заявок нет.
+    <a href="${h.url_for(controller='order', action='add')}">Создать</a>.
+</p>
+% endif
+<p>Всего заявок: ${c.ordercount}</p>
+
+<%def name="buildrow(order,odd=True)">\
+% if odd:
+<tr class="odd">\
+% else:
+<tr class="even">\
+% endif
+<td>${h.link_to(order.id, h.url_for(controller='order', action='view', id=order.id, show=None))}</td>\
+<td>${h.link_to(order.work.title + h.literal(" &mdash; ") + order.category.title, h.url_for(controller='order', action='view', id=order.id, show=None))}</td>\
+<td>${order.customer.title}</td>\
+<td>${h.link_to(order.title or h.literal("&nbsp;&mdash;"), h.url_for(controller='order', action='view', id=order.id, show=None))}</td>\
+<td>${order.created.strftime('%Y.%m.%d %H:%M')}</td>\
+<td>${order.status.title}</td>\
+<td>${h.orderactlink(order)}</td>\
+</tr>
+</%def>\

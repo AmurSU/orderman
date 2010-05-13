@@ -1,0 +1,48 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Пользователи</%def>
+<%def name="title()">Все</%def>
+<%def name="normname(surname, name, patronymic)">${surname} ${name[0]}. ${patronymic[0]}.</%def>
+<%inherit file="menu.html"/>
+<form action="" method="get"><input type="text" id="search" name="search" value="${c.search or ""}" length="50" /> <button type="submit">Искать</button></form>
+% if len(c.paginator):
+<p>${c.paginator.pager(u'$link_first $link_previous от $first_item до $last_item из $item_count $link_next $link_last')}</p>
+<table id="personlist">
+<tr><th>Ф.И.О.</th><th>Подразделение</th><th>Действия</th></tr>
+% for counter,item in enumerate(c.paginator):
+    ${self.buildrow(item, counter%2)}\
+% endfor
+</table>
+<p>${ c.paginator.pager('~2~') }</p>
+% else:
+<p>
+    Нет пользователей.
+    <a href="${h.url_for(controller='usercontrol', action='add', show=None)}">Создать</a>.
+</p>
+% endif
+<p>Всего пользователей: ${c.usercount}</p>
+
+<%def name="buildrow(person,odd=True)">\
+% if odd:
+<tr class="odd">\
+% else:
+<tr class="even">\
+% endif
+<td>${h.link_to(h.name(person), h.url_for(controller='usercontrol', action='view', id=person.id))}</td>\
+<td>\
+${h.link_to((person.division.title or h.literal("&nbsp;&mdash;")), h.url_for(controller='division', action='view', id=person.division.id))}\
+% if person.chief:
+ (Начальник)\
+% endif
+% if person.responsible:
+ (Ответственный)\
+% endif
+</td>\
+<td>\
+% if h.have_role('admin') or (session.has_key('id') and session['id']==person.id):
+[${h.link_to(u"Редактировать", h.url_for(controller='usercontrol', action='edit', id=person.id, show=None))}] \
+% endif
+% if h.have_role('admin'):
+[${h.link_to(u'Удалить', h.url_for(controller='usercontrol', action='delete', id=person.id, show=None))}]\
+% endif
+</td></tr>
+</%def>\

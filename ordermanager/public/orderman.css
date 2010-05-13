@@ -1,0 +1,445 @@
+body, p, div, ol, ul, img, h1, h2, h3, h4 {
+ margin: 0;
+ padding: 0;
+ border: 0px transparent none;
+}
+
+body {
+ font-family: 'Calibri', 'Arial', sans-serif;
+ font-size: 100%;
+ font-weight: normal;
+ color: black;
+ background-color: #FFFFFC;
+ padding: 0 25px;
+}
+
+p {
+ font-size: 90%;
+ text-indent: 1em;
+}
+
+.ordertablesummary {
+    text-align: right;
+    margin-top: -1em;
+}
+
+h3 {margin-top: 1em;}
+
+a:link {
+ color: blue;
+ background: transparent;  
+ text-decoration: none;
+}
+
+a:visited {
+ color: purple;
+ background: transparent;  
+ text-decoration: none;
+}
+
+a:link:hover, a:visited:hover {
+ text-decoration: underline;
+}
+
+table {
+ border-collapse: collapse;
+ width: 100%;
+ border: 1px solid gray;
+}
+
+th {
+ background: navy;
+ font-weight: bold;
+ font-size: 0.9em;
+ color: white;
+ border: 1px solid silver;
+ padding: 2px;
+}
+
+td {
+ font-size: 0.9em;
+ padding: 2px;
+ border-left: 1px solid silver;
+ border-right: 1px solid silver;
+}
+
+tr.odd {
+ background-color: #EEEEEE;
+} 
+
+
+dl {
+ overflow: hidden;
+ position: relative;
+	font-size: 90%;
+	line-height: 110%;
+	padding: 0;
+	/*margin: 0.5em 17.5em 1em 1em;*/
+    margin: 0.5em 1em 1em 1em;
+}
+dt, dd {
+	padding: 2px 3px;
+	margin: 0;
+	border-width: 1px 0 0;
+	border-style: solid;
+	border-color: hsl(0,0%,87%);
+}
+dt {
+	width: 12em;
+	float: left;
+	clear: both;
+}
+dt:first-child, dt:first-child+dd {border-top-width: 0;}
+dd::after {
+	content: "";
+	clear: both;
+	display: block;
+	speak: none;
+}
+dd {margin-left: 12.0em; padding-left: 6px;}
+
+ul, ol {margin: 0.5em 1em 1em 2em;}
+
+.loading {color: green; font-size: 120%; padding: 1em;}
+.loadingsmall {color: green;}
+
+/* "ШАПКА" */
+#header {
+ color: white;
+ background-color: transparent;
+ background-image: url("/images/header_logo.jpg");
+ background-repeat: no-repeat;
+ background-position: -15px 0;
+ padding: 0 25px 0 250px;
+ margin: 0 -25px;
+ position: relative;
+ z-index: 3;
+ height: 150px;
+}
+
+#headerwrap {
+ background: navy url("/images/header_background.gif") top left repeat-x;
+ margin: 0 -25px;
+ padding: 0 25px;
+}
+
+#header h1 {
+ padding-top: 15px;
+}
+
+#userloginmenu {
+ position: absolute;
+ z-index: 5;
+ top: 0; right: 0;
+ padding: 5px 15px;
+ color: white;
+ background: transparent;     
+}
+
+#userloginmenu a {
+ color: yellow;
+ background: transparent;       
+}
+
+/***** ГЛАВНОЕ МЕНЮ *****/
+
+#menu {
+ position: absolute;
+ bottom: 25px;
+ z-index: 4;
+}
+
+#menu ul {
+ overflow: hidden;
+ width: 100%;
+ margin: 0;
+}
+
+#menu li {
+ display: block;
+ float: left;
+}
+
+#menu a {
+ display: block;
+ border: 1px solid black;
+ border-bottom: none;
+ padding: 5px 8px 5px 25px;
+ margin: 0 2px -1px;
+ color: black;
+ background-color: #FFFFFF;
+ background-repeat: no-repeat;
+ background-position: 5px 7px; 
+}
+
+#menu a:link, #menu a:visited {
+ padding: 3px 8px 3px 25px;
+ margin: 2px 2px 1px;
+ border: 1px solid black;
+ border-bottom: none;
+ color: navy;
+ background-color: #EEEEEE;
+ background-position: 5px 5px; 
+}
+
+#menu a:link:hover, #menu a:visited:hover {
+ background-color: white;
+}
+
+/**** ГЛАВНОЕ МЕНЮ: ИКОНКИ *****/
+#menu li.amursu_link a { background-image: url('/icons/home.png'); }
+#menu li.glagne_link a { background-image: url('/icons/chart.png'); }
+#menu li.orders_link a { background-image: url('/icons/notebooks.png'); }
+#menu li.divs_link a { background-image: url('/icons/users.png'); }
+#menu li.users_link a { background-image: url('/icons/user.png'); }
+
+/***** Вторичное меню *****/
+ 
+#sectionmenu {
+ position: relative;
+ overflow: hidden;
+ margin: 0 1em 0;
+}
+
+#sectionmenu li {
+ display: block;
+ float: left;
+ height: 100%;
+ margin: 0 0 0.5em 0.5em;
+}
+
+#sectionmenu a {
+ display: block;
+ padding: 4px 5px;
+ color: black;
+ background: #EEEEEE;
+ border: 1px solid gray;
+ font-weight: bold;
+ font-size: 80%;
+}
+
+#sectionmenu a:link, #sectionmenu a:visited {
+ border: 1px solid silver;
+ background-color: white;
+ color: navy;
+}
+
+#sectionmenu a:link:hover, #sectionmenu a:visited:hover {
+ background-color: #FFFFEE;
+}
+
+#sectionmenu a#smenu_create {
+    padding-left: 25px;
+    background-image: url('/icons/plus.png');
+    background-position: 5px 4px;
+    background-repeat: no-repeat;
+}
+
+/* Таблицы заявок */
+.order_id {
+    text-align: center;
+}
+.order_description {
+    max-width: 200px;
+}
+.order_description td {
+    white-space: nowrap;
+    overflow: hidden;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+    -moz-text-overflow: ellipsis;
+}
+* html .order_description {
+    width: 200px;
+}
+
+
+/****** ФОРМЫ ******/
+form { margin: 0.5em;}
+form table { border: none; }
+form td { border: none; }
+.required { color: red; }
+.label { width: 15em; }
+.field input {font-size: 120%;}
+input[type="submit"], .backbutton {
+ padding: 5px 20px;
+ font-size: 120%;
+ font-weight: bold;
+}
+.error-message {color: red;}
+.label_desc, .field_desc {
+ color: gray;
+ font-size: 75%;
+ padding-top: 0;
+}
+
+/****** РАЗНОЕ ******/
+#flash {
+    background: #ffc;
+    padding: 5px;
+    border: 1px dotted #000;
+    margin: 1em 2em;    
+    clear: both;
+}
+#flash p { margin: 0px; padding: 0px; }
+
+#complainorderinfo {margin-bottom: 1em;}
+
+.attention {
+    background: #FFFFEE url("/icons/exclamation.png") 10px 50% no-repeat;
+    border: 1px dotted #FF9933;
+    padding: 10px 10px 10px 35px;
+    margin: 20px;
+    text-indent: 0;
+}
+
+/* Главная страница */
+#mainactions {
+ position: relative;
+ overflow: hidden;
+ width: 100%;
+}
+
+#mainactions li {
+ display: block;
+ float: left;
+ margin: 0em 1.5em;
+ text-align: center;
+}
+
+#mainactions a {
+ padding: 0.25em 1em;
+ display: block;
+ border: 1px solid silver;
+ font-size: 200%;
+ color: navy;
+}
+
+#mainactions span {
+ display: block;
+ font-size: 40%;
+}
+
+#mainactions li:first-child a:hover {
+    background-color: #33AA33;
+    border-color: black;
+    color: white;
+    text-decoration: none;
+}
+#mainactions li:last-child a:hover {
+    background-color: #CCCC33;
+    border-color: black;
+    color: black;
+    text-decoration: none;
+}
+.warning {
+ background: #FFFFDD;
+ padding: 1em;
+ margin: 1em;
+ border: 2px dotted gray;
+}
+
+.warning .wleft {
+ margin-right: 210px;
+}
+
+.warning form {
+ margin-top: 0;
+ float: right;
+ text-align: right;
+}
+
+.warning form button {
+ margin-top: 0;
+ width: 200px;
+ font-size: 150%;
+ font-weight: bold;
+}
+
+#statistics dt {width: 20em;}
+#statistics dd+dd {margin-left: 20.5em;}
+#statistics dd {width: auto;}
+#statistics {margin: 0.5em 2em 1em;}
+
+
+/* Меню действий */
+#actions { float: right; margin: -1em 1em 1em;}
+#actions li {display: block;}
+#actions a {
+ display: block;
+ border-bottom: 1px solid #FFCC00;
+ color: #CC6600;
+ font-weight: bold;
+ padding: 0.5em 1em 0.5em 2em;
+}
+
+#actions a:hover {
+  color: navy;
+}
+
+#actions a.delete_link {
+ background: url('/icons/bin.png') 0.5em 50% no-repeat;
+}
+#actions a.edit_link {
+ background: url('/icons/pencil.png') 0.5em 50% no-repeat;
+}
+#actions a.take_link {
+ background: url('/icons/auction-hammer-gavel.png') 0.5em 50% no-repeat;
+}
+#actions a.action_link {
+ background: url('/icons/newspaper--pencil.png') 0.5em 50% no-repeat;
+}
+#actions a.complaint_link {
+ background: url('/icons/megaphone.png') 0.5em 50% no-repeat;
+}
+#actions a.approve_link {
+ background: url('/icons/tick.png') 0.5em 50% no-repeat;
+}
+
+/******** FOOTER **********/
+#footer {
+ border-top: 1px solid gray;
+ padding: 0.3em 25px;
+ margin: 1em -25px 0;
+ font-size: 85%;
+}
+#footer #devs {
+ float: right;
+}
+
+#footer abbr {
+ border-bottom-color: gray;
+}
+
+/* Всё, что ниже прилепляет "подвал" к низу страницы */
+html { min-height: 100%; max-height: 100%;}
+body { min-height: 100%; max-height: 100%;}
+
+#nonfooter {
+ position: relative;
+ min-height: 100%;
+ margin-bottom: 5em;
+ margin-top: -5em;
+ vertical-align: top;
+ z-index: 0;
+}
+
+#top {
+ padding-top: 5em;
+}
+#userloginmenu {
+ padding-top: 5em;
+}
+/*
+* html #nonfooter {
+ height: 100%;
+}
+*/
+#footer {
+ position: relative;
+ margin-top: -3.5em;
+ margin-bottom: 0;
+}
+
+/* A CSS hack that only applies to IE -- specifies a different height for the footer */
+* html #footer { margin-top: -3.4em; }

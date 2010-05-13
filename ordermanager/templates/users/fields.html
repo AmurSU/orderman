@@ -1,0 +1,69 @@
+${h.field(
+    u"Фамилия",
+    h.text(name='surname'),
+    required=True,
+)}
+${h.field(
+    u"Имя",
+    h.text(name='name'),
+    required=True,
+)}
+${h.field(
+    u"Отчество",
+    h.text(name='patronymic'),
+    required=True,
+)}
+${h.field(
+    u"E-mail",
+    h.text(name='email'),
+    required=False,
+)}
+${h.field(
+    u"Контактный телефон",
+    h.text(name='phone'),
+    required=False,
+)}
+## Подчинённые не могут менять барина или становиться им. Вот вам и Юрьев день, робятки )))
+% if session.has_key('admin') and session['admin']:
+${h.field(
+    u"Подразделение",
+    h.select(name="div_id", selected_values=c.curdiv, options=c.divisions),
+    required=False,
+    label_desc = u"Выберите подразделение, в котором будет работать пользователь."
+)}
+${h.field(
+    u"Может создавать заявки",
+    h.literal('<input type="checkbox" id="creator" name="creator" />'),
+    label_desc = u"Может ли создавать новые заявки?"
+)}
+${h.field(
+    u"Может выполнять заявки",
+    h.literal('<input type="checkbox" id="performer" name="performer" />'),
+    label_desc = u"Может ли выполнять назначенные ему заявки?"
+)}
+${h.field(
+    u"Может назначать заявки",
+    h.literal('<input type="checkbox" id="appointer" name="appointer" />'),
+    label_desc = u"Может ли назначать заявки исполнителям?"
+)}
+${h.field(
+    u"Ответственный",
+    h.literal('<input type="checkbox" id="responsible" name="responsible" />'),
+    label_desc = u"Является ли ответственным этого подразделения по заявкам?"
+)}
+${h.field(
+    u"Начальник",
+    h.literal('<input type="checkbox" id="chief" name="chief" />'),
+    label_desc = u"Является ли начальником этого подразделения?"
+)}
+${h.field(
+    u"Администратор",
+    h.literal('<input type="checkbox" id="admin" name="admin" />'),
+    label_desc = u"Может ли администрировать всё?"
+)}
+${h.field(
+    u"Оператор",
+    h.literal('<input type="checkbox" id="operator" name="operator" />'),
+    label_desc = u"Может ли создавать заявки и претензии от имени других пользователей?"
+)}
+% endif
