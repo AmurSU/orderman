@@ -2,7 +2,7 @@
 import logging
 
 from pylons import request, response, session, tmpl_context as c
-from pylons.controllers.util import abort, redirect_to
+from pylons.controllers.util import abort
 
 from ordermanager.lib.base import BaseController, render
 
@@ -39,6 +39,6 @@ class MainController(BaseController):
         c.statistics = [[u"Всего заявок в системе", meta.Session.query(model.Order).count()]]
         statuses = meta.Session.query(model.Status)[:]
         for status in statuses:
-            if status.redirects==status.id:
+            if status.redirects==status.id or status.redirects is None:
                 c.statistics.append([u"В статусе "+h.literal("&laquo;")+unicode(status.title)+h.literal("&raquo;"), len(status.orders)]) 
         return render('/main.html')

@@ -2,14 +2,14 @@
 <div id="menu">
 <ul>
 	<li class="amursu_link"><a href="//test.amursu.ru/"><strong>Веб-сайт АмГУ</strong></a></li>
-	<li class="glagne_link">${h.mlink(controller='main', action='index', text=u"Главная")}</li>
+	<li class="glagne_link">${h.link(h.url("startpage"), text=u"Главная")}</li>
 % if (session.get('preferences') or dict()).get('upcat') is None:
-	<li class="orders_link">${h.mlink(controller='order', action='list', text=u"Заявки")}</li>
+	<li class="orders_link">${h.link(h.url("orderlist"), text=u"Заявки")}</li>
 % else:
-	<li class="orders_link">${h.mlink(controller='order', action='list', upcat=session.get('preferences').get('upcat'), text=u"Заявки")}</li>
+	<li class="orders_link">${h.link(h.url(controller='order', action='list', upcat=session.get('preferences').get('upcat')), text=u"Заявки")}</li>
 % endif
-	<li class="divs_link">${h.mlink(controller='division', action='list', text=u"Подразделения")}</li>
-	<li class="users_link">${h.mlink(controller='usercontrol', action='list', text=u"Пользователи")}</li>
+	<li class="divs_link">${h.link(h.url(controller='division', action='list'), text=u"Подразделения")}</li>
+	<li class="users_link">${h.link(h.url(controller='usercontrol', action='list'), text=u"Пользователи")}</li>
 % if session.has_key('admin') and session['admin'] and False:
 	<li class="admin_link">${h.mlink(controller='admin', action='index', text=u"Администрирование")}</li>
 % endif

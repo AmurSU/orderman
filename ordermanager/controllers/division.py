@@ -109,7 +109,6 @@ class DivisionController(BaseController):
         meta.Session.commit()
         h.flashmsg (u"Подразделение " + h.literal("&laquo;") + div.title + h.literal("&raquo;") + " добавлено.")
         redirect_to(h.url_for(controller='division', action='view', id=div.id))
-        #meta.Session.expunge_all()
 
     def edit(self, id=None):
         h.requirerights("admin")

@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """Setup the OrderManager application"""
 import logging
-
+import pylons.test
 from ordermanager.config.environment import load_environment
 from ordermanager.model import meta
 import ordermanager.model as model
-
 from hashlib import md5
 
 log = logging.getLogger(__name__)
@@ -13,7 +12,9 @@ log = logging.getLogger(__name__)
 def setup_app(command, conf, vars):
     """Place any commands to setup ordermanager here"""
     load_environment(conf.global_conf, conf.local_conf)
-
+    # Don't reload the app if it was loaded under the testing environment
+    if not pylons.test.pylonsapp:
+        load_environment(conf.global_conf, conf.local_conf)
     # Create the tables if they don't already exist
     log.info(u"Удаление и создание таблиц...")
     meta.metadata.drop_all(bind=meta.engine)
@@ -42,7 +43,7 @@ def setup_app(command, conf, vars):
         log.info(u"Исправление пользователя-администратора...")
     admin.login = u'admin'
     admin.password = md5(u"Random!").hexdigest()
-    admin.div_id = 1
+    #admin.div_id = 1
     admin.admin = True
     admin.chief = True
     admin.responsible = True

@@ -10,7 +10,7 @@ ${self.actions()}\
 % if not session.has_key('user'):
 <div class="warning">
 <form action="${h.url_for(controller='usercontrol', action='login')}" method="GET"><button type="submit">Войти &gt;</button></form>
-<p class="wleft">Вы не вошли в систему заявок. Сейчас вы можете только просматривать информацию. Для полноценной работы ${h.link(controller="usercontrol", action="login", text=u"войдите")} в систему, используя выданные вам логин и пароль.</p>
+<p class="wleft">Вы не вошли в систему заявок. Сейчас вы можете только просматривать информацию. Для полноценной работы ${h.link(h.url(controller="usercontrol", action="login"), text=u"войдите")} в систему, используя выданные вам логин и пароль.</p>
 </div>
 % endif
 \
@@ -19,14 +19,14 @@ ${self.actions()}\
 <table class="orderlist">
 <tr><th>№</th><th>Задача</th><th>Подразделение</th><th>Доп. информация</th><th>Время подачи</th><th>Статус</th><th>Действие</th></tr>
 % for i,order in enumerate(c.orderstoapprove):
-${h.tr(i)}<td>${order.id}</td><td>${h.link(controller="order", action='view', id=order.id, text=order.work.title + h.literal(" &mdash; ") + order.category.title)}</td><td>${order.customer.title}</td><td>${h.link_to(order.title or h.literal("&nbsp;&mdash;"), h.url_for(controller='order', action='view', id=order.id))}</td><td>${order.created.strftime('%Y.%m.%d %H:%M')}</td><td>${order.status.title}</td><td>${h.link(controller="action", action='approve', id=order.id, text=u"Подтвердить")}</td></tr>
+${h.tr(i)}<td>${order.id}</td><td>${h.link(h.url(controller="order", action='view', id=order.id), text=order.work.title + h.literal(" &mdash; ") + order.category.title)}</td><td>${order.customer.title}</td><td>${h.link_to(order.title or h.literal("&nbsp;&mdash;"), h.url(controller='order', action='view', id=order.id))}</td><td>${order.created.strftime('%Y.%m.%d %H:%M')}</td><td>${order.status.title}</td><td>${h.link(h.url(controller="action", action='approve', id=order.id), text=u"Подтвердить")}</td></tr>
 % endfor
 </table>
 % endif
 \
 <h3>Новые заявки</h3>
 % if c.freeorders:
-<p class="ordertablesummary"><a href="${h.url_for(controller='order', action='list', upcat=(session.get('preferences') or dict()).get('upcat'), cat='any', work='any', status=1)}">Всего ${h.get_plural(c.numfree, (u"свободная заявка", u"свободных заявки", u"свободных заявок"))}</a></p>
+<p class="ordertablesummary"><a href="${h.url(controller='order', action='list', upcat=(session.get('preferences') or dict()).get('upcat'), cat='any', work='any', status=1)}">Всего ${h.get_plural(c.numfree, (u"свободная заявка", u"свободных заявки", u"свободных заявок"))}</a></p>
 ${self.orderstable(c.freeorders)}
 % else:
 <p>Хорошо! Непринятых заявок нет.</p>

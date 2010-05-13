@@ -8,11 +8,13 @@ from ordermanager.model import meta
 import datetime
 from sqlalchemy import schema, types
 
+# Для проверки пароля в Person
+from hashlib import md5
+
 # инициализация модели
 def init_model(engine):
     """Call me before using any of the tables or classes in the model"""
     meta.Session.configure(bind=engine)
-    meta.Session.configure(expire_on_commit=True)
     meta.engine = engine
 
 # Возвращает текущее время и дату
@@ -28,7 +30,7 @@ orders_table = schema.Table ('orders', meta.metadata,
     schema.Column('id', types.Integer,
         schema.Sequence('orders_seq_id', optional=True), primary_key=True),
     # Более подробная информация о заявке (название колонки не соответствует назначению по историческим причинам)
-    schema.Column('title', types.UnicodeText(), default=""),
+    schema.Column('description', types.UnicodeText(), default=""),
     # Кастомное место выполнения заявки
     schema.Column('place', types.Unicode(255), default=""),
     # Что нужно сделать? (починить, установить, купить)
@@ -51,20 +53,39 @@ orders_table = schema.Table ('orders', meta.metadata,
     schema.Column('edited', types.TIMESTAMP())
 )
 
-# Таблица действий (производимых над заявками)
+# Таблица действий
 actions_table = schema.Table ('actions', meta.metadata,
     schema.Column('id', types.Integer,
         schema.Sequence('actions_seq_id', optional=True), primary_key=True),
     # Заявка, которой касается действие
+    schema.Column('from_status_id', types.Integer, schema.ForeignKey("orders.id")),
+    # ID производимого действия
+    schema.Column('to_status_id', types.Integer, schema.ForeignKey("statuses.id")),
+    # Название действия (при выборе)
+    schema.Column('title_before', types.Unicode(64)),
+    # Название действия (в журнале)
+    schema.Column('title_after', types.Unicode(64)),
+    # Комментарий (для разъяснений)
+    schema.Column('description', types.UnicodeText()),
+    # Служебные данные о записи
+    schema.Column('created', types.DateTime(), default=now),
+    schema.Column('edited', types.TIMESTAMP())
+)
+
+# Журнал действий (производимых над заявками)
+actionlog_table = schema.Table ('actionlog', meta.metadata,
+    schema.Column('id', types.Integer,
+        schema.Sequence('actions_seq_id', optional=True), primary_key=True),
+    # Заявка, которой касается действие
     schema.Column('order_id', types.Integer, schema.ForeignKey("orders.id")),
-    # Статус, придаваемы
-    schema.Column('status_id', types.Integer, schema.ForeignKey("statuses.id")),
+    # ID производимого действия
+    schema.Column('action_id', types.Integer, schema.ForeignKey("statuses.id")),
     # Какое подразделение производит действие
     schema.Column('div_id', types.Integer, schema.ForeignKey("divisions.id")),
     # Комментарий
     schema.Column('description', types.UnicodeText()),
-    # До какого времени будет выполняться
-    schema.Column('expires', types.DateTime()),
+    # Предположительное время завершения
+    schema.Column('estimated', types.DateTime()),
     # Служебные данные о записи
     schema.Column('created', types.DateTime(), default=now),
     schema.Column('edited', types.TIMESTAMP())
@@ -123,8 +144,10 @@ people_table = schema.Table ('people', meta.metadata,
 
 # Таблица статусов заявок
 statuses_table = schema.Table ('statuses', meta.metadata,
-    schema.Column('id', types.Integer,
+    schema.Column('id', types.Integer,  schema.CheckConstraint("id > 0 AND id <= 10"),
         schema.Sequence('statuses_seq_id', optional=True), primary_key=True),
+    # Базовый статус
+    schema.Column('base_id', types.Integer, schema.CheckConstraint("base_id > 10"), nullable=False),
     # Название
     schema.Column('title', types.Unicode(255), nullable="false"),
     schema.Column('url_text', types.Unicode(255), nullable="false"),
@@ -176,7 +199,7 @@ works_table = schema.Table ('works', meta.metadata,
     schema.Column('edited', types.TIMESTAMP())
 )
 
-# Таблица автоназначений заявок
+# Таблица автоназначений заявок (not used yet)
 assigns_table = schema.Table ('assigns', meta.metadata,
     schema.Column('id', types.Integer,
         schema.Sequence('assigns_seq_id', optional=True), primary_key=True),
@@ -223,28 +246,60 @@ orderinvs_table = schema.Table('orderinventories', meta.metadata,
 ##### КЛАССЫ #####
 
 class Order(object):
-    pass
+    def __repr__ (self):
+        return ( u"<Order(%d)>" % self.id ).encode("UTF-8")
 
 class Action(object):
-    pass
+    def __repr__ (self):
+        return ( u"<Action(%d)>" % self.id ).encode("UTF-8")
+
+class ActionLog(object):
+    def __repr__(self):
+      return ( u"<Action %d on order %d>" % (self.id, self.order_id)).encode("UTF-8")  
 
 class Division(object):
-    pass
+    def __repr__(self):
+      return ( u"<Division %d: \"%s\">" % (self.id, self.title)).encode("UTF-8")
 
 class Person(object):
-    pass
+    def makepassword(self, password):
+        return md5(password.encode('utf-8')).hexdigest()
+    
+    def checkpassword (self, value):
+        return self.password == self.makepassword(value)
+     
+    def normname (self):
+        u"""Возвращает строку вида: Фамилия И. О.\nВ случае незаполненности одного или больше из этих полей возвращает логин."""
+        if len(self.surname) and len(self.name) and len(self.patronymic):
+            return self.surname + u' ' + self.name[0] + u'. ' + self.patronymic[0] + u'.'
+        else:
+            return self.login
+    
+    def __init__ (self, login, password, name, surname, patronymic):
+        self.login = login
+        self.password = self.makepassword(password)
+        self.name = name
+        self.surname = surname
+        self.patronymic = patronymic
+    
+    def __repr__ (self):
+        return ( u"<Person(%d, %s, %s)>" % (self.id, self.login, self.normname()) ).encode("UTF-8")   
 
 class Status(object):
-    pass
+    def __repr__(self):
+      return ( u"<Status %d: \"%s\">" % (self.id, self.title)).encode("UTF-8")
 
 class Category(object):
-    pass
+    def __repr__(self):
+      return ( u"<Category %d: \"%s\">" % (self.id, self.title)).encode("UTF-8")
 
 class UpperCategory(object):
-    pass
+    def __repr__(self):
+      return ( u"<UpCategory %d: \"%s\">" % (self.id, self.title)).encode("UTF-8")
 
 class Work(object):
-    pass
+    def __repr__(self):
+      return ( u"<Work %d: \"%s\">" % (self.id, self.title)).encode("UTF-8")
 
 class Assign(object):
     pass
@@ -257,7 +312,7 @@ class Inventory(object):
 
 orm.mapper(Order, orders_table,
     properties = {
-        'actions':  orm.relation(Action, backref=orm.backref('order', lazy='dynamic'), cascade="all", lazy="dynamic", order_by=actions_table.c.created),
+        'actions':  orm.relation(Action, cascade="all", uselist=True),
         'customer': orm.relation(Division, cascade=None, uselist=False, backref='createdorders',
             primaryjoin  = divisions_table.c.id==orders_table.c.cust_id,
             foreign_keys = [divisions_table.c.id]  
@@ -273,10 +328,19 @@ orm.mapper(Order, orders_table,
         'inventories': orm.relation (Inventory, secondary=orderinvs_table, backref=orm.backref("orders", cascade=None), cascade=None),
     }
 )
-orm.mapper(Action, actions_table, properties={
+orm.mapper(ActionLog, actionlog_table, properties={
     'performers': orm.relation (Person, secondary=actperf_table, backref=orm.backref("actions", cascade=None), cascade="all"),
     'division'  : orm.relation (Division, cascade=None, uselist=False),
-    'status'    : orm.relation (Status, cascade=None, uselist=False)
+})
+orm.mapper(Action, actions_table, properties={
+    'status_from' : orm.relation (Status, cascade=None, uselist=False,
+        primaryjoin  = statuses_table.c.id==actions_table.c.from_status_id,
+        foreign_keys = [statuses_table.c.id]
+    ),
+    'status_to'   : orm.relation (Status, cascade=None, uselist=False,
+        primaryjoin  = statuses_table.c.id==actions_table.c.to_status_id,
+        foreign_keys = [statuses_table.c.id]
+    )  
 })
 orm.mapper(Division, divisions_table, properties={
    'people' : orm.relation(Person, backref=orm.backref("division", uselist=False, cascade=None), cascade=None), 
@@ -286,7 +350,14 @@ orm.mapper(Division, divisions_table, properties={
 orm.mapper(Person, people_table)
 
 orm.mapper(Status, statuses_table, properties={
-   'actions':orm.relation(Action)
+   'actions_from':orm.relation(Action,
+        primaryjoin  = statuses_table.c.id==actions_table.c.from_status_id,
+        foreign_keys = [actions_table.c.id]
+   ),
+   'actions_to':  orm.relation(Action,
+        primaryjoin  = statuses_table.c.id==actions_table.c.to_status_id,
+        foreign_keys = [actions_table.c.id]   
+   ), 
 })
 orm.mapper(Category, categories_table, properties={
    'orders':orm.relation(Order, cascade=None),

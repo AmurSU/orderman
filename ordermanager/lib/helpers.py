@@ -12,13 +12,20 @@ from routes import url_for
 from webhelpers.html.tags import *
 from webhelpers.html.tools import *
 from webhelpers.html import literal
-import webhelpers.paginate as paginate
+import ordermanager.lib.paginate as paginate
 
-from formbuild.helpers import field
-from formbuild import start_with_layout as form_start, end_with_layout as form_end
-from formbuild.helpers import checkbox_group
+#from formbuild.helpers import field
+#from formbuild import start_with_layout as form_start, end_with_layout as form_end
+#from formbuild.helpers import checkbox_group
+def field (*args, **kwargs):
+  pass
+form_start = field
+form_end = field
+checkbox_group = field
+
 
 import pylons
+from pylons import url
 
 import datetime
 
@@ -33,46 +40,19 @@ def now():
     
 
 # Формирует готовую HTML-ссылку
-def link (controller=None, action=None, id=None, text="Ссылка", title="", class_="", id_=""):
+def link (urlto, text="Главная", **kwargs):
     answer = literal('<a ')
-    if class_:
-        answer += literal('class="'+class_+'" ')
-    if id_:
-        answer += literal('id="'+id_+'" ')
-    if title:
-        answer += literal('title="') + title + literal('" ')
-    if url_for(id=id) != url_for(controller=controller, action=action, id=id):
-       answer += literal('href="') + url_for(controller=controller, action=action, id=id) + literal('"')
-       answer +=  literal(">") + text +  literal("</a>")
+    for attr,value in kwargs.iteritems():
+        if attr != 'class_':
+            answer += attr+'="'+unicode(value)+'" '
+        else:
+            answer += 'class="'+unicode(value)+'" '
+    pylons.request.urlvars.update(pylons.request.params)        
+    if url.current(**pylons.request.urlvars) != urlto:
+        answer += literal('href="') + unicode(urlto) + literal('"') + literal(">")
     else:
-       answer += literal('class="nolink">') + text + literal("</a>")
-    return answer
-
-def link2 (url=None, text="Ссылка", title=""):
-    if url_for() != url_for(url):
-       answer = literal('<a href="') + url + literal('"')
-       if title:
-           answer += literal(' title="') + title + literal('"')
-       answer +=  literal(">") + text +  literal("</a>")
-    else:
-       answer = literal('<a class="nolink"')
-       if title:
-           answer += literal(' title="') + title + literal('"')
-       answer +=  literal(">") + text +  literal("</a>")
-    return answer
-
-# Ссылка для главного меню
-def mlink (controller=None, action=None, id=None, upcat=None, text="Ссылка", title=""):
-    if url_for(action=None, id=id) != url_for(controller=controller, action=None, id=id):
-       answer = literal('<a href="') + url_for(controller=controller, action=action, id=id, upcat=upcat, show=None) + literal('"')
-       if title:
-           answer += literal(' title="') + title + literal('"')
-       answer +=  literal(">") + text +  literal("</a>")
-    else:
-       answer = literal('<a class="nolink"')
-       if title:
-           answer += literal(' title="') + title + literal('"')
-       answer +=  literal(">") + text +  literal("</a>")
+       answer += literal('class="nolink">')
+    answer += text +  literal("</a>")
     return answer
 
 def admincheck():
@@ -82,6 +62,7 @@ def admincheck():
 #    if not pylons.session['admin']:
 #        pylons.controllers.util.abort(403)
 
+    
 def requirerights(rights="admin", user_is=None):
     if not pylons.session.has_key('user'):
         pylons.controllers.util.abort(401)
@@ -124,18 +105,18 @@ def name (user):
 def orderactlink (order):
     '''Возвращает HTML-ссылку на действие, которое пользователь может совершить с заявкой\n\nПрименение: h.orderactlink(заявка)\n\nГде заявка - объект класса model.Order'''
     if have_role('appointer') and order.status_id==1:
-        return link_to(u'Взять себе', url_for(controller='order', action='takerequest', id=order.id, show=None))
+        return link_to(u'Взять себе', url(controller='order', action='takerequest', id=order.id, show=None))
     elif pylons.session.has_key('division') and order.cust_id == pylons.session['division'] and order.status_id==3:
-        return link_to(u'Подтвердить выполнение', url_for(controller='action', action='approve', id=order.id, show=None))
+        return link_to(u'Подтвердить выполнение', url(controller='action', action='approve', id=order.id, show=None))
     elif (
         have_role('appointer')
         and order.status_id not in [1,4,6]
         and pylons.session.has_key('division')
         and order.perf_id == pylons.session['division']
         ) or have_role('admin'):
-        return link_to(u'Изменить статус', url_for(controller='action', action='choose', id=order.id, show=None))
+        return link_to(u'Изменить статус', url(controller='action', action='choose', id=order.id, show=None))
     elif can_complain(order):
-        return link_to(u'Пожаловаться', url_for(controller='action', action='complain', id=order.id, show=None))
+        return link_to(u'Пожаловаться', url(controller='action', action='complain', id=order.id, show=None))
     else:
         return ''
 

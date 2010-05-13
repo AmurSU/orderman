@@ -16,9 +16,6 @@ ${h.field(
     h.select(name="div_id", selected_values=c.curdiv, options=c.divisions),
     required=True,
 )}
-% else:
-
-##<input type="hidden" name="div_id" id="div_id" value="${session.get('division')}" />
 % endif
 ${h.field(
     u"Новый статус",
@@ -31,7 +28,7 @@ ${h.field(
 )}
 ${h.field(
     u"Комментарий",
-    h.textarea(name="description", maxlen=250, cols=80, rows=5)
+    h.text(name="description", maxlen=250)
 )}
 ${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
 ${h.form_end()}

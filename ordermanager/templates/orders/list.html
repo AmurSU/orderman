@@ -3,6 +3,7 @@
 <%def name="title()">Все</%def>\
 <%inherit file="menu.html"/>\
 <form action="${h.url_for(controller='order', action='filter')}" method="get" id="orderfilter">
+<input type="hidden" id="upcat" name="upcat" value="${request.urlvars.get('upcat', 'any')}" />
 Категория: ${h.select(name="cat", selected_values=c.mcategory, options=c.mcat)} &nbsp;
 Вид работ: ${h.select(name="work", selected_values=c.mdefwork, options=c.mwork)} &nbsp;
 Состояние: ${h.select(name="status", selected_values=c.mstatus, options=c.mstat)} &nbsp;
@@ -12,8 +13,9 @@
 <p>Перейти к заявке № <input type="text" name="id" id="id" /> <button type="submit">Перейти</button></p>
 </form>
 % if len(c.paginator):
-<p>${c.paginator.pager(u'$link_first $link_previous от $first_item до $last_item из $item_count $link_next $link_last')}</p>
+##<p>${c.paginator.pager(u'$link_first $link_previous от $first_item до $last_item из $item_count $link_next $link_last')}</p>
 ${self.orderstable(c.paginator)}
+##${self.orderstable(c.orders)}
 <%doc><table class="orderlist">
 <tr><th>№</th><th>Задача</th><th>Подразделение</th><th>Подробности</th><th>Время подачи</th><th>Статус</th><th>Действие</th></tr>
 % for counter,item in enumerate(c.paginator):
@@ -21,14 +23,14 @@ ${self.orderstable(c.paginator)}
 % endfor
 </table>
 </%doc>
-<p>${ c.paginator.pager('~2~') }</p>
+##<p>${ c.paginator.pager('~2~') }</p>
 % else:
 <p>
    Заявок нет.
     <a href="${h.url_for(controller='order', action='add')}">Создать</a>.
 </p>
 % endif
-<p>Всего заявок: ${c.ordercount}</p>
+<p>Всего заявок: ${c.ordercount}, ${c.start}, ${c.end}</p>
 
 <%def name="buildrow(order,odd=True)">\
 % if odd:

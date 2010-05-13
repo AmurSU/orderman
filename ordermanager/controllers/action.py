@@ -26,12 +26,11 @@ class ValidPerformers(formencode.FancyValidator):
                 values,
                 state
             )
-        meta.Session.expunge_all()
-        all_perfs = [user.id for user in meta.Session.query(model.Person).filter_by(deleted=False).filter_by(div_id=values["div_id"]).filter_by(performer=True)]
+        all_perfs = [user.id for user in meta.Session.query(model.Person).filter_by(div_id=values["div_id"]).filter_by(performer=True)]
         for perf in values['performers']:
             if perf not in all_perfs:
                 raise formencode.Invalid(
-                    {'performers': u"Один или больше исполнителей неверны. (Не относятся к выполняющему подразделению, может быть стоит сначала заявку взять себе на выполнение?)."}, # "%d не в %s. d%d s%d" % (perf, all_perfs, values['div_id'], session.get('division'))},
+                    {'performers': u"Один или больше исполнителей неверны. (Не относятся к выполняющему подразделению, может быть стоит сначала заявку взять себе на выполнение?)"},
                     values,
                     state
                 )
@@ -39,16 +38,10 @@ class ValidPerformers(formencode.FancyValidator):
 
 class ValidDivision(formencode.FancyValidator):
     def _to_python(self, value, state):
-        value = int(value)
         if not h.have_role('admin'):
-            if value != int(session.get('division')):
-                raise formencode.Invalid(
-                    u"Попытка взлома? Передан код подразделения %d, а должен быть %d."%(value,session.get('division')),
-                    value,
-                    state
-                )
+            return session.get('division')
         else:
-            divlist = [int(x.div_id) for x in meta.Session.query(model.Person.div_id).filter_by(performer=True).group_by(model.Person.div_id)]
+            divlist = [unicode(x.div_id) for x in meta.Session.query(model.Person.div_id).filter_by(performer=True).all()]
             if value not in divlist:
                 raise formencode.Invalid(
                     u"Неверное подразделение: Передано %s, а должно быть одним из %s."%(value,divlist),
@@ -61,7 +54,7 @@ class ActForm(formencode.Schema):
     allow_extra_fields = True
     filter_extra_fields = True
     div_id = ValidDivision(
-        if_missing = lambda: session.get('division'),
+        if_missing = session.get('division'),
         messages = {
             'empty': u"Выберите подразделение",
             'notIn': u"Выберите подразделение из списка!"
@@ -69,7 +62,7 @@ class ActForm(formencode.Schema):
     )
     performers = formencode.foreach.ForEach(formencode.validators.Int())
     status = formencode.validators.OneOf(
-        [unicode(x.id) for x in meta.Session.query(model.Status).filter(model.sql.not_(model.Status.id.in_([1, 4, 6, 11, 12])))],
+        [unicode(x.id) for x in meta.Session.query(model.Status).filter(model.sql.not_(model.Status.id.in_([1, 4, 6, 11, 12])))[:]],
         not_empty=True,
         messages = {
             'empty': u"Выберите статус",
@@ -109,12 +102,11 @@ class ActionController(BaseController):
         if not (h.have_role('admin') or ((h.have_role("appointer")) and session.has_key('division') and c.order.perf_id == session['division'])):
             abort(403)
         actionquery = meta.Session.query(model.Action)
-        #if actionquery.filter_by(div_id=c.order.perf_id).all() is None:
-        #    lastaction = None
-        #else:
-        #    lastaction = actionquery.filter_by(div_id=c.order.perf_id).order_by(model.sql.desc(model.Action.created)).first()
-        lastaction = actionquery.filter_by(order_id=id).filter_by(div_id=c.order.perf_id).order_by(model.sql.desc(model.Action.created)).first()
-        c.actions = actionquery.filter_by(order_id=id).order_by(model.Action.created).all()
+        if actionquery.filter_by(div_id=c.order.perf_id).all() is None:
+            lastaction = actionquery.order_by(model.sql.desc(model.Action.created)).first()
+        else:
+            lastaction = actionquery.filter_by(div_id=c.order.perf_id).order_by(model.sql.desc(model.Action.created)).first()
+        c.actions = actionquery.filter_by(order_id=id).all()
         # Статусы
         statuses = meta.Session.query(model.Status).all()
         if h.have_role('admin'): excluded_statuses = [1, 4, 6, 11, 12]
@@ -122,9 +114,9 @@ class ActionController(BaseController):
         c.statuses = [[status.id, status.title] for status in statuses if status.id not in excluded_statuses]
         # Люди-исполнители
         if h.have_role('admin') and lastaction is not None:
-            performers = meta.Session.query(model.Person).filter_by(deleted=False).filter_by(div_id=lastaction.div_id).filter_by(performer=True)
+            performers = meta.Session.query(model.Person).filter_by(deleted=False).filter_by(div_id=lastaction.div_id).filter_by(performer=True).all()
         else:
-            performers = meta.Session.query(model.Person).filter_by(deleted=False).filter_by(div_id=session['division']).filter_by(performer=True)
+            performers = meta.Session.query(model.Person).filter_by(deleted=False).filter_by(div_id=session['division']).filter_by(performer=True).all()
         c.performers = [[user.id, h.name(user)] for user in performers]
         if lastaction is not None:
             c.curperfs = [x.id for x in lastaction.performers]
@@ -162,7 +154,6 @@ class ActionController(BaseController):
         order.perf_id = session['division']
         meta.Session.commit()
         h.flashmsg (u"Статус заявки № " + h.strong(order.id) + " был изменён на " + h.strong(order.status.title) + ".")
-        meta.Session.expire_all()
         redirect_to(h.url_for(controller='order', action='view', id=order.id)) 
 
     # Создание жалобы на заявку

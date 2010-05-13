@@ -130,14 +130,21 @@ class OrderController(BaseController):
             if status is not None:
                 qorder = qorder.filter_by(status_id=status.id)
                 c.mstatus = kwargs['status']
-        qorder = qorder.filter_by(deleted=bool(request.urlvars.get('deleted', False)))
         # Разбивка на страницы
-        c.paginator = h.paginate.Page(
+        c.paginator = h.paginate.Paginator(
             qorder,
             page = (kwargs.get('page') or 1),   #int(request.params.get('page', 1)),
             items_per_page = (session.get('preferences') or {}).get('ordersinpage', 15),
         )
-        c.ordercount = qorder.count()
+        #c.ordercount = qorder.count()
+        #page = int(kwargs.get('page') or 1);
+        #items_per_page = (session.get('preferences') or {}).get('ordersinpage', 15);
+        #import math
+        #page = min(page, math.ceil(c.ordercount/items_per_page))
+        #c.start = page * items_per_page - items_per_page
+        #c.end = min(page*items_per_page, c.ordercount)
+        #c.orders = qorder[c.start:c.end]
+
         mstat = meta.Session.query(model.Status).filter(model.Status.redirects==model.Status.id).filter_by(deleted=False).all()
         c.mstat = [['any', u' -- Все -- ']] + [[x.id, x.title] for x in mstat]
         mcat = meta.Session.query(model.Category).filter_by(deleted=False)
@@ -149,7 +156,8 @@ class OrderController(BaseController):
         return render ("/orders/list.html")
 
     def filter(self):
-        redirect_to(h.url_for(controller='order', action='list', upcat=request.params.get('upcat','any'), \
+        #raise ValueError
+        redirect_to(h.url(controller='order', action='list', upcat=request.params.get('upcat','any'), \
             cat=request.params.get('cat','any'), work=request.params.get('work', 'any'), status=request.params.get('status', 'any')))
 
     def view(self, id):
@@ -313,7 +321,7 @@ class OrderController(BaseController):
         meta.Session.add(act)
         meta.Session.commit()
         h.flashmsg (u"Вы взяли заявку № " + h.strong(order.id) + u" для выполнения себе. Исполнители: %s"%(u", ".join([h.name(x) for x in act.performers])))
-        redirect_to(h.url_for(controller='order', action='view', id=order.id))
+        redirect_to(h.url_for(controller='order', action='list', id=None))
 
     @validate(schema=GoTo, form="list")
     def goto (self):

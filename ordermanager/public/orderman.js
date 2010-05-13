@@ -8,6 +8,8 @@ $(document).ready(function() {
     // Установка кнопки "Отказаться"
     $(".backbutton").click(function(){history.back();});
 
+    // Перемотка страницы вверх из "подвала"
+    $(".totop").click(function(){$.scrollTo(0, 250, {}); return false;});
 });
 
 /* В форме подачи жалобы подгрузка информации о выбранной заявке */

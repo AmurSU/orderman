@@ -332,7 +332,7 @@ class UsercontrolController(BaseController):
 
     def add(self):
         h.requirerights("admin")
-        divisions = meta.Session.query(model.Division).filter_by(deleted=False).order_by(model.Division.title).all()
+        divisions = meta.Session.query(model.Division).filter_by(deleted=False).all()
         c.divisions = [[None, u"-- выберите подразделение --"]]
         for i in divisions:
             c.divisions.append([i.id, i.title])
@@ -352,8 +352,6 @@ class UsercontrolController(BaseController):
         meta.Session.commit()
         h.flashmsg (u"Пользователь был добавлен.")
         redirect_to(h.url_for(controller='usercontrol', action='view', id=user.id))
-        #meta.Session.expunge_all()
-
 
     def edit(self, id=None):
         user = h.checkuser(id)
@@ -397,10 +395,8 @@ class UsercontrolController(BaseController):
                     if getattr(user, key) != value:
                         setattr(user, key, value)
         meta.Session.commit()
-        h.flashmsg (u"Информация о пользователе была обновлена. ДА!")
+        h.flashmsg (u"Информация о пользователе была обновлена.")
         redirect_to(h.url_for(controller='usercontrol', action='view', id=user.id))
-        #meta.Session.expunge(user.division)
-        #meta.Session.expunge(user) # Принудительный сброс пользователя из сессии ORM в БД
 
     @validate(schema=ChPassForm, form="edit")
     @restrict('POST')

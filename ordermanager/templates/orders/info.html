@@ -33,7 +33,7 @@ ${h.tr(i)}\
 <td>${entry.division.title}</td>\
 <td>${entry.status.title}</td>\
 <td>${entry.created.strftime('%Y.%m.%d %H:%M')}</td>\
-<td>${u", ".join([h.name(person) for person in entry.performers])}</td>\
+<td>${", ".join([h.name(person) for person in entry.performers])}</td>\
 <td>${entry.description}</td>\
 </tr>
 % endfor
