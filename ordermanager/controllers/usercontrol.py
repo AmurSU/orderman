@@ -14,6 +14,7 @@ from pylons.decorators.rest import restrict
 import ordermanager.model as model
 import ordermanager.model.meta as meta
 import sqlalchemy
+from sqlalchemy import and_, or_, join
 
 from hashlib import md5
 import cPickle as pickle
@@ -423,9 +424,15 @@ class UsercontrolController(BaseController):
 
     def switch (self, id=None):
         h.requirerights("operator")
-        users = meta.Session.query(model.Person).filter_by(deleted=False).filter_by(creator=True).order_by(model.Person.login).order_by(model.Person.surname).all()
-        users.sort(key=lambda x:(x.division.title, x.surname));
-        c.users = [[unicode(x.id), x.division.title + h.literal(" &mdash; ") + (h.name(x))] for x in users]
+        userdivs =meta.Session.query(model.Person, model.Division).join(model.Division)\
+            .filter(and_(model.Person.deleted==False, model.Person.creator==True))\
+            .filter(or_(model.Person.chief==True, model.Person.responsible==True))\
+            .order_by(model.Division.title).order_by(model.Person.surname).all()
+        #users = meta.Session.query(model.Person)\
+        #    .filter_by(deleted=False).filter_by(creator=True).order_by(model.Person.login).order_by(model.Person.surname).all()
+        #users.sort(key=lambda x:(x.division.title, x.surname));
+        #c.users = [[unicode(x.id), x.division.title + h.literal(" &mdash; ") + (h.name(x))] for x in users]
+        c.users = [[unicode(x[0].id), x[1].title + h.literal(" &mdash; ") + (h.name(x[0]))] for x in userdivs]
         c.selected = id
         return render ("/users/switch.html")
 
@@ -435,12 +442,12 @@ class UsercontrolController(BaseController):
         h.requirerights("operator")
         h.refresh_account(self.form_result["user_id"], session.get("id")) 
         h.flashmsg (u"Теперь вы под другим пользователем. Нажмите 'вернуться' вверху, чтобы вернуться в свою учётную запись.")       
-        redirect_to(h.url_for(controller="main", action="index", id=None))
+        redirect_to(h.url_for(controller="order", action="add", id=None))
 
     def switchback (self):
         if session.has_key("operator_id"):
             h.refresh_account(session.get("operator_id")) 
-        redirect_to(h.url_for(controller="main", action="index", id=None))
+        redirect_to(h.url_for(controller="usercontrol", action="switch", id=None))
         
     def preferences (self):
         c.user = h.checkuser(session['id'])
