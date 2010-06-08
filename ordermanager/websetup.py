@@ -73,7 +73,7 @@ def setup_app(command, conf, vars):
         [6,  u"Другое программное обеспечение", u"othersoft",       1   ],
         [7,  u"Системный блок",                 u"systemunit",      1   ],
         [8,  u"Монитор",                        u"monitor",         1   ],
-        [9,  u"Клавиатура и мышь",              u"manipulators",    1   ],
+        [9,  u"Клавиатура и мышь",              u"inputdevices",    1   ],
         [10, u"Принтер/сканер и др. периферия", u"peripherals",     1   ],
         [11, u"Ксерокс (копир)",                u"copier",          1   ],
         [12, u"Картридж",                       u"cartridge",       1   ],

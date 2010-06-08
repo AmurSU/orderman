@@ -2,10 +2,14 @@
 <%def name="head()">Заявки</%def>\
 <%def name="title()">Все</%def>\
 <%inherit file="menu.html"/>\
+% if c.upcat:
+<form action="${h.url_for(controller='order', action='filter', upcat=c.upcat)}" method="get" id="orderfilter">
+% else:
 <form action="${h.url_for(controller='order', action='filter')}" method="get" id="orderfilter">
-Категория: ${h.select(name="cat", selected_values=c.mcategory, options=c.mcat)} &nbsp;
-Вид работ: ${h.select(name="work", selected_values=c.mdefwork, options=c.mwork)} &nbsp;
-Состояние: ${h.select(name="status", selected_values=c.mstatus, options=c.mstat)} &nbsp;
+% endif
+Категория: ${h.select(name="cat", selected_values=c.mcatcur, options=c.mcat)} &nbsp;
+Вид работ: ${h.select(name="work", selected_values=c.mworkcur, options=c.mwork)} &nbsp;
+Состояние: ${h.select(name="status", selected_values=c.mstatcur, options=c.mstat)} &nbsp;
 <button type="submit">Показать</button>
 </form>
 <form action="${h.url_for(controller='order', action='goto')}" method="post">

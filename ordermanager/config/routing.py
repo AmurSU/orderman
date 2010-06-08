@@ -57,12 +57,12 @@ def make_map():
     map.connect ("/orders/category={cat};work={work};status={status}",
         controller="order", action="list",
         requirements = {'cat': '\w+', 'work': '\w+', 'status': '\d+'},
-        upcat = None, cat = 'any', work = 'any', status=None                                 
+        cat = 'any', work = 'any', status=None                                 
     )
     map.connect ("/orders/category={cat};work={work};status={status}/page{page}",
         controller="order", action="list",
         requirements = {'page': '\d+', 'cat': '\w+', 'work': '\w+', 'status': '\d+'},
-        upcat = None, cat = 'any', work = 'any', status=None                              
+        cat = 'any', work = 'any', status=None                              
     )
     map.connect ("/orders/{upcat}/category={cat};work={work};status={status}",
         controller="order", action="list",
@@ -74,7 +74,9 @@ def make_map():
         requirements = {'page': '\d+', 'upcat': '\w+', 'cat': '\w+', 'work': '\w+', 'status': '\d+'},
         upcat = 'any', cat = 'any', work = 'any', status=None                                
     )
-
+    map.connect("/orders/filter", controller="order", action="filter")
+    map.connect("/orders/filter/{upcat}", controller="order", action="filter")
+        
     # Подразделения
     map.connect ("/division/{id}/insertusers", controller="division", action="insertusers", requirements = {'id': '\d+'})
     #map.redirect("/division", '/division/list', _redirect_code='301 Moved Permanently')

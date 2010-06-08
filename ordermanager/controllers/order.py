@@ -110,26 +110,26 @@ class OrderController(BaseController):
 
     def list(self, show=None, sort="date", **kwargs):
         qorder = meta.Session.query(model.Order).order_by(model.sql.desc(model.Order.created))
-        if kwargs.get('upcat') not in ['any', None]:
-            upcat = meta.Session.query(model.UpperCategory).filter_by(url_text=kwargs['upcat']).first()
+        c.upcat = kwargs.get('upcat', None)  
+        c.mworkcur = kwargs.get('work', None) or request.params.get('work','any')  
+        c.mcatcur = kwargs.get('cat', None) or request.params.get('cat','any')
+        c.mstatcur = kwargs.get('status', None) or request.params.get('status','any')    
+        if c.upcat not in ['any', None]:
+            upcat = meta.Session.query(model.UpperCategory).filter_by(url_text=c.upcat).first()
             if upcat is not None:
                 qorder = qorder.filter_by(upcat_id=upcat.id)
-                c.mupcategory = kwargs['upcat']
-        if kwargs.get('cat') not in ['any', None]:
-            cat = meta.Session.query(model.Category).filter_by(url_text=kwargs['cat']).first()
+        if c.mcatcur not in ['any', None]:
+            cat = meta.Session.query(model.Category).filter_by(url_text=c.mcatcur).first()
             if cat is not None:
                 qorder = qorder.filter_by(cat_id=cat.id)
-                c.mcategory = kwargs['cat']
-        if kwargs.get('work') not in ['any', None]:
-            work = meta.Session.query(model.Category).filter_by(url_text=kwargs['work']).first()
+        if c.mworkcur not in ['any', None]:
+            work = meta.Session.query(model.Work).filter_by(url_text=c.mworkcur).first()
             if work is not None:
-                qorder = qorder.filter_by(work_id=work.id)
-                c.mdefwork = kwargs['work']
-        if kwargs.get('status') not in ['any', None]:
-            status = meta.Session.query(model.Status).filter(model.Status.redirects==model.Status.id).filter_by(id=kwargs['status']).first()
+                qorder = qorder.filter_by(work_id=work.id)                
+        if c.mstatcur not in ['any', None]:
+            status = meta.Session.query(model.Status).filter(model.Status.redirects==model.Status.id).filter_by(id=c.mstatcur).first()
             if status is not None:
                 qorder = qorder.filter_by(status_id=status.id)
-                c.mstatus = kwargs['status']
         qorder = qorder.filter_by(deleted=bool(request.urlvars.get('deleted', False)))
         # Разбивка на страницы
         c.paginator = h.paginate.Page(
@@ -148,9 +148,11 @@ class OrderController(BaseController):
         c.mwork = [['any', u' -- Все -- ']] + [[x.url_text, x.title] for x in mwork]
         return render ("/orders/list.html")
 
-    def filter(self):
-        redirect_to(h.url_for(controller='order', action='list', upcat=request.params.get('upcat','any'), \
-            cat=request.params.get('cat','any'), work=request.params.get('work', 'any'), status=request.params.get('status', 'any')))
+    def filter(self, **kwargs):
+        redirect_to(h.url_for(controller='order', action='list',
+                              upcat=(request.params.get('upcat', None) or kwargs.get('upcat', 'any')), \
+                              cat=request.params.get('cat','any'), work=request.params.get('work', 'any'),
+                              status=request.params.get('status', 'any')))
 
     def view(self, id):
         c.order = h.checkorder(id)
