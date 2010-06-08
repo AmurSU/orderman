@@ -19,8 +19,6 @@ class MainController(BaseController):
 
     def index(self):
         qorder = meta.Session.query(model.Order)
-        qorder = qorder.options(eagerload("category"), eagerload("customer"), eagerload("status"))
-        qorder = qorder.options(eagerload("upper_category"), eagerload("work"))
         freeorders = qorder.filter_by(status_id=1)  # .limit(10) #
         c.numfree = freeorders.count()
         if (session.get('preferences') or dict()).get('upcat') is not None:

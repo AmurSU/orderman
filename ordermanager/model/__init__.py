@@ -258,7 +258,7 @@ class Inventory(object):
 orm.mapper(Order, orders_table,
     properties = {
         'actions':  orm.relation(Action, backref=orm.backref('order', lazy='dynamic'), cascade="all", lazy="dynamic", order_by=actions_table.c.created),
-        'customer': orm.relation(Division, cascade=None, uselist=False, backref='createdorders',
+        'customer': orm.relation(Division, cascade=None, uselist=False, backref='createdorders', lazy=False,
             primaryjoin  = divisions_table.c.id==orders_table.c.cust_id,
             foreign_keys = [divisions_table.c.id]  
         ),
@@ -266,10 +266,10 @@ orm.mapper(Order, orders_table,
             primaryjoin =  divisions_table.c.id==orders_table.c.perf_id,
             foreign_keys = [divisions_table.c.id]
         ),
-        'status':   orm.relation(Status, cascade=None, uselist=False, backref="orders"),
-        'work':     orm.relation(Work, cascade=None, uselist=False),
-        'category': orm.relation(Category, cascade=None, uselist=False),
-        'upper_category':orm.relation(UpperCategory, cascade=None, backref=orm.backref("orders", cascade="all")),
+        'status':   orm.relation(Status, cascade=None, uselist=False, lazy=False, backref="orders"),
+        'work':     orm.relation(Work, cascade=None, uselist=False, lazy=False),
+        'category': orm.relation(Category, cascade=None, uselist=False, lazy=False),
+        'upper_category':orm.relation(UpperCategory, cascade=None, lazy=False, backref=orm.backref("orders", cascade="all")),
         'inventories': orm.relation (Inventory, secondary=orderinvs_table, backref=orm.backref("orders", cascade=None), cascade=None),
     }
 )
