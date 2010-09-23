@@ -48,9 +48,13 @@ def link (controller=None, action=None, id=None, text="Ссылка", title="", 
        answer += literal('class="nolink">') + text + literal("</a>")
     return answer
 
-def link2 (url=None, text="Ссылка", title=""):
+def link2 (url=None, text="Ссылка", title="", class_="", id_=""):
     if url_for() != url_for(url):
        answer = literal('<a href="') + url + literal('"')
+       if class_:
+           answer += literal(' class="'+class_+'"')
+       if id_:
+           answer += literal(' id="'+id_+'"')
        if title:
            answer += literal(' title="') + title + literal('"')
        answer +=  literal(">") + text +  literal("</a>")
