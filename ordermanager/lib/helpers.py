@@ -68,7 +68,7 @@ def link2 (url=None, text="Ссылка", title="", class_="", id_=""):
 # Ссылка для главного меню
 def mlink (controller=None, action=None, id=None, upcat=None, text="Ссылка", title=""):
     if url_for(action=None, id=id) != url_for(controller=controller, action=None, id=id):
-       answer = literal('<a href="') + url_for(controller=controller, action=action, id=id, upcat=upcat, show=None) + literal('"')
+       answer = literal('<a href="') + url_for(controller=controller, action=action, id=id, upcat=upcat, show=None, type=None) + literal('"')
        if title:
            answer += literal(' title="') + title + literal('"')
        answer +=  literal(">") + text +  literal("</a>")

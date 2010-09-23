@@ -2,6 +2,7 @@
 <%def name="head()">Заявки</%def>\
 <%def name="title()">Все</%def>\
 <%inherit file="menu.html"/>\
+% if c.mcat and c.mwork and c.mstat:
 % if c.upcat:
 <form action="${h.url_for(controller='order', action='filter', upcat=c.upcat)}" method="get" id="orderfilter">
 % else:
@@ -12,6 +13,7 @@
 Состояние: ${h.select(name="status", selected_values=c.mstatcur, options=c.mstat)} &nbsp;
 <button type="submit">Показать</button>
 </form>
+% endif
 <form action="${h.url_for(controller='order', action='goto')}" method="post">
 <p>Перейти к заявке № <input type="text" name="id" id="id" /> <button type="submit">Перейти</button></p>
 </form>

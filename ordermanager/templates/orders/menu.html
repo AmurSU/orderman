@@ -4,12 +4,15 @@
 <%def name="submenu()">\
 <ul id="sectionmenu">
 % if h.have_role('creator'):
-<li>${h.link(controller="order", action='add', text=u"Создать", id_="smenu_create")}</li>
+<li>${h.link2(h.url_for(controller="order", action='add', show=None, id=None, upcat=None, type=None), text=u"Создать", id_="smenu_create")}</li>
 % endif
-<li>${h.link2(h.url_for(controller="order", action='list', show=None, id=None, upcat=None), text=u"Все заявки")}</li>
+<li>${h.link2(h.url_for(controller="order", action='list', show=None, id=None, upcat=None, type=None), text=u"Все заявки")}</li>
 % for upcat in c.upcats:
-<li>${h.link2(h.url_for(controller="order", action='list', show=None, id=None, upcat=upcat.url_text), text=upcat.title)}</li>
+<li>${h.link2(h.url_for(controller="order", action='list', show=None, id=None, upcat=upcat.url_text, type=None), text=upcat.title)}</li>
 % endfor
+% if h.have_role('performer'):
+<li>${h.link2(h.url_for(controller="order", action="listownorders", type="performing", show=None, id=None, upcat=None), text=u"Выполняемые мной")}
+% endif
 </ul>
 </%def>\
 ${next.body()}

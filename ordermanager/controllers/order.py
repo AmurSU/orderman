@@ -148,6 +148,22 @@ class OrderController(BaseController):
         c.mwork = [['any', u' -- Все -- ']] + [[x.url_text, x.title] for x in mwork]
         return render ("/orders/list.html")
 
+    def listownorders (self, type="performing", **kwargs):
+        qorder = meta.Session.query(model.Order).order_by(model.sql.desc(model.Order.created))
+        if type == "performing":
+           act = meta.Session.query(model.Action).filter(model.Action.performers.any(id=session['id'])) # Только мои действия
+           performingacts = act.filter(model.sql.not_(model.Action.status_id.in_([1, 3, 4, 5, 6, 11, 12]))).all() # И только нужные из них
+           qorder = qorder.filter(model.Order.id.in_([x.order_id for x in performingacts]))
+           qorder = qorder.filter(model.sql.not_(model.Order.status_id.in_([3,4]))).order_by(model.Order.created)
+        # Разбивка на страницы
+        c.paginator = h.paginate.Page(
+            qorder,
+            page = (kwargs.get('page') or 1),   #int(request.params.get('page', 1)),
+            items_per_page = (session.get('preferences') or {}).get('ordersinpage', 15),
+        )
+        c.ordercount = qorder.count()
+        return render ("/orders/list.html")
+        
     def filter(self, **kwargs):
         redirect_to(h.url_for(controller='order', action='list',
                               upcat=(request.params.get('upcat', None) or kwargs.get('upcat', 'any')), \

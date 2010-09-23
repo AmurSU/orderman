@@ -42,6 +42,9 @@ def make_map():
     # Список заявок
     map.redirect("/orders/", '/orders', _redirect_code='301 Moved Permanently')
     map.redirect("/order/list", '/orders', _redirect_code='301 Moved Permanently')
+    map.connect ("/orders/my/{type}", controller="order", action="listownorders",
+        requirements = {'type': '\w+'}
+    )    
     map.connect ("/orders/page{page}",
         controller="order", action="list",
         requirements = {'page': '\d+'}
