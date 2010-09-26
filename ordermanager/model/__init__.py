@@ -230,17 +230,28 @@ inventory_table = schema.Table ('inventory', meta.metadata,
 )
 
 actperf_table = schema.Table('actionperformers', meta.metadata,
-    schema.Column('id', types.Integer,
-        schema.Sequence('actionperformers_seq_id', optional=True), primary_key=True),
-    schema.Column('action_id', types.Integer, schema.ForeignKey('actions.id')),
-    schema.Column('person_id', types.Integer, schema.ForeignKey('people.id')),
+    schema.Column('action_id', types.Integer, schema.ForeignKey('actionlog.id'), primary_key=True),
+    schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
 )
 
+# Таблица, содержащая в себе текущих или конечных исполнителей заявки.
+# Большей частью для денормализации БД и ускорения. Так же сделает многие вещи проще.
+orderperf_table = schema.Table('orderperformers', meta.metadata,
+    schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id'), primary_key=True),
+    schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
+)
+
+# Таблица, содержащая в себе людей-заказчиков заявки.
+# Большей частью для денормализации БД и ускорения. Так же сделает многие вещи проще.
+ordercust_table = schema.Table('ordercustomers', meta.metadata,
+    schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id'), primary_key=True),
+    schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
+)
+
+# Таблица связывающая заявки и собственно объекты, над которыми оные выполняются
 orderinvs_table = schema.Table('orderinventories', meta.metadata,
-    schema.Column('id', types.Integer,
-        schema.Sequence('orderinventories_seq_id', optional=True), primary_key=True),
-    schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id')),
-    schema.Column('inv_id', types.Integer, schema.ForeignKey('inventory.id')),
+    schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id'), primary_key=True),
+    schema.Column('inv_id', types.Integer, schema.ForeignKey('inventory.id'), primary_key=True),
 )
 
 ##### КЛАССЫ #####
@@ -313,13 +324,19 @@ class Inventory(object):
 orm.mapper(Order, orders_table,
     properties = {
         'actions':  orm.relation(Action, cascade="all", uselist=True),
-        'customer': orm.relation(Division, cascade=None, uselist=False, backref='createdorders',
+        'customer': orm.relation(Division, cascade=None, uselist=False, backref='created_orders',
             primaryjoin  = divisions_table.c.id==orders_table.c.cust_id,
             foreign_keys = [divisions_table.c.id]  
         ),
-        'performer':orm.relation(Division, cascade=None, uselist=False, backref='performingorders',
+        'performer':orm.relation(Division, cascade=None, uselist=False, backref='performing_orders',
             primaryjoin =  divisions_table.c.id==orders_table.c.perf_id,
             foreign_keys = [divisions_table.c.id]
+        ),
+        'customers': orm.relation (Person, secondary=ordercust_table, cascade=None,
+            backref=orm.backref("created_orders", cascade=None)
+        ),
+        'performers': orm.relation (Person, secondary=orderperf_table, cascade=None,
+            backref=orm.backref("performing_orders", cascade=None)
         ),
         'status':   orm.relation(Status, cascade=None, uselist=False, backref="orders"),
         'work':     orm.relation(Work, cascade=None, uselist=False),
