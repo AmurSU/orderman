@@ -58,7 +58,7 @@ actions_table = schema.Table ('actions', meta.metadata,
     schema.Column('id', types.Integer,
         schema.Sequence('actions_seq_id', optional=True), primary_key=True),
     # Заявка, которой касается действие
-    schema.Column('from_status_id', types.Integer, schema.ForeignKey("orders.id")),
+    schema.Column('from_status_id', types.Integer), # , schema.ForeignKey("statuses.id")
     # ID производимого действия
     schema.Column('to_status_id', types.Integer, schema.ForeignKey("statuses.id")),
     # Название действия (при выборе)
@@ -79,7 +79,7 @@ actionlog_table = schema.Table ('actionlog', meta.metadata,
     # Заявка, которой касается действие
     schema.Column('order_id', types.Integer, schema.ForeignKey("orders.id")),
     # ID производимого действия
-    schema.Column('action_id', types.Integer, schema.ForeignKey("statuses.id")),
+    schema.Column('action_id', types.Integer, schema.ForeignKey("actions.id")),
     # Какое подразделение производит действие
     schema.Column('div_id', types.Integer, schema.ForeignKey("divisions.id")),
     # Комментарий
@@ -144,10 +144,10 @@ people_table = schema.Table ('people', meta.metadata,
 
 # Таблица статусов заявок
 statuses_table = schema.Table ('statuses', meta.metadata,
-    schema.Column('id', types.Integer,  schema.CheckConstraint("id > 0 AND id <= 10"),
+    schema.Column('id', types.Integer,  schema.CheckConstraint("id > 10"),
         schema.Sequence('statuses_seq_id', optional=True), primary_key=True),
     # Базовый статус
-    schema.Column('base_id', types.Integer, schema.CheckConstraint("base_id > 10"), nullable=False),
+    schema.Column('base_id', types.Integer, schema.CheckConstraint("base_id > 0 AND base_id <= 10"), nullable=False),
     # Название
     schema.Column('title', types.Unicode(255), nullable="false"),
     schema.Column('url_text', types.Unicode(255), nullable="false"),
@@ -323,12 +323,14 @@ class Inventory(object):
 
 orm.mapper(Order, orders_table,
     properties = {
-        'actions':  orm.relation(Action, cascade="all", uselist=True),
-        'customer': orm.relation(Division, cascade=None, uselist=False, backref='created_orders',
+        'actions':  orm.relation(ActionLog, cascade="all", uselist=True),
+        'customer': orm.relation(Division, cascade=None, uselist=False,
+            backref = orm.backref('created_orders', cascade="all"),
             primaryjoin  = divisions_table.c.id==orders_table.c.cust_id,
             foreign_keys = [divisions_table.c.id]  
         ),
-        'performer':orm.relation(Division, cascade=None, uselist=False, backref='performing_orders',
+        'performer':orm.relation(Division, cascade=None, uselist=False,
+            backref = orm.backref('performing_orders', cascade="all"),
             primaryjoin =  divisions_table.c.id==orders_table.c.perf_id,
             foreign_keys = [divisions_table.c.id]
         ),
@@ -346,36 +348,29 @@ orm.mapper(Order, orders_table,
     }
 )
 orm.mapper(ActionLog, actionlog_table, properties={
-    'performers': orm.relation (Person, secondary=actperf_table, backref=orm.backref("actions", cascade=None), cascade="all"),
+    'performers': orm.relation (Person, secondary=actperf_table, backref=orm.backref("actions", cascade="all"), cascade=None),
     'division'  : orm.relation (Division, cascade=None, uselist=False),
 })
 orm.mapper(Action, actions_table, properties={
     'status_from' : orm.relation (Status, cascade=None, uselist=False,
         primaryjoin  = statuses_table.c.id==actions_table.c.from_status_id,
-        foreign_keys = [statuses_table.c.id]
+        foreign_keys = [statuses_table.c.id],
+        backref = orm.backref("actions_from", cascade=None)
     ),
     'status_to'   : orm.relation (Status, cascade=None, uselist=False,
         primaryjoin  = statuses_table.c.id==actions_table.c.to_status_id,
-        foreign_keys = [statuses_table.c.id]
+        foreign_keys = [statuses_table.c.id],
+        backref = orm.backref("actions_to", cascade=None)
     )  
 })
 orm.mapper(Division, divisions_table, properties={
    'people' : orm.relation(Person, backref=orm.backref("division", uselist=False, cascade=None), cascade=None), 
-   'orders' : orm.relation(Order, cascade="all"),
-   'actions': orm.relation(Action, cascade="all")
+   'actions': orm.relation(ActionLog, cascade="all")
 })
 orm.mapper(Person, people_table)
 
-orm.mapper(Status, statuses_table, properties={
-   'actions_from':orm.relation(Action,
-        primaryjoin  = statuses_table.c.id==actions_table.c.from_status_id,
-        foreign_keys = [actions_table.c.id]
-   ),
-   'actions_to':  orm.relation(Action,
-        primaryjoin  = statuses_table.c.id==actions_table.c.to_status_id,
-        foreign_keys = [actions_table.c.id]   
-   ), 
-})
+orm.mapper(Status, statuses_table)
+
 orm.mapper(Category, categories_table, properties={
    'orders':orm.relation(Order, cascade=None),
    'upper_category':orm.relation(UpperCategory, cascade=None, backref=orm.backref("categories", cascade="all"))

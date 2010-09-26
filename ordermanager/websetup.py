@@ -34,11 +34,8 @@ def setup_app(command, conf, vars):
     creating = not bool(admin)
     if creating:
         log.info(u"Добавление пользователя-администратора...")
-        admin = model.Person()
+        admin = model.Person(u'admin', md5(u"Random!").hexdigest(), u'Администратор', u'Администратор', u'Администратор')
         admin.id = 1
-        admin.name = u'Администратор'
-        admin.surname = u'Администратор'
-        admin.patronymic = u'Администратор'
     else:
         log.info(u"Исправление пользователя-администратора...")
     admin.login = u'admin'
