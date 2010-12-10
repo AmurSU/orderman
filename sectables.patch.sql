@@ -31,3 +31,14 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE ordercustomers OWNER TO orderman;
+
+-- Sanitize table actionperformers by deleting unnecessary columns
+ALTER TABLE actionperformers DROP CONSTRAINT actionperformers_pkey;
+ALTER TABLE actionperformers DROP COLUMN id;
+ALTER TABLE actionperformers ADD CONSTRAINT actionperformers_pkey PRIMARY KEY (action_id, person_id);
+
+-- Sanitize table actionperformers by deleting unnecessary columns
+ALTER TABLE orderinventories DROP CONSTRAINT orderinventories_pkey;
+ALTER TABLE orderinventories DROP COLUMN id;
+ALTER TABLE orderinventories ADD CONSTRAINT orderinventories_pkey PRIMARY KEY (order_id, inv_id);
+

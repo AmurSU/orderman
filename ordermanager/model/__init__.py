@@ -206,18 +206,16 @@ inventory_table = schema.Table ('inventory', meta.metadata,
     schema.Column('created', types.DateTime(), default=now)
 )
 
+# Вспомогательная таблица связи многие-ко-многим между таблицей действий и исполнителей
 actperf_table = schema.Table('actionperformers', meta.metadata,
-    schema.Column('id', types.Integer,
-        schema.Sequence('actionperformers_seq_id', optional=True), primary_key=True),
-    schema.Column('action_id', types.Integer, schema.ForeignKey('actions.id')),
-    schema.Column('person_id', types.Integer, schema.ForeignKey('people.id')),
+    schema.Column('action_id', types.Integer, schema.ForeignKey('actions.id'), primary_key=True),
+    schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
 )
 
+# Вспомогательная таблица связи многие-ко-многим между таблицей заявок и инвентарных номеров
 orderinvs_table = schema.Table('orderinventories', meta.metadata,
-    schema.Column('id', types.Integer,
-        schema.Sequence('orderinventories_seq_id', optional=True), primary_key=True),
-    schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id')),
-    schema.Column('inv_id', types.Integer, schema.ForeignKey('inventory.id')),
+    schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id'), primary_key=True),
+    schema.Column('inv_id', types.Integer, schema.ForeignKey('inventory.id'), primary_key=True),
 )
 
 # Таблица, содержащая в себе текущих или конечных исполнителей заявки.
