@@ -220,6 +220,20 @@ orderinvs_table = schema.Table('orderinventories', meta.metadata,
     schema.Column('inv_id', types.Integer, schema.ForeignKey('inventory.id')),
 )
 
+# Таблица, содержащая в себе текущих или конечных исполнителей заявки.
+# Большей частью для денормализации БД и ускорения. Так же сделает многие вещи проще.
+orderperf_table = schema.Table('orderperformers', meta.metadata,
+    schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id'), primary_key=True),
+    schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
+)
+
+# Таблица, содержащая в себе людей-заказчиков заявки.
+# Большей частью для денормализации БД и ускорения. Так же сделает многие вещи проще.
+ordercust_table = schema.Table('ordercustomers', meta.metadata,
+    schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id'), primary_key=True),
+    schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
+)
+
 ##### КЛАССЫ #####
 
 class Order(object):
@@ -271,6 +285,12 @@ orm.mapper(Order, orders_table,
         'category': orm.relation(Category, cascade=None, uselist=False, lazy=False),
         'upper_category':orm.relation(UpperCategory, cascade=None, lazy=False, backref=orm.backref("orders", cascade="all")),
         'inventories': orm.relation (Inventory, secondary=orderinvs_table, backref=orm.backref("orders", cascade=None), cascade=None),
+        'customers': orm.relation (Person, secondary=ordercust_table, cascade=None,
+            backref=orm.backref("created_orders", cascade=None)
+        ),
+        'performers': orm.relation (Person, secondary=orderperf_table, cascade=None,
+            backref=orm.backref("performing_orders", cascade=None)
+        ),
     }
 )
 orm.mapper(Action, actions_table, properties={
