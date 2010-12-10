@@ -88,6 +88,8 @@ class DivisionController(BaseController):
         c.division = h.checkdiv(id)
         c.division.responsible = meta.Session.query(model.Person).filter_by(div_id=id).filter_by(responsible=True).all()
         c.division.chief = meta.Session.query(model.Person).filter_by(div_id=id).filter_by(chief=True).all()
+        c.lastorders = meta.Session.query(model.Order).filter_by(cust_id=id).\
+            order_by(model.sql.desc(model.Order.created))[:10]
         return render("/divisions/view.html")
 
     def add(self):

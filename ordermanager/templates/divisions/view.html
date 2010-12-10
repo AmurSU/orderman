@@ -40,6 +40,12 @@ ${self.actmenu()}
 <p>В этом подразделении нет пользователей.</p>
 % endif
 
+<h3>Последние созданные заявки</h3>
+% if c.lastorders:
+${self.orderstable(c.lastorders)}
+% else:
+<p>Это подразделение не создало ни одной заявки</p>
+% endif
 \
 ## Меню действий!
 <%def name="actmenu()">\
