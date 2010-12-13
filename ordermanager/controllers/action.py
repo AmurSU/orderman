@@ -155,6 +155,8 @@ class ActionController(BaseController):
             perf = meta.Session.query(model.Person).get(pid)
             act.performers.append(perf)
         meta.Session.add(act)
+        # Обновляем исполнителей заявки
+        order.performers = act.performers;
         # Если указан перевод состояния заявки - переводим в него. Иначе оставляем как есть.
         status = meta.Session.query(model.Status).get(int(self.form_result['status']))
         if status.redirects:
@@ -213,6 +215,9 @@ class ActionController(BaseController):
         complaint.description = self.form_result['description']
         meta.Session.add (complaint)
         order.status_id = 6
+        # Обновляем создателей заявки
+        if perf not in order.customers:
+            order.customers.append(perf)
         meta.Session.commit()
         h.flashmsg (u"Жалоба подана. Всех лишат зарплаты. Дело заявки № " + h.strong(order.id) + " будет сделано.")
         redirect_to(h.url_for(controller='order', action='view', id=order.id)) 
@@ -231,6 +236,9 @@ class ActionController(BaseController):
         approval.performers.append(perf)
         meta.Session.add (approval)
         order.status_id = 4
+        # Обновляем создателей заявки
+        if perf not in order.customers:
+            order.customers.append(perf)
         meta.Session.commit()
         h.flashmsg (u"Заявка № " + h.strong(order.id) + " полностью выполнена.")
         redirect_to(h.url_for(controller='order', action='view', id=order.id))         

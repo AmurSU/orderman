@@ -219,7 +219,8 @@ class OrderController(BaseController):
         # Создаём первую запись в журнале - "заявка создана"
         act = model.Action()
         act.div_id = session['division']
-        act.performers.append(meta.Session.query(model.Person).get(session["id"]))
+        perf = meta.Session.query(model.Person).get(session["id"])
+        act.performers.append(perf)
         if session.has_key("operator_id") and session["id"] != session["operator_id"]:
             act.status_id = 12 # Сообщаем, если создаёт оператор (и добавляем его)
             act.performers.append(meta.Session.query(model.Person).get(session["operator_id"]))
@@ -227,7 +228,10 @@ class OrderController(BaseController):
             act.status_id = 11 # Или если просто сам пользователь
         act.order_id = order.id
         meta.Session.add(act)
-        meta.Session.commit() # В базу!
+        # Обновляем создателей заявки
+        order.customers.append(perf);
+        # Готово, в базу!
+        meta.Session.commit()
         h.flashmsg (u"Заявка № " + h.strong(order.id) + " была добавлена.")
         redirect_to(h.url_for(controller='order', action='view', id=order.id))
 
@@ -329,6 +333,9 @@ class OrderController(BaseController):
         order.status_id = 2
         order.perf_id = session['division']
         meta.Session.add(act)
+        # Обновляем исполнителей заявки
+        order.performers = act.performers;
+        # Готово!
         meta.Session.commit()
         h.flashmsg (u"Вы взяли заявку № " + h.strong(order.id) + u" для выполнения себе. Исполнители: %s"%(u", ".join([h.name(x) for x in act.performers])))
         redirect_to(h.url_for(controller='order', action='view', id=order.id))
