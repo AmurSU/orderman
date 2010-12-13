@@ -155,13 +155,17 @@ class ActionController(BaseController):
             perf = meta.Session.query(model.Person).get(pid)
             act.performers.append(perf)
         meta.Session.add(act)
-        # Обновляем исполнителей заявки
-        order.performers = act.performers;
         # Если указан перевод состояния заявки - переводим в него. Иначе оставляем как есть.
         status = meta.Session.query(model.Status).get(int(self.form_result['status']))
         if status.redirects:
             order.status_id = status.redirects
         order.perf_id = session['division']
+        # Обновляем исполнителей заявки
+        if status.redirects == 1:
+            order.performers = []
+        else:
+            order.performers = act.performers;
+        # Готово
         meta.Session.commit()
         h.flashmsg (u"Статус заявки № " + h.strong(order.id) + " был изменён на " + h.strong(order.status.title) + ".")
         meta.Session.expire_all()
