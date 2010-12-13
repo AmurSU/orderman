@@ -150,11 +150,10 @@ class OrderController(BaseController):
 
     def listownorders (self, type="performing", **kwargs):
         qorder = meta.Session.query(model.Order).order_by(model.sql.desc(model.Order.created))
+        qorder = qorder.filter(model.Order.deleted==False)
         if type == "performing":
-           act = meta.Session.query(model.Action).filter(model.Action.performers.any(id=session['id'])) # Только мои действия
-           performingacts = act.filter(model.sql.not_(model.Action.status_id.in_([1, 3, 4, 5, 6, 11, 12]))).all() # И только нужные из них
-           qorder = qorder.filter(model.Order.id.in_([x.order_id for x in performingacts]))
-           qorder = qorder.filter(model.sql.not_(model.Order.status_id.in_([3,4]))).order_by(model.Order.created)
+           qorder = qorder.filter(model.sql.not_(model.Order.status_id.in_([1, 3, 4, 5, 6, 11, 12])))
+           qorder = qorder.filter(model.Order.performers.any(id=session['id']))
         # Разбивка на страницы
         c.paginator = h.paginate.Page(
             qorder,
