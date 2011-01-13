@@ -1,0 +1,18 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Жалоба на выполнение заявки</%def>
+<%def name="title()">Жалоба на выполнение заявки</%def>
+<%inherit file="/orders/menu.html"/>
+
+${h.form_start(h.url_for(controller='action', action='makethank'), method="post", id="complainform")}
+${h.field(
+    u"Заявка",
+    h.select(name="id", selected_values=c.selectedorder, options=c.orders)
+)}
+${h.field(
+    u"Причина",
+    h.textarea(name="description")
+)}
+${h.field(field=h.submit(value=u"Поблагодарить", name='submit'))}
+${h.form_end()}
+
+<div id="complainorderinfo"></div>

@@ -91,6 +91,17 @@ class ComplainForm(formencode.Schema):
         messages = {'empty': u"Вы "+h.strong(u"должны")+u" указать причину вашего недовольства!"}
     )
 
+class ThankForm(formencode.Schema):
+    allow_extra_fields = True
+    filter_extra_fields = True
+    id = formencode.validators.String(
+        not_empty=True,
+        messages = {'empty': u"Выберите заявку!"}
+    )
+    description = formencode.validators.String(
+        messages = {'empty': u"Было бы неплохо узнать, что вас порадовало!"}
+    )
+
 
 #####################################################################
 # Контроллер
@@ -117,8 +128,8 @@ class ActionController(BaseController):
         c.actions = actionquery.filter_by(order_id=id).order_by(model.Action.created).all()
         # Статусы
         statuses = meta.Session.query(model.Status).all()
-        if h.have_role('admin'): excluded_statuses = [1, 4, 6, 11, 12]
-        else: excluded_statuses = [1, 2, 4, 6, 11, 12]
+        if h.have_role('admin'): excluded_statuses = [1, 4, 6, 11, 12, 14]
+        else: excluded_statuses = [1, 2, 4, 6, 11, 12, 14]
         c.statuses = [[status.id, status.title] for status in statuses if status.id not in excluded_statuses]
         # Люди-исполнители
         if h.have_role('admin') and lastaction is not None:
@@ -215,6 +226,57 @@ class ActionController(BaseController):
         order.status_id = 6
         meta.Session.commit()
         h.flashmsg (u"Жалоба подана. Всех лишат зарплаты. Дело заявки № " + h.strong(order.id) + " будет сделано.")
+        redirect_to(h.url_for(controller='order', action='view', id=order.id)) 
+
+    # Создание жалобы на заявку
+    def thank (self, id=None):
+        # Если номер заявки не указан, то позволим выбрать.
+        if id is not None:
+            c.order = h.checkorder(id)
+            if not session.has_key('division'):
+                abort(401)
+            elif c.order.cust_id != session['division']:
+                abort(403)
+            c.selectedorder = c.order.id
+        else: c.selectedorder = None               
+        if not h.have_role('creator'):
+           abort(403)
+        orders = meta.Session.query(model.Order).filter("status_id<>:value and cust_id=:customer").params(value=4, customer=session['division']).all()
+        c.orders =[['', u'-- выберите заявку, выполнением которой вы остались довольны --']]
+        for order in orders:
+            if h.can_complain(order):
+                if len(order.title) > 32:
+                    order.title = order.title[:32] + u"…"
+                str = unicode(order.id) + ". [" + order.work.title + h.literal(" &mdash; ") + order.category.title + "]: " + order.title
+                c.orders.append([order.id, str])
+        return render("/actions/thank.html")
+
+    @validate (schema=ThankForm, form="thank")
+    @restrict ("POST")
+    def makethank (self):
+        order = meta.Session.query(model.Order).filter_by(id=self.form_result['id']).first()
+        if order is None:
+            abort(404)
+        if order.deleted:
+            abort(410)
+        # Теперь - проверка прав доступа (ответственный подразделения, подавшего эту заявку)
+        if not (session.has_key('division') and session['division']):
+            abort(401)
+        if not (h.have_role('creator') and order.cust_id == session['division']):
+            abort(403)
+        thank = model.Action()
+        thank.order_id = order.id
+        thank.status_id = 14
+        thank.div_id = session['division']
+        perf = meta.Session.query(model.Person).get(session['id'])
+        thank.performers.append(perf)
+        # Если претензию подаёт оператор, то и его добавим
+        if session.has_key("operator_id") and session["id"] != session["operator_id"]:
+            thank.performers.append(meta.Session.query(model.Person).get(session["operator_id"]))
+        thank.description = self.form_result['description']
+        meta.Session.add (thank)
+        meta.Session.commit()
+        h.flashmsg (u"Спасибо за " + h.literal("&laquo;") + "спасибо" + h.literal("&raquo;") + "!")
         redirect_to(h.url_for(controller='order', action='view', id=order.id)) 
         
     def approve (self, id):
