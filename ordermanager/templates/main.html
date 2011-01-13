@@ -64,10 +64,14 @@ ${self.orderstable(c.myownorders)}
 <%def name="actions()">
 <ul id="mainactions">
 % if session.has_key('creator') and session.get('creator'):
-<li><a href="${h.url_for(controller='order', action='add')}">Создать <span class="small">новую заявку</span></a></li>
+<li class="createbutton"><a href="${h.url_for(controller='order', action='add')}">Создать <span class="small">новую заявку</span></a></li>
 % endif
 % if session.has_key('creator') and session.get('creator'):
-<li><a href="${h.url_for(controller='action', action='complain')}">Пожаловаться <span class="small">на плохое исполнение заявки</span></a></li>
+<!-- ну и чушь... -->
+<li class="thankbutton"><a href="${h.url_for(controller='action', action='thank')}">Поблагодарить <span class="small">за хорошее исполнение заявки</span></a></li>
+% endif
+% if session.has_key('creator') and session.get('creator'):
+<li class="complainbutton"><a href="${h.url_for(controller='action', action='complain')}">Подать претензию <span class="small">на плохое исполнение заявки</span></a></li>
 % endif
 </ul>
 </%def>

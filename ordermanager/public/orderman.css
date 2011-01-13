@@ -320,16 +320,22 @@ input[type="submit"], .backbutton {
  font-size: 40%;
 }
 
-#mainactions li:first-child a:hover {
+#mainactions li.createbutton a:hover {
     background-color: #33AA33;
     border-color: black;
     color: white;
     text-decoration: none;
 }
-#mainactions li:last-child a:hover {
+#mainactions li.complainbutton a:hover {
     background-color: #CCCC33;
     border-color: black;
     color: black;
+    text-decoration: none;
+}
+#mainactions li.thankbutton a:hover {
+    background-color: #3333CC;
+    border-color: black;
+    color: white;
     text-decoration: none;
 }
 .warning {
