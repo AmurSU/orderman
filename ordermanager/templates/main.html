@@ -71,7 +71,7 @@ ${self.orderstable(c.myownorders)}
 <li class="thankbutton"><a href="${h.url_for(controller='action', action='thank')}">Поблагодарить <span class="small">за хорошее исполнение заявки</span></a></li>
 % endif
 % if session.has_key('creator') and session.get('creator'):
-<li class="complainbutton"><a href="${h.url_for(controller='action', action='complain')}">Подать претензию <span class="small">на плохое исполнение заявки</span></a></li>
+<li class="complainbutton"><a href="${h.url_for(controller='action', action='complain')}">Замечание <span class="small">на плохое исполнение заявки</span></a></li>
 % endif
 </ul>
 </%def>

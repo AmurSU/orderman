@@ -20,6 +20,10 @@
 <li>${h.link_to(u'Пожаловаться', h.url_for(controller='action', action='complain', id=c.order.id), class_="complaint_link")}</li>
 % endif
 \
+% if h.can_complain(c.order):
+<li>${h.link_to(u'Поблагодарить', h.url_for(controller='action', action='thank', id=c.order.id), class_="thank_link")}</li>
+% endif
+\
 % if (h.have_role('admin') or h.have_role('operator') or (session.has_key('division') and h.have_role('creator') and c.order.cust_id==session['division'])):
 <li>${h.link_to(u'Отредактировать', h.url_for(controller='order', action='edit', id=c.order.id), class_="edit_link")}</li>
 % endif
