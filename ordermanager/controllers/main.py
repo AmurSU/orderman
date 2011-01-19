@@ -29,9 +29,9 @@ class MainController(BaseController):
             # Заявки, выполняемые моим подразделением
             c.mydivorders = qorder.filter("status_id<>:value and perf_id=:perf").params(value=4, perf=session['division']).order_by(model.sql.desc(model.Order.created))[:10]
             # Заявки, выполняемые мной
-            act = meta.Session.query(model.Action).filter(model.Action.performers.any(id=session['id']))
-            performingacts = act.filter(model.sql.not_(model.Action.status_id.in_([1, 6, 11, 12]))).all()
-            c.myperforming = meta.Session.query(model.Order).filter(model.Order.id.in_([x.order_id for x in performingacts])).order_by(model.Order.created)[:10]
+            myperf = qorder.filter(model.sql.not_(model.Order.status_id.in_([1, 3, 4, 5])))
+            myperf = myperf.filter(model.Order.performers.any(id=session['id']))
+            c.myperforming = myperf.order_by(model.Order.created)[:10]
             # Жалобы!
             c.complaints = qorder.filter("status_id=:value and perf_id=:perf").params(value=6, perf=session['division']).order_by(model.Order.created).all()
         if session.has_key('division') and session.has_key('creator') and session['creator']:
