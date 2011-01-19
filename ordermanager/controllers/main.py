@@ -36,7 +36,9 @@ class MainController(BaseController):
             c.complaints = qorder.filter("status_id=:value and perf_id=:perf").params(value=6, perf=session['division']).order_by(model.Order.created).all()
         if session.has_key('division') and session.has_key('creator') and session['creator']:
             c.myownorders = qorder.filter("cust_id=:div").params(div=session['division']).order_by(model.sql.desc(model.Order.created))[:10]
-            c.orderstoapprove = qorder.filter("status_id=:value and cust_id=:perf").params(value=3, perf=session['division']).order_by(model.Order.created).all()
+            orderstoapprove = qorder.filter("status_id=:value and cust_id=:perf").params(value=3, perf=session['division'])
+            c.orderstoapprove = orderstoapprove.order_by(model.Order.created)[:10]
+            c.numtoapprove = orderstoapprove.count()
         # M0AR STAT15TICS
         c.statistics = [[u"Всего заявок в системе", meta.Session.query(model.Order).count()]]
         statuses = meta.Session.query(model.Status)[:]

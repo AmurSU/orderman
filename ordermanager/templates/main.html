@@ -16,6 +16,7 @@ ${self.actions()}\
 \
 % if c.orderstoapprove:
 <h3>Нужно подтвердить выполнение!</h3>
+<p class="ordertablesummary">Всего ${h.get_plural(c.numtoapprove, (u"неподтверждённая заявка", u"неподтверждённых заявки", u"неподтверждённых заявок"))}</p>
 <table class="orderlist">
 <tr><th>№</th><th>Задача</th><th>Подразделение</th><th>Доп. информация</th><th>Время подачи</th><th>Статус</th><th>Действие</th></tr>
 % for i,order in enumerate(c.orderstoapprove):
