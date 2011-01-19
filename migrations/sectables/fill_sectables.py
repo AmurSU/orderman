@@ -20,8 +20,10 @@ for order in orders:
             for perf in action.performers:
                 if perf not in order.customers:
                     order.customers.append(perf)
+        elif action.status.id == 3:
+            order.doneAt = action.created
         else: 
             order.performers = action.performers
-            
+
 meta.Session.commit()
-         
+

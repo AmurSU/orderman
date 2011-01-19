@@ -43,6 +43,8 @@ orders_table = schema.Table ('orders', meta.metadata,
     schema.Column('perf_id', types.Integer), #, schema.ForeignKey("divisions.id")),
     # Сделана ли заявка
     schema.Column('status_id', types.Integer, schema.ForeignKey("statuses.id")),
+    # Когда была сделана заявка
+    schema.Column('doneAt', types.DateTime()),
     # До какого времени заявка должна быть сделана
     schema.Column('expires', types.DateTime()),
     # Служебные данные о записи

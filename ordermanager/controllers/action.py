@@ -14,6 +14,8 @@ from pylons.decorators.rest import restrict
 import ordermanager.model as model
 import ordermanager.model.meta as meta
 
+import datetime
+
 log = logging.getLogger(__name__)
 
 #####################################################################
@@ -165,6 +167,9 @@ class ActionController(BaseController):
             order.performers = []
         else:
             order.performers = act.performers;
+        # Если это "отметить выполненной", то ставим заявке время выполнения
+        if status.id == 3:
+            order.doneAt = datetime.datetime.now()
         # Готово
         meta.Session.commit()
         h.flashmsg (u"Статус заявки № " + h.strong(order.id) + " был изменён на " + h.strong(order.status.title) + ".")

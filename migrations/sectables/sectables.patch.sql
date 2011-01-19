@@ -42,3 +42,6 @@ ALTER TABLE orderinventories DROP CONSTRAINT orderinventories_pkey;
 ALTER TABLE orderinventories DROP COLUMN id;
 ALTER TABLE orderinventories ADD CONSTRAINT orderinventories_pkey PRIMARY KEY (order_id, inv_id);
 
+-- Add order's completion time column to order's table
+ALTER TABLE orders ADD COLUMN "doneAt" timestamp without time zone;
+
