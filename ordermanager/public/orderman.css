@@ -107,7 +107,7 @@ ul, ol {margin: 0.5em 1em 1em 2em;}
 #header {
  color: white;
  background-color: transparent;
- background-image: url("/images/header_logo.jpg");
+ background-image: url("/images/header_logo_gold.jpg");
  background-repeat: no-repeat;
  background-position: -15px 0;
  padding: 0 25px 0 250px;
@@ -303,15 +303,15 @@ input[type="submit"], .backbutton {
 #mainactions li {
  display: block;
  float: left;
- margin: 0em 1.5em;
+ margin: 0em 0.5em;
  text-align: center;
 }
 
 #mainactions a {
- padding: 0.25em 1em;
+ padding: 0.2em 1em;
  display: block;
  border: 1px solid silver;
- font-size: 200%;
+ font-size: 175%;
  color: navy;
 }
 
@@ -320,16 +320,22 @@ input[type="submit"], .backbutton {
  font-size: 40%;
 }
 
-#mainactions li:first-child a:hover {
+#mainactions li.createbutton a:hover {
     background-color: #33AA33;
     border-color: black;
     color: white;
     text-decoration: none;
 }
-#mainactions li:last-child a:hover {
+#mainactions li.complainbutton a:hover {
     background-color: #CCCC33;
     border-color: black;
     color: black;
+    text-decoration: none;
+}
+#mainactions li.thankbutton a:hover {
+    background-color: #3333CC;
+    border-color: black;
+    color: white;
     text-decoration: none;
 }
 .warning {
@@ -391,6 +397,9 @@ input[type="submit"], .backbutton {
 }
 #actions a.complaint_link {
  background: url('/icons/megaphone.png') 0.5em 50% no-repeat;
+}
+#actions a.thank_link {
+ background: url('/icons/thumb-up.png') 0.5em 50% no-repeat;
 }
 #actions a.approve_link {
  background: url('/icons/tick.png') 0.5em 50% no-repeat;
