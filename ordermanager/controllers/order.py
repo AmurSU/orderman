@@ -204,6 +204,7 @@ class OrderController(BaseController):
         for key, value in self.form_result.items():
             if key != 'inventories':       # Всё прочее, кроме инвентарников
                 setattr(order, key, value) # тащим из формы прямо в базу
+        meta.Session.add(order)
         # Добавляем отношения заявка <-> инвентарники
         for inv in self.form_result['inventories']:
             item = meta.Session.query(model.Inventory).get(inv);
@@ -214,7 +215,6 @@ class OrderController(BaseController):
                 meta.Session.add(item)
             # </TODO>
             order.inventories.append(item)
-        meta.Session.add(order)
         # Создаём первую запись в журнале - "заявка создана"
         act = model.Action()
         act.div_id = session['division']
