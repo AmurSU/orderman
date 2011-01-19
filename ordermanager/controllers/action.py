@@ -14,6 +14,8 @@ from pylons.decorators.rest import restrict
 import ordermanager.model as model
 import ordermanager.model.meta as meta
 
+import datetime
+
 log = logging.getLogger(__name__)
 
 #####################################################################
@@ -171,6 +173,15 @@ class ActionController(BaseController):
         if status.redirects:
             order.status_id = status.redirects
         order.perf_id = session['division']
+        # Обновляем исполнителей заявки
+        if status.redirects == 1:
+            order.performers = []
+        else:
+            order.performers = act.performers;
+        # Если это "отметить выполненной", то ставим заявке время выполнения
+        if status.id == 3:
+            order.doneAt = datetime.datetime.now()
+        # Готово
         meta.Session.commit()
         h.flashmsg (u"Статус заявки № " + h.strong(order.id) + " был изменён на " + h.strong(order.status.title) + ".")
         meta.Session.expire_all()
@@ -224,6 +235,9 @@ class ActionController(BaseController):
         complaint.description = self.form_result['description']
         meta.Session.add (complaint)
         order.status_id = 6
+        # Обновляем создателей заявки
+        if perf not in order.customers:
+            order.customers.append(perf)
         meta.Session.commit()
         h.flashmsg (u"Жалоба подана. Всех лишат зарплаты. Дело заявки № " + h.strong(order.id) + " будет сделано.")
         redirect_to(h.url_for(controller='order', action='view', id=order.id)) 
@@ -293,6 +307,9 @@ class ActionController(BaseController):
         approval.performers.append(perf)
         meta.Session.add (approval)
         order.status_id = 4
+        # Обновляем создателей заявки
+        if perf not in order.customers:
+            order.customers.append(perf)
         meta.Session.commit()
         h.flashmsg (u"Заявка № " + h.strong(order.id) + " полностью выполнена.")
         redirect_to(h.url_for(controller='order', action='view', id=order.id))         

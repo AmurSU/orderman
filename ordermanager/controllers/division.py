@@ -15,6 +15,11 @@ from pylons.decorators import jsonify
 import ordermanager.model as model
 import ordermanager.model.meta as meta
 
+from sqlalchemy import func
+from sqlalchemy.orm import join
+
+from datetime import datetime, timedelta
+
 log = logging.getLogger(__name__)
 
 #### VALIDATION
@@ -90,6 +95,17 @@ class DivisionController(BaseController):
         c.division.chief = meta.Session.query(model.Person).filter_by(div_id=id).filter_by(chief=True).all()
         c.lastorders = meta.Session.query(model.Order).filter_by(cust_id=id).\
             order_by(model.sql.desc(model.Order.created))[:10]
+        c.personnel = meta.Session.query(model.Person).filter_by(div_id=id).\
+            filter_by(deleted=False).order_by(model.Person.surname).all()
+        # Учёт количества сделанных заявок
+        last = meta.Session.query(model.Person.id, func.count(model.Order.id)).\
+            join(model.Order.performers).filter(model.Person.div_id==112).\
+            group_by(model.Person.id)
+        last30d = last.filter(model.Order.doneAt > datetime.now()-timedelta(30)).all()
+        last1d = last.filter(model.Order.doneAt > datetime.now()-timedelta(1)).all()
+        c.lastmonth = dict(last30d)
+        c.lastday = dict(last1d)
+        c.total = dict(last.all())
         return render("/divisions/view.html")
 
     def add(self):

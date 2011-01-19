@@ -43,6 +43,8 @@ orders_table = schema.Table ('orders', meta.metadata,
     schema.Column('perf_id', types.Integer), #, schema.ForeignKey("divisions.id")),
     # Сделана ли заявка
     schema.Column('status_id', types.Integer, schema.ForeignKey("statuses.id")),
+    # Когда была сделана заявка
+    schema.Column('doneAt', types.DateTime()),
     # До какого времени заявка должна быть сделана
     schema.Column('expires', types.DateTime()),
     # Служебные данные о записи
@@ -206,18 +208,30 @@ inventory_table = schema.Table ('inventory', meta.metadata,
     schema.Column('created', types.DateTime(), default=now)
 )
 
+# Вспомогательная таблица связи многие-ко-многим между таблицей действий и исполнителей
 actperf_table = schema.Table('actionperformers', meta.metadata,
-    schema.Column('id', types.Integer,
-        schema.Sequence('actionperformers_seq_id', optional=True), primary_key=True),
-    schema.Column('action_id', types.Integer, schema.ForeignKey('actions.id')),
-    schema.Column('person_id', types.Integer, schema.ForeignKey('people.id')),
+    schema.Column('action_id', types.Integer, schema.ForeignKey('actions.id'), primary_key=True),
+    schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
 )
 
+# Вспомогательная таблица связи многие-ко-многим между таблицей заявок и инвентарных номеров
 orderinvs_table = schema.Table('orderinventories', meta.metadata,
-    schema.Column('id', types.Integer,
-        schema.Sequence('orderinventories_seq_id', optional=True), primary_key=True),
-    schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id')),
-    schema.Column('inv_id', types.Integer, schema.ForeignKey('inventory.id')),
+    schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id'), primary_key=True),
+    schema.Column('inv_id', types.Integer, schema.ForeignKey('inventory.id'), primary_key=True),
+)
+
+# Таблица, содержащая в себе текущих или конечных исполнителей заявки.
+# Большей частью для денормализации БД и ускорения. Так же сделает многие вещи проще.
+orderperf_table = schema.Table('orderperformers', meta.metadata,
+    schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id'), primary_key=True),
+    schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
+)
+
+# Таблица, содержащая в себе людей-заказчиков заявки.
+# Большей частью для денормализации БД и ускорения. Так же сделает многие вещи проще.
+ordercust_table = schema.Table('ordercustomers', meta.metadata,
+    schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id'), primary_key=True),
+    schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
 )
 
 ##### КЛАССЫ #####
@@ -271,6 +285,12 @@ orm.mapper(Order, orders_table,
         'category': orm.relation(Category, cascade=None, uselist=False, lazy=False),
         'upper_category':orm.relation(UpperCategory, cascade=None, lazy=False, backref=orm.backref("orders", cascade="all")),
         'inventories': orm.relation (Inventory, secondary=orderinvs_table, backref=orm.backref("orders", cascade=None), cascade=None),
+        'customers': orm.relation (Person, secondary=ordercust_table, cascade=None,
+            backref=orm.backref("created_orders", cascade=None)
+        ),
+        'performers': orm.relation (Person, secondary=orderperf_table, cascade=None,
+            backref=orm.backref("performing_orders", cascade=None)
+        ),
     }
 )
 orm.mapper(Action, actions_table, properties={

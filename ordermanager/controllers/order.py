@@ -150,11 +150,10 @@ class OrderController(BaseController):
 
     def listownorders (self, type="performing", **kwargs):
         qorder = meta.Session.query(model.Order).order_by(model.sql.desc(model.Order.created))
+        qorder = qorder.filter(model.Order.deleted==False)
         if type == "performing":
-           act = meta.Session.query(model.Action).filter(model.Action.performers.any(id=session['id'])) # Только мои действия
-           performingacts = act.filter(model.sql.not_(model.Action.status_id.in_([1, 3, 4, 5, 6, 11, 12]))).all() # И только нужные из них
-           qorder = qorder.filter(model.Order.id.in_([x.order_id for x in performingacts]))
-           qorder = qorder.filter(model.sql.not_(model.Order.status_id.in_([3,4]))).order_by(model.Order.created)
+           qorder = qorder.filter(model.sql.not_(model.Order.status_id.in_([1, 3, 4, 5])))
+           qorder = qorder.filter(model.Order.performers.any(id=session['id']))
         # Разбивка на страницы
         c.paginator = h.paginate.Page(
             qorder,
@@ -205,6 +204,7 @@ class OrderController(BaseController):
         for key, value in self.form_result.items():
             if key != 'inventories':       # Всё прочее, кроме инвентарников
                 setattr(order, key, value) # тащим из формы прямо в базу
+        meta.Session.add(order)
         # Добавляем отношения заявка <-> инвентарники
         for inv in self.form_result['inventories']:
             item = meta.Session.query(model.Inventory).get(inv);
@@ -215,11 +215,11 @@ class OrderController(BaseController):
                 meta.Session.add(item)
             # </TODO>
             order.inventories.append(item)
-        meta.Session.add(order)
         # Создаём первую запись в журнале - "заявка создана"
         act = model.Action()
         act.div_id = session['division']
-        act.performers.append(meta.Session.query(model.Person).get(session["id"]))
+        perf = meta.Session.query(model.Person).get(session["id"])
+        act.performers.append(perf)
         if session.has_key("operator_id") and session["id"] != session["operator_id"]:
             act.status_id = 12 # Сообщаем, если создаёт оператор (и добавляем его)
             act.performers.append(meta.Session.query(model.Person).get(session["operator_id"]))
@@ -227,7 +227,10 @@ class OrderController(BaseController):
             act.status_id = 11 # Или если просто сам пользователь
         act.order_id = order.id
         meta.Session.add(act)
-        meta.Session.commit() # В базу!
+        # Обновляем создателей заявки
+        order.customers.append(perf);
+        # Готово, в базу!
+        meta.Session.commit()
         h.flashmsg (u"Заявка № " + h.strong(order.id) + " была добавлена.")
         redirect_to(h.url_for(controller='order', action='view', id=order.id))
 
@@ -329,6 +332,9 @@ class OrderController(BaseController):
         order.status_id = 2
         order.perf_id = session['division']
         meta.Session.add(act)
+        # Обновляем исполнителей заявки
+        order.performers = act.performers;
+        # Готово!
         meta.Session.commit()
         h.flashmsg (u"Вы взяли заявку № " + h.strong(order.id) + u" для выполнения себе. Исполнители: %s"%(u", ".join([h.name(x) for x in act.performers])))
         redirect_to(h.url_for(controller='order', action='view', id=order.id))
