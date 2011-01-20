@@ -99,7 +99,7 @@ class DivisionController(BaseController):
             filter_by(deleted=False).order_by(model.Person.surname).all()
         # Учёт количества сделанных заявок
         last = meta.Session.query(model.Person.id, func.count(model.Order.id)).\
-            join(model.Order.performers).filter(model.Person.div_id==112).\
+            join(model.Order.performers).filter(model.Person.div_id==id).\
             group_by(model.Person.id)
         last30d = last.filter(model.Order.doneAt > datetime.now()-timedelta(30)).all()
         last1d = last.filter(model.Order.doneAt > datetime.now()-timedelta(1)).all()
