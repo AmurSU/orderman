@@ -39,10 +39,4 @@ class MainController(BaseController):
             orderstoapprove = qorder.filter("status_id=:value and cust_id=:perf").params(value=3, perf=session['division'])
             c.orderstoapprove = orderstoapprove.order_by(model.Order.created)[:10]
             c.numtoapprove = orderstoapprove.count()
-        # M0AR STAT15TICS
-        c.statistics = [[u"Всего заявок в системе", meta.Session.query(model.Order).count()]]
-        statuses = meta.Session.query(model.Status)[:]
-        for status in statuses:
-            if status.redirects==status.id:
-                c.statistics.append([u"В статусе "+h.literal("&laquo;")+unicode(status.title)+h.literal("&raquo;"), len(status.orders)]) 
         return render('/main.html')
