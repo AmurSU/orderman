@@ -16,7 +16,8 @@ setup(
         "Pylons>=0.9.7",
         "SQLAlchemy>=0.5",
         "PyTils>=0.2.3",
-        "FormEncode>=1.2.1"
+        "FormEncode>=1.2.1",
+        "Formbuild>=2.0,<3.0"
     ],
     setup_requires=["PasteScript>=1.6.3"],
     packages=find_packages(exclude=['ez_setup']),
