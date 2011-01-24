@@ -4,9 +4,14 @@
 /data
 /build
 /dist
+/*.egg-info
+
+# Pylons application configs
+/*.ini
 
 # Python pre-compiled
 *.pyc
+*.pyo
 
 # log-files
 *.log
