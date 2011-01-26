@@ -246,7 +246,9 @@ class OrderController(BaseController):
         c.work = []
         for i in work:
             c.work.append([i.id, i.title])
-        category = meta.Session.query(model.Category).order_by(model.Category.id).all()
+        category = meta.Session.query(model.Category)\
+            .filter(model.Category.upcat_id==order.upper_category.id)\
+            .order_by(model.Category.id).all()
         c.category = []
         for i in category:
             c.category.append([i.id, i.title])
