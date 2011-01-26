@@ -138,13 +138,15 @@ class OrderController(BaseController):
             items_per_page = (session.get('preferences') or {}).get('ordersinpage', 15),
         )
         c.ordercount = qorder.count()
-        mstat = meta.Session.query(model.Status).filter(model.Status.redirects==model.Status.id).filter_by(deleted=False).all()
+        mstat = meta.Session.query(model.Status)\
+            .filter(model.Status.redirects==model.Status.id).filter_by(deleted=False)\
+            .order_by(model.Status.id).all()
         c.mstat = [['any', u' -- Все -- ']] + [[x.id, x.title] for x in mstat]
-        mcat = meta.Session.query(model.Category).filter_by(deleted=False)
+        mcat = meta.Session.query(model.Category).filter_by(deleted=False).order_by(model.Category.id)
         if kwargs.get('upcat') not in ['any', None] and upcat is not None:
             mcat = mcat.filter(or_(model.Category.upcat_id==upcat.id, model.Category.upcat_id==None))
         c.mcat = [['any', u' -- Все -- ']] + [[x.url_text, x.title] for x in mcat.all()]
-        mwork = meta.Session.query(model.Work).filter_by(deleted=False).all()
+        mwork = meta.Session.query(model.Work).filter_by(deleted=False).order_by(model.Work.id).all()
         c.mwork = [['any', u' -- Все -- ']] + [[x.url_text, x.title] for x in mwork]
         return render ("/orders/list.html")
 
@@ -177,15 +179,15 @@ class OrderController(BaseController):
     def add(self):
         '''Показ формы для создания заявки'''
         h.requirerights('creator')
-        work = meta.Session.query(model.Work).filter_by(deleted=False).all()
+        work = meta.Session.query(model.Work).filter_by(deleted=False).order_by(model.Work.id).all()
         c.work = [[None, u" -- выберите вид работ -- "]]
         for i in work:
             c.work.append([i.id, i.title])
-        category = meta.Session.query(model.Category).filter_by(deleted=False).all()
+        category = meta.Session.query(model.Category).filter_by(deleted=False).order_by(model.Category.id).all()
         c.category = [[None, u" -- выберите категорию -- "]]
         for i in category:
             c.category.append([i.id, i.title])
-        upcategory = meta.Session.query(model.UpperCategory).filter_by(deleted=False).all()
+        upcategory = meta.Session.query(model.UpperCategory).filter_by(deleted=False).order_by(model.UpperCategory.id).all()
         c.upcategory = [[None, u" -- выберите надкатегорию -- "]]
         for i in upcategory:
             c.upcategory.append([i.id, i.title])
@@ -240,15 +242,15 @@ class OrderController(BaseController):
         h.requirelogin()
         if not ((session.has_key('admin') and session['admin']) or (session.has_key('division') and session.has_key('creator') and session['creator'] and order.customer==session['division'])):
             abort(403)
-        work = meta.Session.query(model.Work).all()
+        work = meta.Session.query(model.Work).order_by(model.Work.id).all()
         c.work = []
         for i in work:
             c.work.append([i.id, i.title])
-        category = meta.Session.query(model.Category).all()
+        category = meta.Session.query(model.Category).order_by(model.Category.id).all()
         c.category = []
         for i in category:
             c.category.append([i.id, i.title])
-        upcategory = meta.Session.query(model.UpperCategory).filter_by(deleted=False).all()
+        upcategory = meta.Session.query(model.UpperCategory).filter_by(deleted=False).order_by(model.UpperCategory.id).all()
         c.upcategory = [[None, u" -- выберите надкатегорию -- "]]
         for i in upcategory:
             c.upcategory.append([i.id, i.title])
