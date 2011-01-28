@@ -132,6 +132,8 @@ statuses_table = schema.Table ('statuses', meta.metadata,
     schema.Column('url_text', types.Unicode(255), nullable="false"),
     # В какой статус переводит заявку
     schema.Column('redirects', types.Integer),
+    # Количество заявок, находящихся сейчас в данном статусе
+    schema.Column('ordercount', types.Integer, default=0),
     # Служебные данные о записи
     schema.Column('deleted', types.Boolean, default=False),
     schema.Column('created', types.DateTime(), default=now),
