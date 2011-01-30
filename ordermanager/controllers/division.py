@@ -14,6 +14,8 @@ from pylons.decorators import jsonify
 
 import ordermanager.model as model
 import ordermanager.model.meta as meta
+import sqlalchemy
+from sqlalchemy import and_, or_, join
 
 from sqlalchemy import func
 from sqlalchemy.orm import join
@@ -81,6 +83,12 @@ class DivisionController(BaseController):
 
     def list(self):
         qdiv = meta.Session.query(model.Division).filter_by(deleted=False).order_by(model.Division.title)
+        # Производим поиск подразделений?
+        c.search = request.params.get('search', '')
+        if len(c.search):
+            search = "%"+unicode(c.search).lower()+"%"
+            qdiv = qdiv.filter(sqlalchemy.or_(model.Division.title.ilike(search), model.Division.description.ilike(search), model.Division.address.ilike(search)))
+        # Показ
         c.paginator = h.paginate.Page(
             qdiv,
             page=int(request.params.get('page', 1)),

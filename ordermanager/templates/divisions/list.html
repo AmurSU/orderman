@@ -2,6 +2,7 @@
 <%def name="head()">Подразделения</%def>\
 <%def name="title()">Все</%def>\
 <%inherit file="menu.html"/>\
+<form action="" method="get"><input type="text" id="search" name="search" value="${c.search or ""}" length="50" /> <button type="submit">Искать</button></form>
 % if len(c.paginator):
 <p>${c.paginator.pager(u'$link_first $link_previous от $first_item до $last_item из $item_count $link_next $link_last')}</p>
 <table id="divisionlist">
