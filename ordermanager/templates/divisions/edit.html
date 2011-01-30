@@ -9,6 +9,7 @@ ${fields.body()}
 ${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
 ${h.form_end()}
 
+% if h.have_role('admin'):
 <h3>Сотрудники</h3>
 ${h.form_start(h.url_for(controller='division', action='changeusers', id=request.urlvars['id']), method="post")}
 ${h.field(
@@ -17,6 +18,7 @@ ${h.field(
 )}
 ${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
 ${h.form_end()}
+% endif
 <%doc>
 <form action="${h.url_for(controller='division', action='insertusers', id=request.urlvars['id'])}" method="post">
 <div>${h.select(name="users", selected_values=c.membersid, options=c.users, multiple=True)}</div>

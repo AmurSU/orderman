@@ -130,8 +130,10 @@ class DivisionController(BaseController):
         #meta.Session.expunge_all()
 
     def edit(self, id=None):
-        h.requirerights("admin")
+        h.requirelogin()
         div = h.checkdiv(id)
+        if not (h.have_role('admin') or (session.get('division')==div.id and (session.get('chief') or session.get('responsible')))):
+            abort(403)
         users = meta.Session.query(model.Person).all()
         c.users = []
         for i in users:
@@ -153,8 +155,10 @@ class DivisionController(BaseController):
     @validate(schema=EditDivisionForm, form="edit")
     @restrict('POST')
     def save(self, id):
-        h.requirerights("admin")
+        h.requirelogin()
         div = h.checkdiv(id)
+        if not (h.have_role('admin') or (session.get('division')==div.id and (session.get('chief') or session.get('responsible')))):
+            abort(403)
         for key, value in self.form_result.items():
             if getattr(div, key) != value:
                 setattr(div, key, value)
