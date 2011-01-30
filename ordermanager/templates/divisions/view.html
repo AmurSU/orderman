@@ -58,7 +58,7 @@ ${self.orderstable(c.lastorders)}
 <%def name="actmenu()">\
 <div id="actions">
 <ul>
-% if (h.have_role('admin') or (session.get('division')==c.division.id and (session.get['chief'] or session.get['responsible']))):
+% if (h.have_role('admin') or (session.get('division')==c.division.id and (session.get('chief') or session.get('responsible')))):
 <li class="edit_link">${h.link_to(u'Редактировать', h.url_for(controller='division', action='edit', id=c.division.id), class_="edit_link")}</li>
 % endif
 \
