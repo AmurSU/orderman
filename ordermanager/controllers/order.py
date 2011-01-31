@@ -199,7 +199,7 @@ class OrderController(BaseController):
         h.requirerights('creator')
         order = model.Order()
         # Создание заявки
-        order.status_id = 1; # Заявка свободна!
+        order.status = meta.Session.query(model.Status).get(1); # Заявка свободна!
         order.cust_id = session['division'] # Заявка исходит от подразделения текущего пользователя
         for key, value in self.form_result.items():
             if key != 'inventories':       # Всё прочее, кроме инвентарников
@@ -221,10 +221,10 @@ class OrderController(BaseController):
         perf = meta.Session.query(model.Person).get(session["id"])
         act.performers.append(perf)
         if session.has_key("operator_id") and session["id"] != session["operator_id"]:
-            act.status_id = 12 # Сообщаем, если создаёт оператор (и добавляем его)
+            act.status = meta.Session.query(model.Status).get(12) # Сообщаем, если создаёт оператор (и добавляем его)
             act.performers.append(meta.Session.query(model.Person).get(session["operator_id"]))
         else:
-            act.status_id = 11 # Или если просто сам пользователь
+            act.status = meta.Session.query(model.Status).get(11) # Или если просто сам пользователь
         act.order_id = order.id
         meta.Session.add(act)
         # Обновляем создателей заявки
@@ -323,13 +323,13 @@ class OrderController(BaseController):
         elif h.have_role('guest'): abort(401)
         act = model.Action()
         act.order_id = order.id
-        act.status_id = 2
+        act.status = meta.Session.query(model.Status).get(2)
         act.div_id = session['division']
         #act.performer = self.form_result['performer']
         for pid in self.form_result['performers']:
             perf = meta.Session.query(model.Person).get(pid)
             act.performers.append(perf)
-        order.status_id = 2
+        order.status = meta.Session.query(model.Status).get(2)
         order.perf_id = session['division']
         meta.Session.add(act)
         # Обновляем исполнителей заявки
