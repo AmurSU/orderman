@@ -268,6 +268,17 @@ class Assign(object):
 class Inventory(object):
     pass
 
+##### СЛУЖЕБНЫЕ ВЕЩИ #####
+
+# Расширение, отслеживающее изменение статуса заявки и обновляющее статистику
+# Чтобы расширение работало, НЕ ИСПОЛЬЗУЙТЕ код вида order.status_id = 2
+# Вместо этого используйте код вида order.status = meta.Session.query(model.Status).get(2)
+class OrderChangeStatus(orm.interfaces.AttributeExtension): 
+    def set(self, state, value, oldvalue, initiator): 
+        value.ordercount += 1
+        if oldvalue:
+            oldvalue.ordercount -= 1
+        return value 
 
 ##### СОЕДИНЕНИЕ МОДЕЛИ #####
 
@@ -282,7 +293,8 @@ orm.mapper(Order, orders_table,
             primaryjoin =  divisions_table.c.id==orders_table.c.perf_id,
             foreign_keys = [divisions_table.c.id]
         ),
-        'status':   orm.relation(Status, cascade=None, uselist=False, lazy=False, backref="orders"),
+        'status':   orm.relation(Status, cascade=None, uselist=False, lazy=False, backref="orders",
+            extension=OrderChangeStatus()),
         'work':     orm.relation(Work, cascade=None, uselist=False, lazy=False),
         'category': orm.relation(Category, cascade=None, uselist=False, lazy=False),
         'upper_category':orm.relation(UpperCategory, cascade=None, lazy=False, backref=orm.backref("orders", cascade="all")),
