@@ -236,6 +236,27 @@ ordercust_table = schema.Table('ordercustomers', meta.metadata,
     schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
 )
 
+# Таблица новостей, анонсов, объявлений
+news_table = schema.Table ('news', meta.metadata,
+    schema.Column('id', types.Integer, 
+        schema.Sequence('news_seq_id', optional=True), primary_key=True),
+    # Приоритет, чем выше - тем приоритетнее
+    schema.Column('priority', types.Integer, default=0),
+    # Тип новости (объявление, анонс, техобслуживание)
+    schema.Column('type', types.Unicode(32), nullable="false"),
+    # Заголовок
+    schema.Column('title', types.Unicode(64), nullable="false"),
+    # Основной текст
+    schema.Column('text', types.Unicode(255), nullable="false"),
+    # Метки времени, когда нужно публиковать и скрывать новость/объявление
+    schema.Column('publish', types.DateTime(), default=now),
+    schema.Column('hide', types.DateTime()),    
+    # Служебные данные о записи
+    schema.Column('deleted', types.Boolean, default=False),
+    schema.Column('created', types.DateTime(), default=now),
+    schema.Column('edited', types.TIMESTAMP())
+)
+
 ##### КЛАССЫ #####
 
 class Order(object):
@@ -266,6 +287,9 @@ class Assign(object):
     pass
 
 class Inventory(object):
+    pass
+
+class News(object):
     pass
 
 ##### СЛУЖЕБНЫЕ ВЕЩИ #####
@@ -337,3 +361,4 @@ orm.mapper(Assign, assigns_table, properties={
 })
 orm.mapper(Inventory, inventory_table)
 
+orm.mapper(News, news_table)
