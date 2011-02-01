@@ -12,6 +12,9 @@ import ordermanager.model.meta as meta
 import ordermanager.lib.helpers as h
 
 from sqlalchemy.orm import eagerload
+from sqlalchemy import or_
+
+from datetime import datetime
 
 log = logging.getLogger(__name__)
 
@@ -44,5 +47,11 @@ class MainController(BaseController):
         statuses = meta.Session.query(model.Status).filter(model.Status.redirects==model.Status.id)\
             .order_by(model.Status.id).all()
         c.ordercountbystatus = [(unicode(status.title), status.ordercount) for status in statuses]
-
+        # Выберем одну нужную новость
+        now = datetime.now()
+        c.news = meta.Session.query(model.News).filter(model.News.publish < now)\
+            .filter(or_(model.News.hide > now, model.News.hide == None))\
+            .filter_by(deleted=False).order_by(model.sql.desc(model.News.priority))\
+            .order_by(model.sql.desc(model.News.publish)).first()
+        # Готово, в печать
         return render('/main.html')

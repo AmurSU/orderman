@@ -7,6 +7,15 @@ ${self.actions()}\
 \
 <p>Пожалуйста, ознакомьтесь с руководством по использованию диспетчера заявок. <a href="/ordermanager_manual.pdf">Скачать руководство</a>.</p>
 \
+% if c.news:
+<div id="newsblock">
+<div class="${c.news.type}">
+<h3>${c.news.title}</h3>
+<p>${c.news.text}</p>
+</div>
+</div>
+% endif
+\
 % if not session.has_key('user'):
 <div class="warning">
 <form action="${h.url_for(controller='usercontrol', action='login')}" method="GET"><button type="submit">Войти &gt;</button></form>
