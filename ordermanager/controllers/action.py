@@ -161,7 +161,7 @@ class ActionController(BaseController):
             return u"Ай-яй-яй!"
         act = model.Action()
         act.order_id = order.id
-        act.status_id = self.form_result['status']
+        act.status = meta.Session.query(model.Status).get(int(self.form_result['status']))
         act.div_id = session['division']
         act.description = self.form_result['description']
         for pid in self.form_result['performers']:
@@ -171,7 +171,7 @@ class ActionController(BaseController):
         # Если указан перевод состояния заявки - переводим в него. Иначе оставляем как есть.
         status = meta.Session.query(model.Status).get(int(self.form_result['status']))
         if status.redirects:
-            order.status_id = status.redirects
+            order.status = meta.Session.query(model.Status).get(status.redirects)
         order.perf_id = session['division']
         # Обновляем исполнителей заявки
         if status.redirects == 1:
@@ -225,7 +225,7 @@ class ActionController(BaseController):
             abort(403)
         complaint = model.Action()
         complaint.order_id = order.id
-        complaint.status_id = 6
+        complaint.status = meta.Session.query(model.Status).get(6)
         complaint.div_id = session['division']
         perf = meta.Session.query(model.Person).get(session['id'])
         complaint.performers.append(perf)
@@ -234,7 +234,7 @@ class ActionController(BaseController):
             complaint.performers.append(meta.Session.query(model.Person).get(session["operator_id"]))
         complaint.description = self.form_result['description']
         meta.Session.add (complaint)
-        order.status_id = 6
+        order.status = meta.Session.query(model.Status).get(6)
         # Обновляем создателей заявки
         if perf not in order.customers:
             order.customers.append(perf)
@@ -280,7 +280,7 @@ class ActionController(BaseController):
             abort(403)
         thank = model.Action()
         thank.order_id = order.id
-        thank.status_id = 14
+        thank.status = meta.Session.query(model.Status).get(14)
         thank.div_id = session['division']
         perf = meta.Session.query(model.Person).get(session['id'])
         thank.performers.append(perf)
@@ -300,13 +300,13 @@ class ActionController(BaseController):
             abort(403)
         approval = model.Action()
         approval.order_id = order.id
-        approval.status_id = 4
+        approval.status = meta.Session.query(model.Status).get(4)
         approval.div_id = session['division']
         #approval.performer = session['id']
         perf = meta.Session.query(model.Person).get(session['id'])
         approval.performers.append(perf)
         meta.Session.add (approval)
-        order.status_id = 4
+        order.status = meta.Session.query(model.Status).get(4)
         # Обновляем создателей заявки
         if perf not in order.customers:
             order.customers.append(perf)

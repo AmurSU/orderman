@@ -39,4 +39,10 @@ class MainController(BaseController):
             orderstoapprove = qorder.filter("status_id=:value and cust_id=:perf").params(value=3, perf=session['division'])
             c.orderstoapprove = orderstoapprove.order_by(model.Order.created)[:10]
             c.numtoapprove = orderstoapprove.count()
+        # Немножко статистики на главную
+        c.ordercount = meta.Session.query(model.Order).filter_by(deleted=False).count()
+        statuses = meta.Session.query(model.Status).filter(model.Status.redirects==model.Status.id)\
+            .order_by(model.Status.id).all()
+        c.ordercountbystatus = [(unicode(status.title), status.ordercount) for status in statuses]
+
         return render('/main.html')
