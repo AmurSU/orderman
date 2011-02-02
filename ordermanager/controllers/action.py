@@ -296,7 +296,7 @@ class ActionController(BaseController):
     def approve (self, id):
         order = h.checkorder(id)
         # Теперь - проверка прав доступа (ответственный подразделения, подавшего эту заявку)
-        if not (session.has_key('division') and order.cust_id == session['division'] and order.status_id == 3 and (h.have_role('appointer') or h.have_role('responsible') or h.have_role('chief'))):
+        if not (session.has_key('division') and order.cust_id == session['division'] and order.status_id == 3 and (h.have_role('appointer') or h.have_role('responsible') or h.have_role('chief') or h.have_role('creator'))):
             abort(403)
         approval = model.Action()
         approval.order_id = order.id
