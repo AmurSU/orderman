@@ -293,6 +293,44 @@ input[type="submit"], .backbutton {
     text-indent: 0;
 }
 
+/* Новости */
+#newsblock h3 {
+    margin: 0;
+    padding: 0;
+    font-size: 100%;
+    border-bottom: 1px solid gray;
+}
+
+#newsblock p {
+    margin: 5px 0 0 0;
+    padding: 0;
+    font-size: 100%;
+    text-indent: 0;
+}
+
+#newsblock > div {
+    margin: 0.5em 1em;
+    border: 1px dotted gray;
+    padding: 10px 10px 10px 64px;
+    background-position: 16px 16px;
+    background-repeat: no-repeat;
+}
+
+#newsblock > .attention {
+    background-image: url("/icons/exclamation.png");
+    background-color: #FFEECC;
+}
+
+#newsblock > .information {
+    background-image: url("/icons/information.png");
+    background-color: #EEEEFF;
+}
+
+#newsblock > .tip {
+    background-image: url("/icons/balloon.png");
+    background-color: #EEFFEE;
+}
+
 /* Главная страница */
 #mainactions {
  position: relative;
