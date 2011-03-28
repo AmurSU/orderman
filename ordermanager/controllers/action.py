@@ -129,7 +129,7 @@ class ActionController(BaseController):
         lastaction = actionquery.filter_by(order_id=id).filter_by(div_id=c.order.perf_id).order_by(model.sql.desc(model.Action.created)).first()
         c.actions = actionquery.filter_by(order_id=id).order_by(model.Action.created).all()
         # Статусы
-        statuses = meta.Session.query(model.Status).all()
+        statuses = meta.Session.query(model.Status).order_by(model.Status.gui_priority)
         if h.have_role('admin'): excluded_statuses = [1, 4, 6, 11, 12, 14]
         else: excluded_statuses = [1, 2, 4, 6, 11, 12, 14]
         c.statuses = [[status.id, status.title] for status in statuses if status.id not in excluded_statuses]

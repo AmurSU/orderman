@@ -134,6 +134,8 @@ statuses_table = schema.Table ('statuses', meta.metadata,
     schema.Column('redirects', types.Integer),
     # Количество заявок, находящихся сейчас в данном статусе
     schema.Column('ordercount', types.Integer, default=0),
+    # Приоритет для сортировки статусов в выпадающем списке в GUI
+    schema.Column('gui_priority', types.Integer),
     # Служебные данные о записи
     schema.Column('deleted', types.Boolean, default=False),
     schema.Column('created', types.DateTime(), default=now),
