@@ -103,6 +103,10 @@ ul, ol {margin: 0.5em 1em 1em 2em;}
 .loading {color: green; font-size: 120%; padding: 1em;}
 .loadingsmall {color: green;}
 
+#content {
+    clear: both;
+}
+
 /* "ШАПКА" */
 #header {
  color: white;
