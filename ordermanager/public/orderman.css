@@ -5,7 +5,7 @@ body, p, div, ol, ul, img, h1, h2, h3, h4 {
 }
 
 body {
- font-family: 'Calibri', 'Arial', sans-serif;
+ font-family: 'Microsoft Sans Serif', 'Calibri', 'Lucida Sans', 'Arial', sans-serif;
  font-size: 100%;
  font-weight: normal;
  color: black;
