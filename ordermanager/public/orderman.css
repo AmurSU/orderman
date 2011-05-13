@@ -408,6 +408,9 @@ input[type="submit"], .backbutton {
 #actions a.approve_link {
  background: url('/icons/tick.png') 0.5em 50% no-repeat;
 }
+#actions a.revoke_link {
+ background: url('/icons/cross-button.png') 0.5em 50% no-repeat;
+}
 
 /******** FOOTER **********/
 #footer {
