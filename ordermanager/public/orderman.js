@@ -104,3 +104,11 @@ $(document).ready(function() {
         });
     });
 });
+
+// Запрос подтверждения на отзыв заявки
+$(document).ready(function() {
+    $("#actions a.revoke_link").click(function () {
+        return confirm("Вы действительно хотите отозвать заявку?\n\nЗаявка после этого больше не сможет быть выполнена!");
+    });
+});
+
