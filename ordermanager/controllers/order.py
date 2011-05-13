@@ -365,3 +365,30 @@ class OrderController(BaseController):
         result = [dict(id=x.id, text=x.title) for x in categories]
         return result
 
+    def revoke (self, id=None):
+        """Отзыв заявки её создателем (например, решили проблему сами или «ложная тревога»)."""
+        order = h.checkorder(id)
+        # Заявка должна быть свободна!
+        if order.status.id != 1:
+            abort(403)
+        # Проверка прав доступа (админ либо ответственный подразделения, создавшего заявку)
+        if not (h.have_role('admin') or (session.has_key('division') and session.has_key('creator') and session['creator'] and order.cust_id==session['division'])):
+            abort(401)
+        # Заявка готова, но никто её не сделал
+        order.status = meta.Session.query(model.Status).get(15)
+        order.performers = []
+        order.performer = None
+        # Добавление записи в журнал действий над заявкой
+        act = model.Action()
+        act.order_id = order.id
+        act.status = meta.Session.query(model.Status).get(15)
+        act.division = meta.Session.query(model.Division).get(session['division'])
+        act.performers.append(meta.Session.query(model.Person).get(session['id']))
+        if session.has_key("operator_id") and session["id"] != session["operator_id"]:
+            act.performers.append(meta.Session.query(model.Person).get(session["operator_id"]))
+        meta.Session.add(act)
+        # Готово
+        meta.Session.commit()
+        h.flashmsg (u"Заявка № " + h.strong(order.id) + u" отозвана.")
+        redirect_to(h.url_for(controller='order', action='view', id=order.id))
+
