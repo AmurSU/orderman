@@ -311,7 +311,8 @@ class OrderController(BaseController):
         if not (h.have_role('appointer') and c.order.status_id==1):
             abort(401)
         c.division = meta.Session.query(model.Division).get(int(session['division']))
-        performers = meta.Session.query(model.Person).filter_by(div_id=session['division']).filter_by(performer=True).order_by(model.Person.surname).all()
+        performers = meta.Session.query(model.Person).filter_by(deleted=False)\
+            .filter_by(div_id=session['division']).filter_by(performer=True).order_by(model.Person.surname).all()
         c.performers = []
         for user in performers:
             c.performers.append([user.id, h.name(user)])
