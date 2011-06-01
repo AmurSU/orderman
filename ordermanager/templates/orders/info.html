@@ -30,10 +30,10 @@ ${h.literal(u"\n").join([h.literal("<li>") + unicode(item.id) + h.literal(" &mda
 <tr><th>Подразделение</th><th>Действие</th><th>Время</th><th>Исполнитель</th><th>Комментарий</th></tr>
 % for i,entry in enumerate(c.order.actions):
 ${h.tr(i)}\
-<td>${entry.division.title}</td>\
+<td>${h.link(controller="division", action="view", id=entry.division.id, text=entry.division.title)}</td>\
 <td>${entry.status.title}</td>\
 <td>${entry.created.strftime('%Y.%m.%d %H:%M')}</td>\
-<td>${u", ".join([h.name(person) for person in entry.performers])}</td>\
+<td>${h.literal(u", ".join([h.link(controller="usercontrol", action="view", id=person.id, text=h.name(person)) for person in entry.performers]))}</td>\
 <td>${entry.description}</td>\
 </tr>
 % endfor
