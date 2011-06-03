@@ -89,7 +89,7 @@ $(document).ready(function() {
     ucsel = $("#orderform #upcat_id");
     csel = $("#orderform #cat_id");
     ucsel.change(function() {
-        $("#orderform #cat_id option+option").remove();
+        $("#orderform #cat_id option:not([value=None])").remove();
         if (ucsel.val() == "None")
             return;  
         loading = $("<p>").addClass("loadingsmall").text("Загрузка...");
