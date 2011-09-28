@@ -45,6 +45,9 @@ def make_map():
     map.connect ("/orders/my/{type}", controller="order", action="listownorders",
         requirements = {'type': '\w+'}
     )    
+    map.connect ("/orders/my/{type}/page{page}", controller="order", action="listownorders",
+        requirements = {'type': '\w+', 'page': '\d+'}
+    )
     map.connect ("/orders/page{page}",
         controller="order", action="list",
         requirements = {'page': '\d+'}
