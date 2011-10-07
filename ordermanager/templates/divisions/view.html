@@ -33,11 +33,11 @@ ${self.actmenu()}
 % if c.division.people:
 <table>
 <tr><th rowspan="2">Сотрудник</th><th colspan="5">Выполнено заявок</th></tr>
-<tr><th>за сутки</th><th>за эту неделю</th><th>за прошлую неделю</th><th>за 30 дней</th><th>всего</th></tr>
+<tr><th>за сегодня</th><th>за эту неделю</th><th>за прошлую неделю</th><th>за 30 дней</th><th>всего</th></tr>
 % for user in c.personnel:
 <tr>
 <td>${h.link_to(h.name(user), h.url_for(controller="usercontrol", action="view", id=user.id))}</td>
-<td>${c.lastday.get(user.id) or 0}</td>
+<td>${c.today.get(user.id) or 0}</td>
 <td>${c.thisweek.get(user.id) or 0}</td>
 <td>${c.prevweek.get(user.id) or 0}</td>
 <td>${c.lastmonth.get(user.id) or 0}</td>

@@ -113,11 +113,11 @@ class DivisionController(BaseController):
         last30d = last.filter(model.Order.doneAt > datetime.now()-timedelta(30)).all()
         thisweek = last.filter(model.Order.doneAt >= thismonday).all()
         prevweek = last.filter(model.Order.doneAt < thismonday).filter(model.Order.doneAt >= thismonday-timedelta(7)).all()
-        last1d = last.filter(model.Order.doneAt > datetime.now()-timedelta(1)).all()
+        last1d = last.filter(model.Order.doneAt > datetime.combine(date.today(), time(0, 0))).all()
         c.lastmonth = dict(last30d)
         c.prevweek = dict(prevweek)
         c.thisweek = dict(thisweek)
-        c.lastday = dict(last1d)
+        c.today = dict(last1d)
         c.total = dict(last.all())
         return render("/divisions/view.html")
 
