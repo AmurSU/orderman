@@ -20,7 +20,7 @@ from sqlalchemy import and_, or_, join
 from sqlalchemy import func
 from sqlalchemy.orm import join
 
-from datetime import datetime, timedelta
+from datetime import date, time, datetime, timedelta
 
 log = logging.getLogger(__name__)
 
@@ -106,12 +106,17 @@ class DivisionController(BaseController):
         c.personnel = meta.Session.query(model.Person).filter_by(div_id=id).\
             filter_by(deleted=False).order_by(model.Person.surname).all()
         # Учёт количества сделанных заявок
+        thismonday = datetime.combine(date.today(), time(0, 0)) - timedelta(date.today().weekday())
         last = meta.Session.query(model.Person.id, func.count(model.Order.id)).\
             join(model.Order.performers).filter(model.Person.div_id==id).\
             group_by(model.Person.id)
         last30d = last.filter(model.Order.doneAt > datetime.now()-timedelta(30)).all()
+        thisweek = last.filter(model.Order.doneAt >= thismonday).all()
+        prevweek = last.filter(model.Order.doneAt < thismonday).filter(model.Order.doneAt >= thismonday-timedelta(7)).all()
         last1d = last.filter(model.Order.doneAt > datetime.now()-timedelta(1)).all()
         c.lastmonth = dict(last30d)
+        c.prevweek = dict(prevweek)
+        c.thisweek = dict(thisweek)
         c.lastday = dict(last1d)
         c.total = dict(last.all())
         return render("/divisions/view.html")
