@@ -47,33 +47,6 @@ ${self.actmenu()}
 % endif
 </dl>
 \
-## Статистика!
-\
-<h4>Заявки, созданные пользователем</h4>
-% if c.createdorders:
-<p>Пользователь создал ${h.get_plural(c.creatednum, u"заявку, заявки, заявок")}.</p>
-${self.orderstable(c.createdorders)}
-% if c.givememore:
-<p><a href="${h.url_for(controller='usercontrol', action='view', showallorders='True')}">Показать все заявки&hellip;</a></p>
-% endif
-% else:
-<p>Не создал ни одной заявки</p>
-% endif
-\
-% if h.have_role('performer') and c.performing:
-<h4>Заявки, выполняемые пользователем</h4>
-<p>Пользователь принимал участие в выполнении ${h.get_plural(c.performingnum, u"заявки, заявок, заявок")}.</p>
-${self.orderstable(c.performing)}
-% if c.givememore:
-<p><a href="${h.url_for(controller='usercontrol', action='view', showallorders='True')}">Показать все заявки&hellip;</a></p>
-% endif
-% endif
-\
-% if h.have_role('performer') and c.performed:
-<h4>Заявки, выполненные пользователем</h4>
-${self.orderstable(c.performed)}
-% endif
-\
 ## Меню действий!
 <%def name="actmenu()">\
 <div id="actions">

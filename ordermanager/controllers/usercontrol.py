@@ -309,26 +309,8 @@ class UsercontrolController(BaseController):
         session.save()
         redirect_to(h.url_for(controller="main", action="index", id=None))
 
-    def view(self, id=None, showallorders=False):
+    def view(self, id=None):
         c.person = h.checkuser(id)
-        act = meta.Session.query(model.Action).filter(model.Action.performers.any(id=id))
-        c.givememore = not showallorders
-        # Выбираем заявки, созданные этим пользователем
-        creatingacts = act.filter(model.Action.status_id.in_([11, 12])).all()
-        createdorders = meta.Session.query(model.Order).filter(model.Order.id.in_([x.order_id for x in creatingacts])).order_by(model.Order.id)
-        c.creatednum = createdorders.count()
-        # Выбираем заявки, выполняемые этим пользователем
-        performingacts = act.filter(model.sql.not_(model.Action.status_id.in_([1, 6, 11, 12]))).all()
-        #performingacts = act.filter("status_id!=11 AND status_id!=12 AND status_id!=6 AND status_id!=1").all()
-        performing = meta.Session.query(model.Order).filter(model.Order.id.in_([x.order_id for x in performingacts])).order_by(model.Order.id)
-        c.performingnum = performing.count()
-        # TODO: Выбираем заявки, выполненные этим пользователем
-        if showallorders:
-            c.createdorders = createdorders.all()
-            c.performing = performing.all()
-        else:
-            c.createdorders = createdorders[:5]
-            c.performing = performing[:5]
         return render("/users/view.html")
 
     def add(self):

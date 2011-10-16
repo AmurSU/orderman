@@ -29,7 +29,6 @@ def make_map():
     
     # Пользователи
     map.connect ('/user/{id}', controller="usercontrol", action="view", requirements = {'id': '\d+'})
-    map.connect ('/user/{id}/allorders', controller="usercontrol", action="view", showallorders=True, requirements = {'id': '\d+'})
     map.connect ('/user/{id}/{action}', controller="usercontrol", requirements = {'id': '\d+'})
     # И их список
     map.connect ('/users', controller="usercontrol", action="list")
