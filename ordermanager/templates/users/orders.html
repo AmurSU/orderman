@@ -1,0 +1,16 @@
+## -*- coding: utf-8 -*-
+<%def name="head()">Заявки пользователя</%def>\
+<%def name="title()">Заявки пользователя</%def>\
+<%inherit file="menu.html"/>\
+
+<form action="${h.url_for(controller='usercontrol', action='orders', id=c.person.id)}" method="get">
+${h.select(name="status", selected_values=c.status, options=c.statuses)} заявки
+с <input type="date" name="start_date" id="start_date" value="${c.start_date.date().isoformat()}" />
+по <input type="date" name="stop_date" id="stop_date" value="${c.stop_date.date().isoformat()}" />
+<button type="submit">Показать</button>
+${h.get_plural(len(c.orders), u"заявка найдена, заявки найдено, заявок найдено")}.
+</form>
+
+${self.orderstable(c.orders)}
+
+<p><a href="${h.url_for(controller='usercontrol', action='view', id=c.person.id)}">&lt; Назад на страницу пользователя</a></p>

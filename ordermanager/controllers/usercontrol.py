@@ -16,6 +16,7 @@ import ordermanager.model.meta as meta
 import sqlalchemy
 from sqlalchemy import and_, or_, join
 
+from datetime import datetime, date
 from hashlib import md5
 import cPickle as pickle
 
@@ -311,6 +312,7 @@ class UsercontrolController(BaseController):
 
     def view(self, id=None):
         c.person = h.checkuser(id)
+        c.today = date.today()
         return render("/users/view.html")
 
     def add(self):
@@ -449,3 +451,14 @@ class UsercontrolController(BaseController):
         meta.Session.commit()
         h.flashmsg (u"Ваши настройки были бережно сохранены...")
         redirect_to(h.url_for(controller="main", action="index"))
+        
+    def orders (self, id=None):
+        c.person = h.checkuser(id)
+        c.statuses = [[2, u"Принятые"], [3, u"Выполненные"]]
+        c.status = request.params.get("status", 3)
+        c.start_date = datetime.strptime(request.params.get("start_date", datetime.now().date().isoformat()), "%Y-%m-%d")
+        c.stop_date = datetime.strptime(request.params.get("stop_date", datetime.now().date().isoformat()), "%Y-%m-%d")
+        c.orders = meta.Session.query(model.Order).join(model.Order.actions).join(model.Action.performers)\
+            .filter(and_(model.Action.status_id==c.status, model.Action.performers.any(id=id)))\
+            .filter(model.Action.created>=c.start_date).filter(model.Action.created<=c.stop_date).all()
+        return render ("/users/orders.html")

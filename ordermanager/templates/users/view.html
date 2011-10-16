@@ -47,6 +47,14 @@ ${self.actmenu()}
 % endif
 </dl>
 \
+<h3>Просмотреть заявки, относящиеся к пользователю</h3>
+<form action="${h.url_for(controller='usercontrol', action='orders', id=c.person.id)}" method="get">
+${h.select(name="status", selected_values=3, options=[[2, u"Принятые"], [3, u"Выполненные"]])} заявки
+с <input type="date" name="start_date" id="start_date" value="${c.today.isoformat()}" />
+по <input type="date" name="stop_date" id="stop_date" value="${c.today.isoformat()}" />
+<button type="submit">Показать</button>
+</form>
+\
 ## Меню действий!
 <%def name="actmenu()">\
 <div id="actions">
