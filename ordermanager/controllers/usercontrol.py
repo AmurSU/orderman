@@ -16,7 +16,7 @@ import ordermanager.model.meta as meta
 import sqlalchemy
 from sqlalchemy import and_, or_, join
 
-from datetime import datetime, date
+from datetime import datetime, date, time, timedelta
 from hashlib import md5
 import cPickle as pickle
 
@@ -460,5 +460,5 @@ class UsercontrolController(BaseController):
         c.stop_date = datetime.strptime(request.params.get("stop_date", datetime.now().date().isoformat()), "%Y-%m-%d")
         c.orders = meta.Session.query(model.Order).join(model.Order.actions).join(model.Action.performers)\
             .filter(and_(model.Action.status_id==c.status, model.Action.performers.any(id=id)))\
-            .filter(model.Action.created>=c.start_date).filter(model.Action.created<=c.stop_date).all()
+            .filter(model.Action.created>=c.start_date).filter(model.Action.created<=c.stop_date+timedelta(1)).all()
         return render ("/users/orders.html")
