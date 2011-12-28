@@ -13,6 +13,7 @@ setup(
     author_email='andrey.novikov@amursu.ru',
     url='www.amursu.ru',
     install_requires=[
+        "WebOb>=1.0,<=1.0.9",
         "Pylons>=0.9.7",
         "SQLAlchemy>=0.5",
         "PyTils>=0.2.3",
