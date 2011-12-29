@@ -12,6 +12,11 @@
 
     python go-pylons.py --no-site-packages Pylons-0.9.7
 
+В случае, если этот скрипт отрабатывает некорректно::
+
+    virtualenv --no-site-packages Pylons-0.9.7
+    Pylons-0.9.7/bin/easy_install Pylons==0.9.7
+
 3. Дальнейшая работа должна производится в виртуальном окружении, для этого перейдите в созданный каталог и выполните файл ``activate``::
 
     cd Pylons-0.9.7
