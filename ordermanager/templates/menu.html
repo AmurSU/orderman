@@ -1,7 +1,7 @@
 ## -*- coding: utf-8 -*-
 <div id="menu">
 <ul>
-	<li class="amursu_link"><a href="//test.amursu.ru/"><strong>Веб-сайт АмГУ</strong></a></li>
+	<li class="amursu_link"><a href="//www.amursu.ru/"><strong>Веб-сайт АмГУ</strong></a></li>
 	<li class="glagne_link">${h.mlink(controller='main', action='index', text=u"Главная")}</li>
 % if (session.get('preferences') or dict()).get('upcat') is None:
 	<li class="orders_link">${h.mlink(controller='order', action='list', text=u"Заявки")}</li>
