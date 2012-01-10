@@ -154,7 +154,7 @@ class OrderController(BaseController):
         qorder = meta.Session.query(model.Order).order_by(model.sql.desc(model.Order.created))
         qorder = qorder.filter(model.Order.deleted==False)
         if type == "performing":
-           qorder = qorder.filter(model.sql.not_(model.Order.status_id.in_([1, 3, 4, 5])))
+           qorder = qorder.filter(model.sql.not_(model.Order.status_id.in_([1, 3, 4, 5, 15])))
            qorder = qorder.filter(model.Order.performers.any(id=session['id']))
         # Разбивка на страницы
         c.paginator = h.paginate.Page(
