@@ -240,7 +240,7 @@ class OrderController(BaseController):
         order = h.checkorder(id)
         # Теперь - проверка прав доступа (админ либо ответственный подразделения, создавшего заявку)
         h.requirelogin()
-        if not ((session.has_key('admin') and session['admin']) or (session.has_key('division') and session.has_key('creator') and session['creator'] and order.customer==session['division'])):
+        if not ((session.has_key('admin') and session['admin']) or (session.has_key('division') and session.has_key('creator') and session['creator'] and order.customer.id==session['division'])):
             abort(403)
         work = meta.Session.query(model.Work).order_by(model.Work.id).all()
         c.work = []
@@ -273,7 +273,7 @@ class OrderController(BaseController):
     def save(self, id):
         order = h.checkorder(id)
         # Теперь - проверка прав доступа (админ либо ответственный подразделения, создавшего заявку)
-        if not (h.have_role('admin') or h.have_role('operator') or (session.has_key('division') and session.has_key('creator') and session['creator'] and order.customer==session['division'])):
+        if not (h.have_role('admin') or h.have_role('operator') or (session.has_key('division') and session.has_key('creator') and session['creator'] and order.customer.id==session['division'])):
             abort(401)
         for key, value in self.form_result.items():
             if getattr(order, key) != value and key != 'inventories':
