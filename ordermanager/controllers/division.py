@@ -114,6 +114,35 @@ class DivisionController(BaseController):
         thisweek = last.filter(model.Order.doneAt >= thismonday).all()
         prevweek = last.filter(model.Order.doneAt < thismonday).filter(model.Order.doneAt >= thismonday-timedelta(7)).all()
         last1d = last.filter(model.Order.doneAt > datetime.combine(date.today(), time(0, 0))).all()
+        # Учёт по дням количества сделанных заявок
+        dates = meta.Session.execute
+        dates_q = """
+          SELECT o."doneAt"::date AS done_date
+          FROM orders o
+          WHERE o."doneAt" BETWEEN (now() - '1 month'::interval)::timestamp AND now()
+          GROUP BY done_date
+          ORDER BY done_date;
+        """
+        c.dates = [row[0] for row in meta.Session.execute(dates_q)]
+        order_count_q = """
+          SELECT o."doneAt"::date AS done_date, count(o.id)
+          FROM   people p 
+            JOIN orderperformers op ON p.id = op.person_id
+            JOIN orders o ON op.order_id = o.id
+          WHERE
+                p.id = %d
+            AND o.status_id IN (3, 4)
+            AND o."doneAt" BETWEEN (now() - '1 month'::interval)::timestamp AND now()
+          GROUP BY done_date
+          ORDER BY done_date;
+        """
+        c.graph_data = {}
+        for user in c.personnel:
+          subres = {}
+          for row in meta.Session.execute(order_count_q % user.id):
+            subres[row[0]] = row[1]
+          c.graph_data[user.id] = subres
+        # Подготовка к отображению шаблона
         c.lastmonth = dict(last30d)
         c.prevweek = dict(prevweek)
         c.thisweek = dict(thisweek)

@@ -49,6 +49,29 @@ ${self.actmenu()}
 <p>В этом подразделении нет пользователей.</p>
 % endif
 
+<h3>График выполнения заявок</h3>
+% if c.division.people:
+<p>Количество заявок, отмеченных выполненными, за последние 30 дней. Без учёта трудоёмкости заявок.</p>
+<table id="perf_graph_data">
+  <tr><th rowspan="2">Сотрудник</th><th colspan="${len(c.dates)}">Выполнено заявок за дату</th></tr>
+  <tr>
+    % for day in c.dates:
+      <th>${day.month}.${day.day}</th>
+    % endfor
+  </tr>
+  % for user in c.personnel:
+    <tr>
+    <td>${h.link_to(h.name(user), h.url_for(controller="usercontrol", action="view", id=user.id))}</td>
+    % for day in c.dates:
+      <td>${(c.graph_data.get(user.id) or dict()).get(day) or 0}</td>
+    % endfor
+    </tr>
+  % endfor
+</table>
+% else:
+<p>В этом подразделении нет пользователей.</p>
+% endif
+
 <h3>Последние созданные заявки</h3>
 % if c.lastorders:
 ${self.orderstable(c.lastorders)}
