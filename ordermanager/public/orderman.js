@@ -112,3 +112,47 @@ $(document).ready(function() {
     });
 });
 
+// Рисование графика выполненных заявок
+$(document).ready(function(){
+  var dates = Array();
+  $('#perf_graph_data th.date').each( function (index, elem) { 
+    dates.push(Array( index, $(this).text()));
+  });
+
+  var titles = $('#perf_graph_data tbody td:first-child').map(function() { return $(this).text(); });
+  
+  var data = Array();
+  $('#perf_graph_data tbody tr').each(function () {
+    subData = Array();
+    $('td:not(:first-child)', this).each(function (index, elem) {
+      subData.push(Array(index, parseInt($(elem).text())));
+    } );
+    data.push(subData);
+  });
+  var plot1 = $.jqplot ('perf_graph', data, {
+    axesDefaults: {
+      labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+    },
+    axes: {
+      xaxis: {
+        label: "Дни",
+        pad: 0,
+        ticks: dates
+      },
+      yaxis: {
+        label: "Заявки",
+        pad: 1
+      }
+    },
+    series: titles.map( function () { return { label: this } }),
+    legend: {
+        show: true,
+        location: 'ne',     // compass direction, nw, n, ne, e, se, s, sw, w.
+        xoffset: 12,        // pixel offset of the legend box from the x (or x2) axis.
+        yoffset: 12,        // pixel offset of the legend box from the y (or y2) axis.
+    }
+
+  });
+  
+  $('#perf_graph_data').remove();
+});
