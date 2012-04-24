@@ -64,12 +64,14 @@ ${self.actmenu()}
   </thead>
   <tbody>
   % for user in c.personnel:
-    <tr>
-    <td>${h.link_to(h.name(user), h.url_for(controller="usercontrol", action="view", id=user.id))}</td>
-    % for day in c.dates:
-      <td>${(c.graph_data.get(user.id) or dict()).get(day) or 0}</td>
-    % endfor
-    </tr>
+    % if c.lastmonth.get(user.id): # Have this user performed any orders in last month?
+      <tr>
+        <td>${h.name(user)}</td>
+        % for day in c.dates:
+          <td>${(c.graph_data.get(user.id) or dict()).get(day) or 0}</td>
+        % endfor
+      </tr>
+    % endif
   % endfor
   </tbody>
 </table>

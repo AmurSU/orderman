@@ -144,6 +144,7 @@ $(document).ready(function(){
         pad: 1
       }
     },
+    seriesDefaults: { showMarker: false },
     series: titles.map( function () { return { label: this } }),
     legend: {
         show: true,
