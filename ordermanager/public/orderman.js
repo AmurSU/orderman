@@ -135,12 +135,12 @@ $(document).ready(function(){
     },
     axes: {
       xaxis: {
-        label: "Дни",
+        label: "Дата",
         pad: 0,
         ticks: dates
       },
       yaxis: {
-        label: "Заявки",
+        label: "Трудоёмкость",
         pad: 1
       }
     },

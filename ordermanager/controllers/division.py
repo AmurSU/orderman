@@ -125,7 +125,7 @@ class DivisionController(BaseController):
         """
         c.dates = [row[0] for row in meta.Session.execute(dates_q)]
         order_count_q = """
-          SELECT o."doneAt"::date AS done_date, count(o.id)
+          SELECT o."doneAt"::date AS done_date, sum(o.workload)
           FROM   people p 
             JOIN orderperformers op ON p.id = op.person_id
             JOIN orders o ON op.order_id = o.id
