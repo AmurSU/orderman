@@ -127,7 +127,7 @@ $(document).ready(function(){
   $('#perf_graph_data tbody tr').each(function () {
     subData = Array();
     $('td:not(:first-child)', this).each(function (index, elem) {
-      var value = parseInt($(elem).text());
+      var value = parseFloat($(elem).text());
       subData.push(Array(index, value));
       if (value > max_workload) max_workload = value;
     } );
