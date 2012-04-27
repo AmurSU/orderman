@@ -120,40 +120,45 @@ $(document).ready(function(){
   });
 
   var titles = $('#perf_graph_data tbody td:first-child').map(function() { return $(this).text(); });
+
+  var max_workload = 0;
   
   var data = Array();
   $('#perf_graph_data tbody tr').each(function () {
     subData = Array();
     $('td:not(:first-child)', this).each(function (index, elem) {
-      subData.push(Array(index, parseInt($(elem).text())));
+      var value = parseInt($(elem).text());
+      subData.push(Array(index, value));
+      if (value > max_workload) max_workload = value;
     } );
     data.push(subData);
   });
-  var plot1 = $.jqplot ('perf_graph', data, {
-    axesDefaults: {
-      labelRenderer: $.jqplot.CanvasAxisLabelRenderer
-    },
-    axes: {
-      xaxis: {
-        label: "Дата",
-        pad: 0,
-        ticks: dates
-      },
-      yaxis: {
-        label: "Трудоёмкость",
-        pad: 1
-      }
-    },
-    seriesDefaults: { showMarker: false },
-    series: titles.map( function () { return { label: this } }),
-    legend: {
-        show: true,
-        location: 'ne',     // compass direction, nw, n, ne, e, se, s, sw, w.
-        xoffset: 12,        // pixel offset of the legend box from the x (or x2) axis.
-        yoffset: 12,        // pixel offset of the legend box from the y (or y2) axis.
-    }
 
+  $('.perf_graph').each( function (index, elem) {
+    $.jqplot (elem.id, [data[index]], {
+      axesDefaults: {
+        labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+      },
+      axes: {
+        xaxis: {
+          showTicks: index == data.length-1,
+          pad: 0,
+          ticks: dates
+        },
+        yaxis: {
+          pad: 1,
+          max: max_workload
+        }
+      },
+      seriesDefaults: { showMarker: false },
+      series: [{ label: titles[index] } ],
+      legend: {
+          show: true,
+          location: 'ne',     // compass direction, nw, n, ne, e, se, s, sw, w.
+          xoffset: 12,        // pixel offset of the legend box from the x (or x2) axis.
+          yoffset: 12,        // pixel offset of the legend box from the y (or y2) axis.
+      }
+    });
   });
-  
   $('#perf_graph_data').remove();
 });
