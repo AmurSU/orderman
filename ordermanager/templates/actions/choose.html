@@ -33,6 +33,10 @@ ${h.field(
     u"Комментарий",
     h.textarea(name="description", maxlen=250, cols=80, rows=5)
 )}
+${h.field(
+    u"Трудоёмкость",
+    h.text(name="workload", maxlength="10", value=c.order.workload)
+)}
 ${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
 ${h.form_end()}
 </%def>

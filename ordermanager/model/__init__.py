@@ -45,6 +45,8 @@ orders_table = schema.Table ('orders', meta.metadata,
     schema.Column('status_id', types.Integer, schema.ForeignKey("statuses.id")),
     # Когда была сделана заявка
     schema.Column('doneAt', types.DateTime()),
+    # Трудоёмкость заявки в человеко-часах
+    schema.Column('workload', types.Numeric(precision=5, scale=1), default="1.0"),
     # До какого времени заявка должна быть сделана
     schema.Column('expires', types.DateTime()),
     # Служебные данные о записи

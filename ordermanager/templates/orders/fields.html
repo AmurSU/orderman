@@ -25,3 +25,9 @@ ${h.field(
     required=False,
     field_desc=u"Укажите здесь сведения, если сведений, указанных для вашего подразделения, недостаточно"
 )}
+${h.field(
+    u"Планируемая трудоёмкость",
+    h.text(name="workload", maxlength="10", value=c.workload),
+    required=False,
+    field_desc=u"Сколько займёт выполнение заявки в человека-часах на каждого исполнителя"
+)}

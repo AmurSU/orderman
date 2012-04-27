@@ -82,12 +82,14 @@ class OrderForm (formencode.Schema):
     place = formencode.validators.String()
     # TODO: Сделать валидацию (по OneOf) инвентарных номеров!
     inventories = formencode.foreach.ForEach(formencode.validators.Int())
+    workload = formencode.validators.Number()
     chained_validators = [MatchedCategories()]
 
 class TakeForm(formencode.Schema):
     allow_extra_fields = True
     filter_extra_fields = True
     performers = formencode.foreach.ForEach(formencode.validators.Int())
+    workload = formencode.validators.Number()
     chained_validators = [ValidPerformers()]
 
 class GoTo(formencode.Schema):
@@ -192,6 +194,7 @@ class OrderController(BaseController):
         for i in upcategory:
             c.upcategory.append([i.id, i.title])
         c.curcat = c.curwork = c.upcat = []
+        c.workload = 1.0
         return render ("/orders/add.html")
 
     @validate(schema=OrderForm, form="add")
@@ -264,6 +267,7 @@ class OrderController(BaseController):
             'work_id': order.work_id,
             'cat_id': order.cat_id,
             'upcat_id': order.upcat_id,
+            'workload': order.workload
         }
         c.invs = [item for item in order.inventories]
         return htmlfill.render(render("/orders/edit.html"), values)
@@ -336,6 +340,7 @@ class OrderController(BaseController):
             act.performers.append(perf)
         order.status = meta.Session.query(model.Status).get(2)
         order.perf_id = session['division']
+        order.workload = self.form_result['workload']
         meta.Session.add(act)
         # Обновляем исполнителей заявки
         order.performers = act.performers;

@@ -20,6 +20,7 @@ ${h.literal(u"\n").join([h.literal("<li>") + unicode(item.id) + h.literal(" &mda
 % endif
 <dt>Подана</dt><dd>${c.order.created.strftime('%Y.%m.%d %H:%M')}<span class="noprint"> (${h.ago(c.order.created)})</span></dd>
 <dt>Текущий статус:</dt><dd>${c.order.status.title}</dd>
+<dt>Трудоёмкость:</dt><dd>${c.order.workload} человеко-часов</dd>
 % if c.order.edited:
 <dt>Посл. редактирование</dt><dd>${c.order.edited}</dd>
 % endif
