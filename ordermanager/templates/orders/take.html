@@ -8,11 +8,9 @@
 <p>Вы действительно хотите взять себе на выполнение заявку № ${c.order.id}?</p>
 <p>Если да, то выберите непосредственных исполнителей:</p>
 ${h.form_start(h.url_for(controller='order', action='take', id=request.urlvars['id']), method="post")}
-<%doc>${h.field(
-    u"Исполнители",
-    
-)}</%doc>\
-${h.checkbox_group('performers', selected_values=None, align="vert", options=c.performers)}
+<div>${h.checkbox_group('performers', selected_values=None, align="vert", options=c.performers)}</div>
+<br />
+<p>Планируемая трудоёмкость: ${h.text(name="workload", maxlength="10", value=c.order.workload)} человеко-часов.</p>
 
 <tr><td colspan="2">${h.literal(u'<button type="button" class="backbutton">&lt; Не брать</button>')} &nbsp; ${h.submit(value=u"Взять >", name='submit')}</td></tr>
 ${h.form_end()}

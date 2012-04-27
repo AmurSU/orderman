@@ -79,6 +79,7 @@ class ActForm(formencode.Schema):
         }
     )
     description = formencode.validators.String()
+    workload = formencode.validators.Number()
     chained_validators = [ValidPerformers()]
 
 class ComplainForm(formencode.Schema):
@@ -164,6 +165,9 @@ class ActionController(BaseController):
         act.status = meta.Session.query(model.Status).get(int(self.form_result['status']))
         act.div_id = session['division']
         act.description = self.form_result['description']
+        if float(self.form_result['workload']) != float(order.workload):
+          act.description += u" Трудоёмкость изменена с %2.1f на %2.1f" % (order.workload, self.form_result['workload'])
+          order.workload = self.form_result['workload']
         for pid in self.form_result['performers']:
             perf = meta.Session.query(model.Person).get(pid)
             act.performers.append(perf)
