@@ -267,6 +267,7 @@ class OrderController(BaseController):
             'work_id': order.work_id,
             'cat_id': order.cat_id,
             'upcat_id': order.upcat_id,
+            'place': order.place,
             'workload': order.workload
         }
         c.invs = [item for item in order.inventories]
