@@ -33,6 +33,14 @@ $(document).ready(function() {
         });
       });
   });
+
+  $("#chooseact #status").change(function() {
+    if (parseInt(this.value) == 16) {
+      $("#perfs").closest("tr.field").hide();
+    } else {
+      $("#perfs").closest("tr.field").show();
+    }
+  });
 });
 
 // Функция загружает инфу о заявке в HTML и притыкает её куда скажешь

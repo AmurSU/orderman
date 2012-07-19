@@ -168,9 +168,12 @@ class ActionController(BaseController):
         if float(self.form_result['workload']) != float(order.workload):
           act.description += u" Трудоёмкость изменена с %2.1f на %2.1f" % (order.workload, self.form_result['workload'])
           order.workload = self.form_result['workload']
-        for pid in self.form_result['performers']:
-            perf = meta.Session.query(model.Person).get(pid)
-            act.performers.append(perf)
+        if act.status.id != 16: # Пояснение делает только сам пользователь и никто другой!
+          for pid in self.form_result['performers']:
+              perf = meta.Session.query(model.Person).get(pid)
+              act.performers.append(perf)
+        else:
+          act.performers = [meta.Session.query(model.Person).get(int(session['id']))]
         meta.Session.add(act)
         # Если указан перевод состояния заявки - переводим в него. Иначе оставляем как есть.
         status = meta.Session.query(model.Status).get(int(self.form_result['status']))
@@ -178,10 +181,11 @@ class ActionController(BaseController):
             order.status = meta.Session.query(model.Status).get(status.redirects)
         order.perf_id = session['division']
         # Обновляем исполнителей заявки
-        if status.redirects == 1:
-            order.performers = []
-        else:
-            order.performers = act.performers;
+        if status.id != 16:
+          if status.redirects == 1:
+              order.performers = []
+          else:
+              order.performers = act.performers;
         # Если это "отметить выполненной", то ставим заявке время выполнения
         if status.id == 3:
             order.doneAt = datetime.datetime.now()
