@@ -468,3 +468,19 @@ body { min-height: 100%; max-height: 100%;}
 
 /* A CSS hack that only applies to IE -- specifies a different height for the footer */
 * html #footer { margin-top: -3.4em; }
+
+/* Table sorter */
+table.tablesorter thead tr .header {
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+}
+table.tablesorter thead tr .headerSortUp {
+	background-image: url(/icons/asc.gif);
+}
+table.tablesorter thead tr .headerSortDown {
+	background-image: url(/icons/desc.gif);
+}
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+  background-color: blue;
+}
