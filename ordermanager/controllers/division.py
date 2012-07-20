@@ -107,7 +107,7 @@ class DivisionController(BaseController):
             filter_by(deleted=False).order_by(model.Person.surname).all()
         # Учёт количества сделанных заявок
         thismonday = datetime.combine(date.today(), time(0, 0)) - timedelta(date.today().weekday())
-        last = meta.Session.query(model.Person.id, func.count(model.Order.id)).\
+        last = meta.Session.query(model.Person.id, func.count(model.Order.id), func.sum(model.Order.workload)).\
             join(model.Order.performers).filter(model.Person.div_id==id).\
             group_by(model.Person.id)
         last30d = last.filter(model.Order.doneAt > datetime.now()-timedelta(30)).all()
@@ -143,11 +143,11 @@ class DivisionController(BaseController):
             subres[row[0]] = row[1]
           c.graph_data[user.id] = subres
         # Подготовка к отображению шаблона
-        c.lastmonth = dict(last30d)
-        c.prevweek = dict(prevweek)
-        c.thisweek = dict(thisweek)
-        c.today = dict(last1d)
-        c.total = dict(last.all())
+        c.lastmonth = dict([[record[0], record[1:]] for record in last30d])
+        c.prevweek = dict([[record[0], record[1:]] for record in prevweek])
+        c.thisweek = dict([[record[0], record[1:]] for record in thisweek])
+        c.today = dict([[record[0], record[1:]] for record in last1d])
+        c.total = dict([[record[0], record[1:]] for record in last.all()])
         return render("/divisions/view.html")
 
     def add(self):
