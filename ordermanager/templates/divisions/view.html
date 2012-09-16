@@ -86,12 +86,12 @@ ${self.actmenu()}
   </tr>
   </thead>
   <tbody>
-  % for user in c.personnel:
+  % for user_idx, user in enumerate(c.personnel):
     % if c.lastmonth.get(user.id): # Have this user performed any orders in last month?
       <tr>
         <td>${h.name(user)}</td>
-        % for day in c.dates:
-          <td>${(c.graph_data.get(user.id) or dict()).get(day) or 0}</td>
+        % for i,day in enumerate(c.dates):
+          <td>${c.graph_data[user_idx][i]}</td>
         % endfor
       </tr>
     % endif

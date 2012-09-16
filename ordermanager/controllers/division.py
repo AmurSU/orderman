@@ -123,9 +123,11 @@ class DivisionController(BaseController):
           GROUP BY done_date
           ORDER BY done_date;
         """
-        c.dates = [row[0] for row in meta.Session.execute(dates_q)]
         order_count_q = """
-          SELECT o."doneAt"::date AS done_date, sum(o.workload)
+          SELECT
+               o."doneAt"::date AS done_date,
+               (o."doneAt"::date - (SELECT a.created::date FROM actions a WHERE a.order_id = o.id AND a.status_id = 2 ORDER BY a.created DESC LIMIT 1) + 1) AS days,
+               o.workload
           FROM   people p 
             JOIN orderperformers op ON p.id = op.person_id
             JOIN orders o ON op.order_id = o.id
@@ -133,15 +135,17 @@ class DivisionController(BaseController):
                 p.id = %d
             AND o.status_id IN (3, 4)
             AND o."doneAt" BETWEEN (now() - '1 month'::interval)::timestamp AND now()
-          GROUP BY done_date
           ORDER BY done_date;
         """
-        c.graph_data = {}
-        for user in c.personnel:
-          subres = {}
+        c.dates = [row[0] for row in meta.Session.execute(dates_q)]
+        c.graph_data = [[0 for d in c.dates] for user in c.personnel] # Empty graph data
+        for user_idx, user in enumerate(c.personnel):
           for row in meta.Session.execute(order_count_q % user.id):
-            subres[row[0]] = row[1]
-          c.graph_data[user.id] = subres
+            stop_idx = c.dates.index(row[0])
+            start_idx = stop_idx - row[1] - 2
+            if start_idx < 0: start_idx = 0
+            for idx in range(start_idx, stop_idx):
+              c.graph_data[user_idx][idx] += float(row[2])/(row[1]+2)
         # Подготовка к отображению шаблона
         c.lastmonth = dict([[record[0], record[1:]] for record in last30d])
         c.prevweek = dict([[record[0], record[1:]] for record in prevweek])
