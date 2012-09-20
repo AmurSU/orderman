@@ -127,7 +127,7 @@ class ActionController(BaseController):
         #    lastaction = None
         #else:
         #    lastaction = actionquery.filter_by(div_id=c.order.perf_id).order_by(model.sql.desc(model.Action.created)).first()
-        lastaction = actionquery.filter_by(order_id=id).filter_by(div_id=c.order.perf_id).order_by(model.sql.desc(model.Action.created)).first()
+        lastaction = actionquery.filter_by(order_id=id).filter_by(div_id=c.order.perf_id).filter(model.Action.status_id != 16).order_by(model.sql.desc(model.Action.created)).first()
         c.actions = actionquery.filter_by(order_id=id).order_by(model.Action.created).all()
         # Статусы
         statuses = meta.Session.query(model.Status).order_by(model.Status.gui_priority)
