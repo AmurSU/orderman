@@ -43,13 +43,14 @@ ${h.form_end()}
 <h2>История работы с заявкой</h2>
 % if c.actions:
 <table>
-<tr><th>Время</th><th>Действие</th><th>Подразделение</th><th>Исполнитель</th></tr>
+<tr><th>Время</th><th>Действие</th><th>Подразделение</th><th>Исполнитель</th><th>Комментарий</th></tr>
 % for entry in c.actions:
 <tr>\
 <td>${entry.created.strftime('%Y.%m.%d %H:%M')}</td>\
 <td>${entry.status.title}</td>\
 <td>${entry.division.title}</td>\
 <td>${", ".join([h.name(person) for person in entry.performers])}</td>\
+<td>${entry.description}</td>\
 </tr>
 % endfor
 </table>
