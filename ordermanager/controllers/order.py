@@ -128,10 +128,14 @@ class OrderController(BaseController):
             work = meta.Session.query(model.Work).filter_by(url_text=c.mworkcur).first()
             if work is not None:
                 qorder = qorder.filter_by(work_id=work.id)                
-        if c.mstatcur not in ['any', None]:
+        if c.mstatcur not in ['any', 'performed', 'not_performed', None]:
             status = meta.Session.query(model.Status).filter(model.Status.redirects==model.Status.id).filter_by(id=c.mstatcur).first()
             if status is not None:
                 qorder = qorder.filter_by(status_id=status.id)
+        elif c.mstatcur == 'not_performed':
+          qorder = qorder.filter(model.sql.not_(model.Order.status_id.in_([3, 4, 15])))
+        elif c.mstatcur == 'performed':
+          qorder = qorder.filter(model.Order.status_id.in_([3, 4]))
         qorder = qorder.filter_by(deleted=bool(request.urlvars.get('deleted', False)))
         # Разбивка на страницы
         c.paginator = h.paginate.Page(
@@ -143,7 +147,11 @@ class OrderController(BaseController):
         mstat = meta.Session.query(model.Status)\
             .filter(model.Status.redirects==model.Status.id).filter_by(deleted=False)\
             .order_by(model.Status.id).all()
-        c.mstat = [['any', u' -- Все -- ']] + [[x.id, x.title] for x in mstat]
+        c.mstat = [
+          ([('any', u' -- Все -- ')], u'Все заявки'),
+          ([('not_performed', u'Не выполненные'), ('performed', u'Выполненные')], u'По степени завершённости'),
+          ([[x.id, x.title] for x in mstat], u'В определённом состоянии')
+        ]
         mcat = meta.Session.query(model.Category).filter_by(deleted=False).order_by(model.Category.id)
         if kwargs.get('upcat') not in ['any', None] and upcat is not None:
             mcat = mcat.filter(or_(model.Category.upcat_id==upcat.id, model.Category.upcat_id==None))

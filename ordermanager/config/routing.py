@@ -61,22 +61,22 @@ def make_map():
     )
     map.connect ("/orders/category={cat};work={work};status={status}",
         controller="order", action="list",
-        requirements = {'cat': '\w+', 'work': '\w+', 'status': '\d+'},
+        requirements = {'cat': '\w+', 'work': '\w+', 'status': '\w+'},
         cat = 'any', work = 'any', status=None                                 
     )
     map.connect ("/orders/category={cat};work={work};status={status}/page{page}",
         controller="order", action="list",
-        requirements = {'page': '\d+', 'cat': '\w+', 'work': '\w+', 'status': '\d+'},
+        requirements = {'page': '\d+', 'cat': '\w+', 'work': '\w+', 'status': '\w+'},
         cat = 'any', work = 'any', status=None                              
     )
     map.connect ("/orders/{upcat}/category={cat};work={work};status={status}",
         controller="order", action="list",
-        requirements = {'upcat': '\w+', 'cat': '\w+', 'work': '\w+', 'status': '\d+'},
+        requirements = {'upcat': '\w+', 'cat': '\w+', 'work': '\w+', 'status': '\w+'},
         upcat = 'any', cat = 'any', work = 'any', status=None                               
     )
     map.connect ("/orders/{upcat}/category={cat};work={work};status={status}/page{page}",
         controller="order", action="list",
-        requirements = {'page': '\d+', 'upcat': '\w+', 'cat': '\w+', 'work': '\w+', 'status': '\d+'},
+        requirements = {'page': '\d+', 'upcat': '\w+', 'cat': '\w+', 'work': '\w+', 'status': '\w+'},
         upcat = 'any', cat = 'any', work = 'any', status=None                                
     )
     map.connect("/orders/filter", controller="order", action="filter")
