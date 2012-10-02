@@ -191,7 +191,7 @@ class ActionController(BaseController):
             order.doneAt = datetime.datetime.now()
         # Готово
         meta.Session.commit()
-        h.flashmsg (u"Статус заявки № " + h.strong(order.id) + " был изменён на " + h.strong(order.status.title) + ".")
+        h.flashmsg (u"Статус заявки № " + h.strong(order.id) + u" был изменён на " + h.strong(order.status.title) + u".")
         meta.Session.expire_all()
         redirect_to(h.url_for(controller='order', action='view', id=order.id)) 
 
@@ -247,7 +247,7 @@ class ActionController(BaseController):
         if perf not in order.customers:
             order.customers.append(perf)
         meta.Session.commit()
-        h.flashmsg (u"Жалоба подана. Всех лишат зарплаты. Дело заявки № " + h.strong(order.id) + " будет сделано.")
+        h.flashmsg (u"Жалоба подана. Всех лишат зарплаты. Дело заявки № " + h.strong(order.id) + u" будет сделано.")
         redirect_to(h.url_for(controller='order', action='view', id=order.id)) 
 
     # Создание жалобы на заявку
@@ -298,7 +298,7 @@ class ActionController(BaseController):
         thank.description = self.form_result['description']
         meta.Session.add (thank)
         meta.Session.commit()
-        h.flashmsg (u"Спасибо за " + h.literal("&laquo;") + "спасибо" + h.literal("&raquo;") + "!")
+        h.flashmsg (u"Спасибо за " + h.literal("&laquo;") + u"спасибо" + h.literal("&raquo;") + "!")
         redirect_to(h.url_for(controller='order', action='view', id=order.id)) 
         
     def approve (self, id):
@@ -319,7 +319,7 @@ class ActionController(BaseController):
         if perf not in order.customers:
             order.customers.append(perf)
         meta.Session.commit()
-        h.flashmsg (u"Заявка № " + h.strong(order.id) + " полностью выполнена.")
+        h.flashmsg (u"Заявка № " + h.strong(order.id) + u" полностью выполнена.")
         redirect_to(h.url_for(controller='order', action='view', id=order.id))         
 
 

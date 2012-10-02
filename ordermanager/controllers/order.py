@@ -236,7 +236,7 @@ class OrderController(BaseController):
         order.customers.append(perf);
         # Готово, в базу!
         meta.Session.commit()
-        h.flashmsg (u"Заявка № " + h.strong(order.id) + " была добавлена.")
+        h.flashmsg (u"Заявка № " + h.strong(order.id) + u" была добавлена.")
         redirect_to(h.url_for(controller='order', action='view', id=order.id))
 
     def edit(self, id):
@@ -307,7 +307,7 @@ class OrderController(BaseController):
         #meta.Session.delete(order)
         order.deleted = True;
         meta.Session.commit()
-        h.flashmsg (u"Заявки № " + h.strong(order.id) + " больше нет.")
+        h.flashmsg (u"Заявки № " + h.strong(order.id) + u" больше нет.")
         redirect_to(h.url_for(controller='order', action='list', id=None))
 
     def takerequest (self, id=None):
