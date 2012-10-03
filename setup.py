@@ -18,7 +18,6 @@ setup(
         "SQLAlchemy>=0.5,<=0.5.9",
         "PyTils>=0.2.3",
         "FormEncode>=1.2.1",
-        "Formbuild>=2.0,<3.0",
         "WebHelpers>=1.3,<2.0"
     ],
     setup_requires=["PasteScript>=1.6.3"],

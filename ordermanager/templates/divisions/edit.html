@@ -4,24 +4,28 @@
 <%inherit file="menu.html"/>
 <%namespace file="fields.html" name="fields" import="*"/>
 
-${h.form_start(h.url_for(controller='division', action='save', id=request.urlvars['id']), method="post")}
+${h.form(h.url_for(controller='division', action='save', id=request.urlvars['id']), method="post")}
+<table>
 ${fields.body()}
-${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
-${h.form_end()}
+<tr class="field">
+<td class="label" valign="top"><label></label></td>
+<td class="field" colspan="2" valign="top">${h.submit(value=u"Сохранить", name='submit')}</td>
+</tr>
+</table>
+${h.end_form()}
 
 % if h.have_role('admin'):
 <h3>Сотрудники</h3>
-${h.form_start(h.url_for(controller='division', action='changeusers', id=request.urlvars['id']), method="post")}
-${h.field(
-    h.literal(u"Выберите сотрудников<br/><small>Используйте CTRL для можественного выделения</small>"),
-    h.select(name="users", selected_values=c.membersid, options=c.users, multiple=True, size="10")   
-)}
-${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
-${h.form_end()}
+${h.form(h.url_for(controller='division', action='changeusers', id=request.urlvars['id']), method="post")}
+<table>
+<tr class="field">
+<td class="label" valign="top"><label>Выберите сотрудников<br/><small>Используйте CTRL для можественного выделения</small></label></td>
+<td class="field" colspan="2" valign="top">${h.select(name="users", selected_values=c.membersid, options=c.users, multiple=True, size="10")}</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label></label></td>
+<td class="field" colspan="2" valign="top">${h.submit(value=u"Сохранить", name='submit')}</td>
+</tr>
+</table>
+${h.end_form()}
 % endif
-<%doc>
-<form action="${h.url_for(controller='division', action='insertusers', id=request.urlvars['id'])}" method="post">
-<div>${h.select(name="users", selected_values=c.membersid, options=c.users, multiple=True)}</div>
-<div>${h.submit(value=u"Сохранить", name='submit')}</div>
-</form>
-</%doc>

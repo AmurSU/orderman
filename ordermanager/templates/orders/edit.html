@@ -4,12 +4,21 @@
 <%inherit file="menu.html"/>
 <%namespace file="fields.html" name="fields" import="*"/>
 
-${h.form_start(h.url_for(controller='order', action='save', id=request.urlvars['id']), method="post", id="orderform")}
+${h.form(h.url_for(controller='order', action='save', id=request.urlvars['id']), method="post", id="orderform")}
+<table>
 ${fields.body()}
-${h.field(
-    u"Введите инвентарный номер",
-    h.literal(u'<div id="invs">' + u"".join([u'<input id="inventories" maxlength="12" name="inventories" type="text" value="'+unicode(item.id)+u'" /> <button type="button" class="removeinv">Удалить</button><br />' for item in c.invs]) + u'<button type="button" id="addinv">Добавить инвентарный номер</button></div>'),
-    required=True,
-)}
-${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
-${h.form_end()}
+<tr class="field">
+<td class="label" valign="top"><label>Введите инвентарный номер</label></td>
+<td class="field" colspan="2" valign="top"><div id="invs">
+% for item in c.order.inventories:
+<input maxlength="12" name="inventories" type="text" value="${unicode(item.id)}" /><button type="button" class="removeinv">Удалить</button><br />
+% endfor
+<button type="button" id="addinv">Добавить инвентарный номер</button>
+</div></td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label></label></td>
+<td class="field" colspan="2" valign="top">${h.submit(value=u"Сохранить", name='submit')}</td>
+</tr>
+</table>
+${h.end_form()}

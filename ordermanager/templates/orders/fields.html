@@ -1,33 +1,35 @@
-${h.field(
-    u"Выберите надкатегорию работ",
-    h.select(name="upcat_id", selected_values=c.upcat, options=c.upcategory),
-    required=True,
-)}
-${h.field(
-    u"Выберите категорию работ",
-    h.select(name="cat_id", selected_values=c.curcat, options=c.category),
-    required=True,
-)}
-${h.field(
-    u"Выберите вид работ",
-    h.select(name="work_id", selected_values=c.curwork, options=c.work),
-    required=True,
-)}
-${h.field(
-    u"Место выполнения работ",
-    h.text(name="place", maxlength="250"),
-    required=False,
-    field_desc=u"Укажите здесь, где именно необходимо сделать работу в формате: " + h.strong(u"корпус, кабинет, номер телефона")
-)}
-${h.field(
-    u"Дополнительная информация",
-    h.textarea(name='title', cols="40", rows="7",  maxlength="500"),
-    required=False,
-    field_desc=u"Укажите здесь сведения, если сведений, указанных для вашего подразделения, недостаточно"
-)}
-${h.field(
-    u"Планируемая трудоёмкость",
-    h.text(name="workload", maxlength="10", value=c.workload),
-    required=False,
-    field_desc=u"Сколько займёт выполнение заявки в человека-часах на каждого исполнителя"
-)}
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Выберите надкатегорию работ</label></td>
+<td class="field" colspan="2" valign="top">${h.select(name="upcat_id", selected_values=c.order.upcat_id, options=c.upcategory)}</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Выберите категорию работ</label></td>
+<td class="field" colspan="2" valign="top">${h.select(name="cat_id", selected_values=c.order.cat_id, options=c.category)}</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Выберите вид работ</label></td>
+<td class="field" colspan="2" valign="top">${h.select(name="work_id", selected_values=c.order.work_id, options=c.work)}</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label>Место выполнения работ</label></td>
+<td class="field" colspan="2" valign="top">${h.text(name="place", maxlength="250", value=c.order.place)}</td>
+<tr class="description">
+<td class="label_desc" valign="top"><span class="small"></span></td>
+<td class="field_desc" colspan="2" valign="top"><span class="small">Укажите здесь, где именно необходимо сделать работу в формате: <strong>корпус, кабинет, номер телефона</strong></span></td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label>Дополнительная информация</label></td>
+<td class="field" colspan="2" valign="top">${h.textarea(name='title', content=c.order.title, cols="40", rows="7",  maxlength="500")}</td>
+</tr>
+<tr class="description">
+<td class="label_desc" valign="top"><span class="small"></span></td>
+<td class="field_desc" colspan="2" valign="top"><span class="small">Укажите здесь сведения, если сведений, указанных для вашего подразделения, недостаточно</span></td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label>Планируемая трудоёмкость</label></td>
+<td class="field" colspan="2" valign="top">${h.text(name="workload", maxlength="10", value=c.order.workload)}</td>
+</tr>
+<tr class="description">
+<td class="label_desc" valign="top"><span class="small"></span></td>
+<td class="field_desc" colspan="2" valign="top"><span class="small">Сколько займёт выполнение заявки в человеко-часах на каждого исполнителя</span></td>
+</tr>

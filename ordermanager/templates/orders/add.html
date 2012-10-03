@@ -4,14 +4,18 @@
 <%inherit file="menu.html"/>
 <%namespace file="fields.html" name="fields" import="*"/>
 <p class="attention">Пожалуйста, указывайте в поле &laquo;Место работ&raquo; адрес для выполнения заявки (если он отличается от контактной информации, указанной в информации о подразделении или при её отсутствии), а в поле &laquo;Доп. информация&raquo; &mdash; всю прочую дополнительную информацию!</p>
-${h.form_start(h.url_for(controller='order', action='create'), method="post", id="orderform")}
+${h.form(h.url_for(controller='order', action='create'), method="post", id="orderform")}
+<table>
 ${fields.body()}
-${h.field(
-    u"Введите инвентарный номер",
-    h.literal(u'<div id="invs"><button type="button" id="addinv">Добавить инвентарный номер</button></div>'),
-    required=True,
-)}
-${h.field(field=h.submit(value=u"Заявить!", name='submit'))}
-${h.form_end()}
+<tr class="field">
+<td class="label" valign="top"><label>Введите инвентарный номер</label></td>
+<td class="field" colspan="2" valign="top"><div id="invs"><button type="button" id="addinv">Добавить инвентарный номер</button></div></td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label></label></td>
+<td class="field" colspan="2" valign="top">${h.submit(value=u"Заявить!", name='submit')}</td>
+</tr>
+</table>
+${h.end_form()}
 
 <p class="note">Вашу заявку должны взять в течение одного рабочего дня и выполнить (обычно) в течение трёх рабочих дней.</p>

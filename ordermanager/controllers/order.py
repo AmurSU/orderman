@@ -189,6 +189,7 @@ class OrderController(BaseController):
     def add(self):
         '''Показ формы для создания заявки'''
         h.requirerights('creator')
+        c.order = model.Order()
         work = meta.Session.query(model.Work).filter_by(deleted=False).order_by(model.Work.id).all()
         c.work = [[None, u" -- выберите вид работ -- "]]
         for i in work:
@@ -210,14 +211,14 @@ class OrderController(BaseController):
     def create(self):
         '''Метод непосредственного создания заявки в БД'''
         h.requirerights('creator')
-        order = model.Order()
+        c.order = model.Order()
         # Создание заявки
-        order.status = meta.Session.query(model.Status).get(1); # Заявка свободна!
-        order.cust_id = session['division'] # Заявка исходит от подразделения текущего пользователя
+        c.order.status = meta.Session.query(model.Status).get(1); # Заявка свободна!
+        c.order.cust_id = session['division'] # Заявка исходит от подразделения текущего пользователя
         for key, value in self.form_result.items():
             if key != 'inventories':       # Всё прочее, кроме инвентарников
-                setattr(order, key, value) # тащим из формы прямо в базу
-        meta.Session.add(order)
+                setattr(c.order, key, value) # тащим из формы прямо в базу
+        meta.Session.add(c.order)
         # Добавляем отношения заявка <-> инвентарники
         for inv in self.form_result['inventories']:
             item = meta.Session.query(model.Inventory).get(inv);
@@ -227,7 +228,7 @@ class OrderController(BaseController):
                 item.id = inv
                 meta.Session.add(item)
             # </TODO>
-            order.inventories.append(item)
+            c.order.inventories.append(item)
         # Создаём первую запись в журнале - "заявка создана"
         act = model.Action()
         act.div_id = session['division']
@@ -238,27 +239,27 @@ class OrderController(BaseController):
             act.performers.append(meta.Session.query(model.Person).get(session["operator_id"]))
         else:
             act.status = meta.Session.query(model.Status).get(11) # Или если просто сам пользователь
-        act.order_id = order.id
+        act.order_id = c.order.id
         meta.Session.add(act)
         # Обновляем создателей заявки
-        order.customers.append(perf);
+        c.order.customers.append(perf);
         # Готово, в базу!
         meta.Session.commit()
         h.flashmsg (u"Заявка № " + h.strong(order.id) + u" была добавлена.")
         redirect_to(h.url_for(controller='order', action='view', id=order.id))
 
     def edit(self, id):
-        order = h.checkorder(id)
+        c.order = h.checkorder(id)
         # Теперь - проверка прав доступа (админ либо ответственный подразделения, создавшего заявку)
         h.requirelogin()
-        if not ((session.has_key('admin') and session['admin']) or (session.has_key('division') and session.has_key('creator') and session['creator'] and order.customer.id==session['division'])):
+        if not ((session.has_key('admin') and session['admin']) or (session.has_key('division') and session.has_key('creator') and session['creator'] and c.order.customer.id==session['division'])):
             abort(403)
         work = meta.Session.query(model.Work).order_by(model.Work.id).all()
         c.work = []
         for i in work:
             c.work.append([i.id, i.title])
         category = meta.Session.query(model.Category)\
-            .filter(model.Category.upcat_id==order.upper_category.id)\
+            .filter(model.Category.upcat_id==c.order.upper_category.id)\
             .order_by(model.Category.id).all()
         c.category = []
         for i in category:
@@ -267,19 +268,7 @@ class OrderController(BaseController):
         c.upcategory = [[None, u" -- выберите надкатегорию -- "]]
         for i in upcategory:
             c.upcategory.append([i.id, i.title])
-        c.curwork = [order.work]
-        c.curcat = [order.category]
-        c.upcat = [order.upper_category]
-        values = {
-            'title': order.title,
-            'work_id': order.work_id,
-            'cat_id': order.cat_id,
-            'upcat_id': order.upcat_id,
-            'place': order.place,
-            'workload': order.workload
-        }
-        c.invs = [item for item in order.inventories]
-        return htmlfill.render(render("/orders/edit.html"), values)
+        return render("/orders/edit.html")
 
     @validate(schema=OrderForm, form="edit")
     @restrict('POST')

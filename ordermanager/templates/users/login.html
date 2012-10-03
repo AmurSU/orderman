@@ -3,16 +3,19 @@
 <%def name="title()">Вход</%def>
 <%inherit file="menu.html"/>
 
-${h.form_start(h.url_for(controller='usercontrol', action='dologin'), method="post")}
-${h.field(
-    u"Логин",
-    h.text(name='login', maxlengt="32"),
-    required=True,
-)}
-${h.field(
-    u"Пароль",
-    h.password(name='password', maxlength="32"),
-    required=True,
-)}
-${h.field(field=h.submit(value=u"Войти", name='submit'))}
-${h.form_end()}
+${h.form(h.url_for(controller='usercontrol', action='dologin'), method="post")}
+<table>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Логин</label></td>
+<td class="field" colspan="2" valign="top">${h.text(name='login', maxlengt="32")}</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Пароль</label></td>
+<td class="field" colspan="2" valign="top">${h.password(name='password', maxlength="32")}</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label></label></td>
+<td class="field" colspan="2" valign="top">${h.submit(value=u"Войти", name='submit')}</td>
+</tr>
+</table>
+${h.end_form()}

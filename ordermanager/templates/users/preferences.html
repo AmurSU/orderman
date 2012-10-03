@@ -16,19 +16,30 @@ weekend = datetime.datetime.weekday(datetime.datetime.today()) in [5,6]
 </div>
 <div id="work" style="display: none;">
 % endif
-${h.form_start(h.url_for(controller='usercontrol', action='saveprefs', id=None), method="post")}
-${h.field(
-    u"Предпочитаемая надкатегория",
-    h.select(name="upcat", selected_values=(c.user.preferences or dict()).get('upcat', None), options=c.upcats),
-    label_desc = u"Выберите тип заявок, который будет по умолчанию отображаться на главной странице и в списке заявок."
-)}
-${h.field(
-    u"Количество заявок на страницу",
-    h.text(name="ordersinpage", value=(c.user.preferences or dict()).get('ordersinpage', 15)),
-    label_desc = u"Выберите количество заявок, которое будет отображаться на одной странице в списке заявок."
-)}
-${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
-${h.form_end()}
+${h.form(h.url_for(controller='usercontrol', action='saveprefs', id=None), method="post")}
+<table>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Предпочитаемая надкатегория</label></td>
+<td class="field" colspan="2" valign="top">${h.select(name="upcat", selected_values=(c.user.preferences or dict()).get('upcat', None), options=c.upcats)}</td>
+</tr>
+<tr class="description">
+<td class="label_desc" valign="top"><span class="small"></span></td>
+<td class="field_desc" colspan="2" valign="top"><span class="small">Выберите тип заявок, который будет по умолчанию отображаться на главной странице и в списке заявок.</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Количество заявок на страницу</label></td>
+<td class="field" colspan="2" valign="top">${h.text(name="ordersinpage", value=(c.user.preferences or dict()).get('ordersinpage', 15))}</td>
+</tr>
+<tr class="description">
+<td class="label_desc" valign="top"><span class="small"></span></td>
+<td class="field_desc" colspan="2" valign="top"><span class="small">Выберите количество заявок, которое будет отображаться на одной странице в списке заявок.</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label></label></td>
+<td class="field" colspan="2" valign="top">${h.submit(value=u"Сохранить", name='submit')}</td>
+</tr>
+</table>
+${h.end_form()}
 % if weekend:
 </div>
 % endif

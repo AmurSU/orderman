@@ -4,32 +4,48 @@
 <%inherit file="menu.html"/>
 <%namespace file="fields.html" name="fields" import="*"/>
 
-${h.form_start(h.url_for(controller='usercontrol', action='save', id=request.urlvars['id']), method="post")}
+${h.form(h.url_for(controller='usercontrol', action='save', id=request.urlvars['id']), method="post")}
+<table>
 ${fields.body()}
-${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
-${h.form_end()}
+<tr class="field">
+<td class="label" valign="top"><label></label></td>
+<td class="field" colspan="2" valign="top">${h.submit(value=u"Сохранить", name='submit')}</td>
+</tr>
+</table>
+${h.end_form()}
 
 <h3>Смена пароля</h3>
-${h.form_start(h.url_for(controller='usercontrol', action='changepassword', id=request.urlvars['id']), method="post")}
+${h.form(h.url_for(controller='usercontrol', action='changepassword', id=request.urlvars['id']), method="post")}
+<table>
 % if not h.have_role('admin'):
-${h.field(
-    u"Пароль",
-    h.password(name='oldpass'),
-    required=True,
-    label_desc = u"Для принятия изменений необходимо, чтобы вы ввели свой пароль"
-)}
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Пароль</label></td>
+<td class="field" colspan="2" valign="top">${h.password(name='oldpass')}</td>
+</tr>
+<tr class="description">
+<td class="label_desc" valign="top"><span class="small"></span></td>
+<td class="field_desc" colspan="2" valign="top"><span class="small">Для принятия изменений необходимо, чтобы вы ввели свой пароль</td>
+</tr>
 % endif
-${h.field(
-    u"Новый пароль",
-    h.password(name='newpass'),
-    required=False,
-    label_desc = u"Введите новый пароль, если хотите его изменить"
-)}
-${h.field(
-    u"Новый пароль ещё раз",
-    h.password(name='chkpass'),
-    required=False,
-    label_desc = u"И введите его ещё раз, чтобы избежать ошибок."
-)}
-${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
-${h.form_end()}
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Новый пароль</label></td>
+<td class="field" colspan="2" valign="top">${h.password(name='newpass')}</td>
+</tr>
+<tr class="description">
+<td class="label_desc" valign="top"><span class="small"></span></td>
+<td class="field_desc" colspan="2" valign="top"><span class="small">Введите новый пароль, если хотите его изменить</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Новый пароль ещё раз</label></td>
+<td class="field" colspan="2" valign="top">${h.password(name='chkpass')}</td>
+</tr>
+<tr class="description">
+<td class="label_desc" valign="top"><span class="small"></span></td>
+<td class="field_desc" colspan="2" valign="top"><span class="small">И введите его ещё раз, чтобы избежать ошибок.</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label></label></td>
+<td class="field" colspan="2" valign="top">${h.submit(value=u"Сохранить", name='submit')}</td>
+</tr>
+</table>
+${h.end_form()}

@@ -6,40 +6,43 @@
 <h2>Заявка № ${c.order.id}</h2>
 <p>${c.order.work.title} &mdash; ${c.order.category.title}: ${c.order.title}</p>
 <p>Заявка была принята ${h.humandatetime(c.order.created)} (${h.ago(c.order.created)}). ${h.link_to(u"Подробнее >>", h.url_for(controller="order", action="view", id=c.order.id))}.</p>
-${self.form()}
-<%def name="form()">
 <form:error name="*">
-${h.form_start(h.url_for(controller='action', action='act', id=request.urlvars['id']), method="post", id="chooseact")}
+${h.form(h.url_for(controller='action', action='act', id=request.urlvars['id']), method="post", id="chooseact")}
+<table>
 % if h.have_role('admin'):
-${h.field(
-    u"Подразделение",
-    h.select(name="div_id", selected_values=c.curdiv, options=c.divisions),
-    required=True,
-)}
-% else:
-
-##<input type="hidden" name="div_id" id="div_id" value="${session.get('division')}" />
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Подразделение</label></td>
+<td class="field" colspan="2" valign="top">${h.select(name="div_id", selected_values=c.curdiv, options=c.divisions)}</td>
+</tr>
 % endif
-${h.field(
-    u"Новый статус",
-    h.select(name="status", selected_values=c.curstate, options=c.statuses),
-    required=True,
-)}
-${h.field(
-    u"Исполнители",
-    h.literal('<div id="perfs">')+h.checkbox_group('performers', selected_values=c.curperfs, align="vert", options=c.performers)+h.literal('</div>')
-)}
-${h.field(
-    u"Комментарий",
-    h.textarea(name="description", maxlen=250, cols=80, rows=5)
-)}
-${h.field(
-    u"Трудоёмкость",
-    h.text(name="workload", maxlength="10", value=c.order.workload)
-)}
-${h.field(field=h.submit(value=u"Сохранить", name='submit'))}
-${h.form_end()}
-</%def>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Новый статус</label></td>
+<td class="field" colspan="2" valign="top">${h.select(name="status", selected_values=c.curstate, options=c.statuses)}</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Исполнители</label></td>
+<td class="field" colspan="2" valign="top"><div id="perfs">
+% for performer in c.performers:
+${h.checkbox('performers', value=performer[0], checked=(performer[0] in c.curperfs), label=performer[1])}<br/>
+% endfor
+</div>
+</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label>Комментарий</label></td>
+<td class="field" colspan="2" valign="top">${h.textarea(name="description", maxlen=250, cols=80, rows=5)}</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label>Трудоёмкость</label></td>
+<td class="field" colspan="2" valign="top">${h.text(name="workload", maxlength="10", value=c.order.workload)}</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label></label></td>
+<td class="field" colspan="2" valign="top">${h.submit(value=u"Сохранить", name='submit')}
+</td>
+</tr>
+</table>
+${h.end_form()}
 <h2>История работы с заявкой</h2>
 % if c.actions:
 <table>

@@ -1,25 +1,15 @@
-${h.field(
-    u"Название",
-    h.text(name='title'),
-    required=True,
-)}
-${h.field(
-    u"Месторасположение",
-    h.text(name='address'),
-    required=True,
-)}
-${h.field(
-    u"Описание",
-    h.textarea(name='description', cols="40", rows="7"),
-    required=False,
-)}
-${h.field(
-    u"E-mail",
-    h.text(name='email'),
-    required=False,
-)}
-${h.field(
-    u"Телефон",
-    h.text(name='phone'),
-    required=False,
-)}
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Название</label></td>
+<td class="field" colspan="2" valign="top">${h.text(name='title')}</td></tr>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Месторасположение</label></td>
+<td class="field" colspan="2" valign="top">${h.text(name='address')}</td></tr>
+<tr class="field">
+<td class="label" valign="top"><label>Описание</label></td>
+<td class="field" colspan="2" valign="top">${h.textarea(name='description', cols="40", rows="7")}</td></tr>
+<tr class="field">
+<td class="label" valign="top"><label>E-mail</label></td>
+<td class="field" colspan="2" valign="top">${h.text(name='email')}</td></tr>
+<tr class="field">
+<td class="label" valign="top"><label>Телефон</label></td>
+<td class="field" colspan="2" valign="top">${h.text(name='phone')}</td></tr>

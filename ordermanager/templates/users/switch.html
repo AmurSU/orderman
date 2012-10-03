@@ -3,12 +3,19 @@
 <%def name="title()">Переключение пользователя</%def>\
 <%inherit file="menu.html"/>\
 
-${h.form_start(h.url_for(controller='usercontrol', action='doswitch', id=None), method="post")}
-${h.field(
-    u"Пользователь",
-    h.select(name="user_id", selected_values=c.selected, options=c.users),
-    required=True,
-    label_desc = u"Выберите пользователя, от имени которого будете действовать."
-)}
-${h.field(field=h.submit(value=u"Сменить", name='submit'))}
-${h.form_end()}
+${h.form(h.url_for(controller='usercontrol', action='doswitch', id=None), method="post")}
+<table>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Пользователь</label></td>
+<td class="field" colspan="2" valign="top">${h.select(name="user_id", selected_values=c.selected, options=c.users)}</td>
+</tr>
+<tr class="description">
+<td class="label_desc" valign="top"><span class="small"></span></td>
+<td class="field_desc" colspan="2" valign="top"><span class="small">Выберите пользователя, от имени которого будете действовать.</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label></label></td>
+<td class="field" colspan="2" valign="top">${h.submit(value=u"Сменить", name='submit')}</td>
+</tr>
+</table>
+${h.end_form()}

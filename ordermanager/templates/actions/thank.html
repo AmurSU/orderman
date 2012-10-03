@@ -3,16 +3,21 @@
 <%def name="title()">Жалоба на выполнение заявки</%def>
 <%inherit file="/orders/menu.html"/>
 
-${h.form_start(h.url_for(controller='action', action='makethank'), method="post", id="complainform")}
-${h.field(
-    u"Заявка",
-    h.select(name="id", selected_values=c.selectedorder, options=c.orders)
-)}
-${h.field(
-    u"Причина",
-    h.textarea(name="description")
-)}
-${h.field(field=h.submit(value=u"Поблагодарить", name='submit'))}
-${h.form_end()}
+${h.form(h.url_for(controller='action', action='makethank'), method="post", id="complainform")}
+<table>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Заявка</label></td>
+<td class="field" colspan="2" valign="top">${h.select(name="id", selected_values=c.selectedorder, options=c.orders)}</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Причина</label></td>
+<td class="field" colspan="2" valign="top">${h.textarea(name="description")}</td>
+</tr>
+<tr class="field">
+<td class="label" valign="top"><label></label></td>
+<td class="field" colspan="2" valign="top">${h.submit(value=u"Поблагодарить", name='submit')}</td>
+</tr>
+</table>
+${h.end_form()}
 
 <div id="complainorderinfo"></div>

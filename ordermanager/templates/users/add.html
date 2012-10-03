@@ -4,22 +4,21 @@
 <%inherit file="menu.html"/>
 <%namespace file="fields.html" name="fields" import="*"/>
 
-${h.form_start(h.url_for(controller='usercontrol', action='create'), method="post", id="usercreationform")}
-${h.field(
-    u"Логин",
-    h.text(name='login'),
-    required=True,
-)}
+${h.form(h.url_for(controller='usercontrol', action='create'), method="post", id="usercreationform")}
+<table>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Логин</label></td>
+<td class="field" colspan="2" valign="top">${h.text(name='login')}</td></tr>
 ${fields.body()}
-${h.field(
-    u"Пароль",
-    h.password(name='password'),
-    required=True,
-)}
-${h.field(
-    u"Пароль ещё раз",
-    h.password(name='passcheck'),
-    required=True,
-)}
-${h.field(field=h.submit(value=u"Создать", name='submit'))}
-${h.form_end()}
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Пароль</label></td>
+<td class="field" colspan="2" valign="top">${h.password(name='password')}</td></tr>
+<tr class="field">
+<td class="label" valign="top"><span class="required">*</span><label>Пароль ещё раз</label></td>
+<td class="field" colspan="2" valign="top">${h.password(name='passcheck')}</td></tr>
+<tr class="field">
+<td class="label" valign="top"><label></label></td>
+<td class="field" colspan="2" valign="top">${h.submit(value=u"Создать", name='submit')}</td>
+</tr>
+</table>
+${h.end_form()}
