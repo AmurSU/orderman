@@ -245,8 +245,8 @@ class OrderController(BaseController):
         c.order.customers.append(perf);
         # Готово, в базу!
         meta.Session.commit()
-        h.flashmsg (u"Заявка № " + h.strong(order.id) + u" была добавлена.")
-        redirect_to(h.url_for(controller='order', action='view', id=order.id))
+        h.flashmsg (u"Заявка № " + h.strong(c.order.id) + u" была добавлена.")
+        redirect_to(h.url_for(controller='order', action='view', id=c.order.id))
 
     def edit(self, id):
         c.order = h.checkorder(id)
