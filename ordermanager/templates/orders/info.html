@@ -1,4 +1,7 @@
 <h3>Информация о заявке</h3>
+% if c.order.urgent:
+<p class="error"><strong>Это важная заявка и должна быть выполнена <em>срочно</em>!</strong></p>
+% endif
 <dl>
 <dt>Тип:</dt><dd>${c.order.upper_category.title}</dd>
 <dt>Вид работы:</dt><dd>${c.order.work.title}</dd>

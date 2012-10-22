@@ -19,7 +19,7 @@
 </form>
 % if len(c.paginator):
 <p>${c.paginator.pager(u'$link_first $link_previous от $first_item до $last_item из $item_count $link_next $link_last')}</p>
-${self.orderstable(c.paginator)}
+${self.orderstable([order for order,urgent in c.paginator])}
 <%doc><table class="orderlist">
 <tr><th>№</th><th>Задача</th><th>Подразделение</th><th>Подробности</th><th>Время подачи</th><th>Статус</th><th>Действие</th></tr>
 % for counter,item in enumerate(c.paginator):

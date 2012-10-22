@@ -103,12 +103,12 @@ def strong (text):
     '''Оборачивает текст в тег <strong>.\n\nПрименение: h.strong(текст)'''
     return literal("<strong>") + unicode(text) + literal("</strong>")
 
-def tr (i=1):
+def tr (i=1, klass=""):
     if i%2:
         text = "odd"
     else:
         text = "even"
-    return literal("<tr class=\"") + unicode(text) + literal("\">")
+    return literal("<tr class=\"") + unicode(text) + " " + klass + literal("\">")
 
 def normname (surname, name, patronymic):
     """Эта функция объявлена устаревшей! Пожалуйста, по возможности используйте h.name()\n\nВозвращает строку вида: Фамилия И. О.\n\nПрименение: h.normname(фамилия, имя, отчество)"""

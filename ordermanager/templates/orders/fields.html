@@ -33,3 +33,13 @@
 <td class="label_desc" valign="top"><span class="small"></span></td>
 <td class="field_desc" colspan="2" valign="top"><span class="small">Сколько займёт выполнение заявки в человеко-часах на каждого исполнителя</span></td>
 </tr>
+% if h.have_role('admin') or (session.has_key('division') and h.have_role('responsible') and c.order.perf_id==session['division']):
+<tr class="field">
+<td class="label" valign="top"><label>Важная заявка</label></td>
+<td class="field" colspan="2" valign="top">${h.checkbox(name="urgent", checked=c.order.urgent)}</td>
+</tr>
+<tr class="description">
+<td class="label_desc" valign="top"><span class="small"></span></td>
+<td class="field_desc" colspan="2" valign="top"><span class="small">Отметьте флажком заявку, если она <strong>очень срочная</strong> и <strong>очень важная</strong></span></td>
+</tr>
+% endif

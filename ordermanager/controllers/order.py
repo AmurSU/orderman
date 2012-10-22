@@ -14,7 +14,8 @@ from pylons.decorators.rest import restrict
 import ordermanager.model as model
 import ordermanager.model.meta as meta
 
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
+from sqlalchemy.sql.expression import case
 
 log = logging.getLogger(__name__)
 
@@ -83,6 +84,7 @@ class OrderForm (formencode.Schema):
     # TODO: Сделать валидацию (по OneOf) инвентарных номеров!
     inventories = formencode.foreach.ForEach(formencode.validators.Int())
     workload = formencode.validators.Number()
+    urgent = formencode.validators.Bool()
     chained_validators = [MatchedCategories()]
 
 class TakeForm(formencode.Schema):
@@ -111,7 +113,8 @@ class OrderController(BaseController):
         pass
 
     def list(self, show=None, sort="date", **kwargs):
-        qorder = meta.Session.query(model.Order).order_by(model.sql.desc(model.Order.created))
+        qorder = meta.Session.query(model.Order, case([(and_(model.Order.urgent==True, model.Order.doneAt==None), True)], else_=False).label('really_urgent'))
+        qorder = qorder.order_by("really_urgent DESC", model.sql.desc(model.Order.created))
         c.upcat = kwargs.get('upcat', None)  
         c.mworkcur = kwargs.get('work', None) or request.params.get('work','any')  
         c.mcatcur = kwargs.get('cat', None) or request.params.get('cat','any')
@@ -218,6 +221,9 @@ class OrderController(BaseController):
         for key, value in self.form_result.items():
             if key != 'inventories':       # Всё прочее, кроме инвентарников
                 setattr(c.order, key, value) # тащим из формы прямо в базу
+        # Не все могут помечать заявку важной
+        if h.have_role('admin'):
+            setattr(c.order, 'urgent', bool(self.form_result['urgent']))
         meta.Session.add(c.order)
         # Добавляем отношения заявка <-> инвентарники
         for inv in self.form_result['inventories']:
@@ -252,7 +258,7 @@ class OrderController(BaseController):
         c.order = h.checkorder(id)
         # Теперь - проверка прав доступа (админ либо ответственный подразделения, создавшего заявку)
         h.requirelogin()
-        if not ((session.has_key('admin') and session['admin']) or (session.has_key('division') and session.has_key('creator') and session['creator'] and c.order.customer.id==session['division'])):
+        if not (h.have_role('admin') or h.have_role('operator') or (session.has_key('division') and (h.have_role('creator') and c.order.cust_id==session['division']) or (h.have_role('responsible') and c.order.perf_id==session['division']))):
             abort(403)
         work = meta.Session.query(model.Work).order_by(model.Work.id).all()
         c.work = []
@@ -275,11 +281,15 @@ class OrderController(BaseController):
     def save(self, id):
         order = h.checkorder(id)
         # Теперь - проверка прав доступа (админ либо ответственный подразделения, создавшего заявку)
-        if not (h.have_role('admin') or h.have_role('operator') or (session.has_key('division') and session.has_key('creator') and session['creator'] and order.customer.id==session['division'])):
+        if not (h.have_role('admin') or h.have_role('operator') or (session.has_key('division') and (h.have_role('creator') and order.cust_id==session['division']) or (h.have_role('responsible') and order.perf_id==session['division']))):
             abort(401)
         for key, value in self.form_result.items():
-            if getattr(order, key) != value and key != 'inventories':
+            if getattr(order, key) != value and key not in ['inventories', 'urgent']:
                 setattr(order, key, value)
+        # Не все могут помечать заявку важной
+        if h.have_role('admin') or (session.has_key('division') and h.have_role('responsible') and order.perf_id==session['division']):
+            setattr(order, 'urgent', bool(self.form_result.get('urgent')))
+        # Проверяем права
         # Изменяем отношения заявка <-> инвентарники
         for item in order.inventories: # Удаляем уже неактуальные отношения (удалённые при редактировании инвентарники)
             if item.id not in self.form_result['inventories']:

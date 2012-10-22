@@ -97,11 +97,13 @@ ${self.footer()}\
     <tbody>
 % for i,order in enumerate(orders):
 <%
+klass = ""
+if order.urgent and not order.doneAt: klass = "urgent"
 title = order.title.split("\n")[0]
 if len(title)>32:
    title = title[:32] + u"…"
 %>
-        ${h.tr(i)}<td>${order.id}</td><td>${h.link(controller="order", action='view', id=order.id, text=order.upper_category.title + ": " + order.work.title + h.literal(" &mdash; ") + order.category.title)}</td><td>${h.link_to(title or h.literal(" "), h.url_for(controller='order', action='view', id=order.id), title=order.title)}</td><td>${order.customer.title}</td><td>${order.created.strftime('%Y.%m.%d %H:%M')}</td><td>${order.status.title}</td><td>${"%.2f" % order.workload}</td><td>${h.orderactlink(order)}</td></tr>
+        ${h.tr(i, klass)}<td>${order.id}</td><td>${h.link(controller="order", action='view', id=order.id, text=order.upper_category.title + ": " + order.work.title + h.literal(" &mdash; ") + order.category.title)}</td><td>${h.link_to(title or h.literal(" "), h.url_for(controller='order', action='view', id=order.id), title=order.title)}</td><td>${order.customer.title}</td><td>${order.created.strftime('%Y.%m.%d %H:%M')}</td><td>${order.status.title}</td><td>${"%.2f" % order.workload}</td><td>${h.orderactlink(order)}</td></tr>
 % endfor
     </tbody>
     </table>
