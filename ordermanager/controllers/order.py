@@ -164,7 +164,8 @@ class OrderController(BaseController):
         return render ("/orders/list.html")
 
     def listownorders (self, type="performing", **kwargs):
-        qorder = meta.Session.query(model.Order).order_by(model.sql.desc(model.Order.created))
+        qorder = meta.Session.query(model.Order, case([(and_(model.Order.urgent==True, model.Order.doneAt==None), True)], else_=False).label('really_urgent'))
+        qorder = qorder.order_by("really_urgent DESC", model.sql.desc(model.Order.created))
         qorder = qorder.filter(model.Order.deleted==False)
         if type == "performing":
            qorder = qorder.filter(model.sql.not_(model.Order.status_id.in_([1, 3, 4, 5, 15])))
