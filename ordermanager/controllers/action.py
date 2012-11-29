@@ -135,10 +135,11 @@ class ActionController(BaseController):
         else: excluded_statuses = [1, 2, 4, 6, 11, 12, 14]
         c.statuses = [[status.id, status.title] for status in statuses if status.id not in excluded_statuses]
         # Люди-исполнители
+        performers = meta.Session.query(model.Person).filter_by(deleted=False).filter_by(performer=True).order_by(model.Person.surname, model.Person.name, model.Person.name)
         if h.have_role('admin') and lastaction is not None:
-            performers = meta.Session.query(model.Person).filter_by(deleted=False).filter_by(div_id=lastaction.div_id).filter_by(performer=True)
+            performers = performers.filter_by(div_id=lastaction.div_id)
         else:
-            performers = meta.Session.query(model.Person).filter_by(deleted=False).filter_by(div_id=session['division']).filter_by(performer=True)
+            performers = performers.filter_by(div_id=session['division'])
         c.performers = [[user.id, h.name(user)] for user in performers]
         if lastaction is not None:
             c.curperfs = [x.id for x in lastaction.performers]
