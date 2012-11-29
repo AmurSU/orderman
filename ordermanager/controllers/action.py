@@ -80,6 +80,7 @@ class ActForm(formencode.Schema):
     )
     description = formencode.validators.String()
     workload = formencode.validators.Number()
+    inventories = formencode.foreach.ForEach(formencode.validators.Int())
     chained_validators = [ValidPerformers()]
 
 class ComplainForm(formencode.Schema):
@@ -190,6 +191,20 @@ class ActionController(BaseController):
         # Если это "отметить выполненной", то ставим заявке время выполнения
         if status.id == 3:
             order.doneAt = datetime.datetime.now()
+        # Изменяем отношения заявка <-> инвентарники
+        for item in order.inventories: # Удаляем уже неактуальные отношения (удалённые при редактировании инвентарники)
+            if item.id not in self.form_result['inventories']:
+                order.inventories.remove(item)
+        for inv in self.form_result['inventories']: # Добавляем новые отношения
+            item = meta.Session.query(model.Inventory).get(inv);
+            if not item:
+                # <TODO text="Убрать добавление инвентарников в базу после введения проверок!">
+                item = model.Inventory()
+                item.id = inv
+                meta.Session.add(item)
+                # </TODO>
+            if item not in order.inventories:
+                order.inventories.append(item)
         # Готово
         meta.Session.commit()
         h.flashmsg (u"Статус заявки № " + h.strong(order.id) + u" был изменён на " + h.strong(order.status.title) + u".")

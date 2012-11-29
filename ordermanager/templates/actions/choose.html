@@ -37,6 +37,15 @@ ${h.checkbox('performers', value=performer[0], checked=(performer[0] in c.curper
 <td class="field" colspan="2" valign="top">${h.text(name="workload", maxlength="10", value=c.order.workload)}</td>
 </tr>
 <tr class="field">
+<td class="label" valign="top"><label>Инвентарные номера</label></td>
+<td class="field" colspan="2" valign="top"><div id="invs">
+% for item in c.order.inventories:
+<input maxlength="12" name="inventories" type="text" value="${unicode(item.id)}" /><button type="button" class="removeinv">Удалить</button><br />
+% endfor
+<button type="button" id="addinv">Добавить инвентарный номер</button>
+</div></td>
+</tr>
+<tr class="field">
 <td class="label" valign="top"><label></label></td>
 <td class="field" colspan="2" valign="top">${h.submit(value=u"Сохранить", name='submit')}
 </td>
