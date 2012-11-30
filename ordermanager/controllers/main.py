@@ -19,6 +19,10 @@ class MainController(BaseController):
 
     def index(self):
         qorder = meta.Session.query(model.Order)
+        # Filter old orders (more than 1 year old)
+        max_age = request.params.get('max_age_in_days', '365')
+        if len(max_age) and max_age != 'unlimited':
+            qorder = qorder.filter("age(orders.created) < interval ':age days'").params(age=int(max_age))
         freeorders = qorder.filter_by(status_id=1)  # .limit(10) #
         c.numfree = freeorders.count()
         if (session.get('preferences') or dict()).get('upcat') is not None:

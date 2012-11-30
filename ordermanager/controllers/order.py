@@ -115,6 +115,11 @@ class OrderController(BaseController):
     def list(self, show=None, sort="date", **kwargs):
         qorder = meta.Session.query(model.Order, case([(and_(model.Order.urgent==True, model.Order.doneAt==None), True)], else_=False).label('really_urgent'))
         qorder = qorder.order_by("really_urgent DESC", model.sql.desc(model.Order.created))
+        # Filter old orders (more than 1 year old)
+        max_age = request.params.get('max_age_in_days', '365')
+        if len(max_age) and max_age != 'unlimited':
+            qorder = qorder.filter("age(orders.created) < interval ':age days'").params(age=int(max_age))
+        # Main filtrations
         c.upcat = kwargs.get('upcat', None)  
         c.mworkcur = kwargs.get('work', None) or request.params.get('work','any')  
         c.mcatcur = kwargs.get('cat', None) or request.params.get('cat','any')
