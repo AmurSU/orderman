@@ -212,6 +212,12 @@ ul, ol {margin: 0.5em 1em 1em 2em;}
  margin: 0 0 0.5em 0.5em;
 }
 
+#sectionmenu li.delimiter {
+ background: silver;
+ width: 1px;
+ height: 25px;
+}
+
 #sectionmenu a {
  display: block;
  padding: 4px 5px;
