@@ -43,6 +43,13 @@ $(document).ready(function() {
   });
 });
 
+// Workload
+$(document).ready(function() {
+  $("#perfs input[type=checkbox]").change(function() {
+      $("input", $(this).closest("td").next()).attr("disabled", !this.checked);
+  });
+});
+
 // Функция загружает инфу о заявке в HTML и притыкает её куда скажешь
 function LoadOrderInfo(id, whereload) {
   $(whereload+" *").remove();

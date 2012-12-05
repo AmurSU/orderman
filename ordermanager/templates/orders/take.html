@@ -13,8 +13,6 @@ ${h.form(h.url_for(controller='order', action='take', id=request.urlvars['id']),
 ${h.checkbox('performers', value=performer[0], label=performer[1])}<br/>
 % endfor
 </div>
-<br />
-<p>Планируемая трудоёмкость: ${h.text(name="workload", maxlength="10", value=c.order.workload)} человеко-часов.</p>
 
 <tr><td colspan="2">${h.literal(u'<button type="button" class="backbutton">&lt; Не брать</button>')} &nbsp; ${h.submit(value=u"Взять >", name='submit')}</td></tr>
 ${h.end_form()}

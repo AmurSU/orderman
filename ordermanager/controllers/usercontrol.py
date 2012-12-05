@@ -458,7 +458,7 @@ class UsercontrolController(BaseController):
         c.status = request.params.get("status", 3)
         c.start_date = datetime.strptime(request.params.get("start_date", datetime.now().date().isoformat()), "%Y-%m-%d")
         c.stop_date = datetime.strptime(request.params.get("stop_date", datetime.now().date().isoformat()), "%Y-%m-%d")
-        c.orders = meta.Session.query(model.Order).join(model.Order.actions).join(model.Action.performers)\
-            .filter(and_(model.Action.status_id==c.status, model.Action.performers.any(id=id)))\
+        c.orders = meta.Session.query(model.Order).join(model.Order.actions).join(model.Action.action_performers)\
+            .filter(and_(model.Action.status_id==c.status, model.Action.action_performers.any(person_id=id)))\
             .filter(model.Action.created>=c.start_date).filter(model.Action.created<=c.stop_date+timedelta(1)).all()
         return render ("/users/orders.html")

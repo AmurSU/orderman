@@ -28,6 +28,20 @@ ${h.literal(u"\n").join([h.literal("<li>") + unicode(item.id) + h.literal(" &mda
 <dt>Посл. редактирование</dt><dd>${c.order.edited}</dd>
 % endif
 </dl>
+% if len(c.order.order_performers):
+<div id="perfs"><table>
+<tr><th>Исполнитель</th><th>Затраченное время</th></tr>
+<%
+perfs = sorted([((not op.current), h.name(op.person), op.workload, op.person_id) for op in c.order.order_performers])
+%>
+% for not_final, name, workload, p_id in perfs:
+<tr ${h.literal('class="not_final"') if not_final else ""}>\
+<td>${h.link(controller="usercontrol", action="view", id=p_id, text=name)}</td>\
+<td>${workload} часов</td>\
+</tr>
+% endfor
+</table></div>
+% endif
 <h3>Активность над заявкой</h3>
 % if c.order.actions:
 <table>
@@ -37,7 +51,11 @@ ${h.tr(i)}\
 <td>${h.link(controller="division", action="view", id=entry.division.id, text=entry.division.title)}</td>\
 <td>${entry.status.title}</td>\
 <td>${entry.created.strftime('%Y.%m.%d %H:%M')}</td>\
-<td>${h.literal(u", ".join([h.link(controller="usercontrol", action="view", id=person.id, text=h.name(person)) for person in entry.performers]))}</td>\
+% if sum(map(lambda x: x.workload, entry.action_performers)):
+<td>${h.literal(", ".join([h.literal("%s (%s)"%(h.link(controller="usercontrol", action="view", id=ap.person.id, text=h.name(ap.person)), ap.workload)) for ap in entry.action_performers]))}</td>\
+% else:
+<td>${h.literal(", ".join([h.link(controller="usercontrol", action="view", id=ap.person.id, text=h.name(ap.person)) for ap in entry.action_performers]))}</td>\
+% endif
 <td>${entry.description}</td>\
 </tr>
 % endfor

@@ -15,6 +15,7 @@ import ordermanager.model as model
 import ordermanager.model.meta as meta
 
 import datetime
+from decimal import *
 
 log = logging.getLogger(__name__)
 
@@ -70,6 +71,7 @@ class ActForm(formencode.Schema):
         }        
     )
     performers = formencode.foreach.ForEach(formencode.validators.Int())
+    workloads  = formencode.foreach.ForEach(formencode.validators.Number())
     status = formencode.validators.OneOf(
         [unicode(x.id) for x in meta.Session.query(model.Status).filter(model.sql.not_(model.Status.id.in_([1, 4, 6, 11, 12])))],
         not_empty=True,
@@ -79,7 +81,6 @@ class ActForm(formencode.Schema):
         }
     )
     description = formencode.validators.String()
-    workload = formencode.validators.Number()
     inventories = formencode.foreach.ForEach(formencode.validators.Int())
     chained_validators = [ValidPerformers()]
 
@@ -143,7 +144,7 @@ class ActionController(BaseController):
             performers = performers.filter_by(div_id=session['division'])
         c.performers = [[user.id, h.name(user)] for user in performers]
         if lastaction is not None:
-            c.curperfs = [x.id for x in lastaction.performers]
+            c.curperfs = [x.id for x in c.order.performers]
             c.curdiv = lastaction.div_id
         if h.have_role("admin"):
             divlist = [x.div_id for x in meta.Session.query(model.Person.div_id).filter_by(performer=True).all()]
@@ -162,32 +163,51 @@ class ActionController(BaseController):
             h.flashmsg (u"Нельзя повторять статусы!")
             redirect_to(h.url_for(controller='action', action='choose', id=order.id)) 
             return u"Ай-яй-яй!"
+        status = meta.Session.query(model.Status).get(int(self.form_result['status']))
         act = model.Action()
         act.order_id = order.id
-        act.status = meta.Session.query(model.Status).get(int(self.form_result['status']))
+        act.status = status
         act.div_id = session['division']
         act.description = self.form_result['description']
-        if float(self.form_result['workload']) != float(order.workload):
-          act.description += u" Трудоёмкость изменена с %2.1f на %2.1f" % (order.workload, self.form_result['workload'])
-          order.workload = self.form_result['workload']
-        if act.status.id != 16: # Пояснение делает только сам пользователь и никто другой!
-          for pid in self.form_result['performers']:
-              perf = meta.Session.query(model.Person).get(pid)
-              act.performers.append(perf)
+        if status.id != 16: # Пояснение делает только сам пользователь и никто другой!
+            for index, p_id in enumerate(self.form_result['performers']):
+                perf = meta.Session.query(model.Person).get(p_id)
+                workload = Decimal(self.form_result['workloads'][index])
+                if perf in order.performers:
+                    workload -= filter(lambda x: x.person_id == p_id, order.order_performers)[0].workload
+                    if workload < 0: workload = 0
+                act.action_performers.append(model.ActionPerformer(person=perf, workload=workload))
+            # Обновляем исполнителей заявки
+            if status.redirects == 1:
+                # «Очищаем» список исполнителей, если заявка становится свободной
+                for op in order.order_performers:
+                    op.current = False
+            else:
+                new_performers  = list(set(act.performers) - set(order.performers))
+                ex_performers   = list(set(order.performers) - set(act.performers))
+                same_performers = list(set(act.performers) & set(order.performers))
+                for op in order.order_performers:
+                    # Устанавливаем новую трудоёмкость существующим исполнителям
+                    if op.person in same_performers:
+                        ap = filter(lambda p: p.person_id == op.person_id, act.action_performers)[0]
+                        op.workload += ap.workload
+                        op.current = True
+                    # Снимаем флаг участия с бывших исполнителей
+                    elif op.person in ex_performers:
+                        op.current = False
+                # Добавляем новых исполнителей
+                for ap in act.action_performers:
+                    if ap.person in new_performers:
+                        order.order_performers.append(model.OrderPerformer(person=ap.person, workload=ap.workload))
+                # Update a workload of entire order
+                order.workload = sum(map(lambda x: x.workload, order.order_performers))
         else:
           act.performers = [meta.Session.query(model.Person).get(int(session['id']))]
         meta.Session.add(act)
         # Если указан перевод состояния заявки - переводим в него. Иначе оставляем как есть.
-        status = meta.Session.query(model.Status).get(int(self.form_result['status']))
         if status.redirects:
             order.status = meta.Session.query(model.Status).get(status.redirects)
         order.perf_id = session['division']
-        # Обновляем исполнителей заявки
-        if status.id != 16:
-          if status.redirects == 1:
-              order.performers = []
-          else:
-              order.performers = act.performers;
         # Если это "отметить выполненной", то ставим заявке время выполнения
         if status.id == 3:
             order.doneAt = datetime.datetime.now()

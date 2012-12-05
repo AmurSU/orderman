@@ -7,6 +7,7 @@ from ordermanager.model import meta
 
 import datetime
 from sqlalchemy import schema, types
+from sqlalchemy.ext.associationproxy import association_proxy
 
 # инициализация модели
 def init_model(engine):
@@ -220,6 +221,8 @@ inventory_table = schema.Table ('inventory', meta.metadata,
 actperf_table = schema.Table('actionperformers', meta.metadata,
     schema.Column('action_id', types.Integer, schema.ForeignKey('actions.id'), primary_key=True),
     schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
+    # Количество времени, которое затратил именно этот человек на данное действие (без учёта предыдущих)
+    schema.Column('workload', types.Numeric(precision=5, scale=1), default="0.0"),
 )
 
 # Вспомогательная таблица связи многие-ко-многим между таблицей заявок и инвентарных номеров
@@ -233,6 +236,10 @@ orderinvs_table = schema.Table('orderinventories', meta.metadata,
 orderperf_table = schema.Table('orderperformers', meta.metadata,
     schema.Column('order_id', types.Integer, schema.ForeignKey('orders.id'), primary_key=True),
     schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
+    # Количество времени, которое затратил именно этот человек на заявку
+    schema.Column('workload', types.Numeric(precision=5, scale=1), default="0.0"),
+    # Относится ли этот исполнитель к числу людей, закрывших заявку
+    schema.Column('current', types.Boolean, default=False),
 )
 
 # Таблица, содержащая в себе людей-заказчиков заявки.
@@ -242,19 +249,34 @@ ordercust_table = schema.Table('ordercustomers', meta.metadata,
     schema.Column('person_id', types.Integer, schema.ForeignKey('people.id'), primary_key=True),
 )
 
+##### Вспомогательные функции для association proxy #####
+
+def _create_ap_by_person(person):
+    return ActionPerformer(person=person)
+
+def _create_ap_by_action(action):
+    return ActionPerformer(action=action)
+
+def _create_op_by_person(person):
+    return OrderPerformer(person=person)
+
+def _create_op_by_order(order):
+    return OrderPerformer(order=order)
+
 ##### КЛАССЫ #####
 
 class Order(object):
-    pass
+    performers = association_proxy('order_performers', 'person', creator=_create_op_by_person)
 
 class Action(object):
-    pass
+    performers = association_proxy('action_performers', 'person', creator=_create_ap_by_person)
 
 class Division(object):
     pass
 
 class Person(object):
-    pass
+    actions = association_proxy('action_performs', 'action', creator=_create_ap_by_action)
+    orders  = association_proxy('order_performs',  'order',  creator=_create_op_by_order)
 
 class Status(object):
     pass
@@ -274,6 +296,23 @@ class Assign(object):
 class Inventory(object):
     pass
 
+class ActionPerformer(object):
+    def __init__(self, person=None, action=None, workload=0.0):
+        self.person   = person
+        if person: self.person_id = person.id # A little hack to ensure, that foreign key is set up
+        self.action   = action
+        if action: self.action_id = action.id # A little hack to ensure, that foreign key is set up
+        self.workload = workload
+
+class OrderPerformer(object):
+    def __init__(self, person=None, order=None, workload=0.0, current=True):
+        self.person   = person
+        if person: self.person_id = person.id # A little hack to ensure, that foreign key is set up
+        self.order    = order
+        if order:  self.order_id  = order.id  # A little hack to ensure, that foreign key is set up
+        self.workload = workload
+        self.current = current
+        
 ##### СЛУЖЕБНЫЕ ВЕЩИ #####
 
 # Расширение, отслеживающее изменение статуса заявки и обновляющее статистику
@@ -313,10 +352,17 @@ orm.mapper(Order, orders_table,
         ),
     }
 )
+orm.mapper(ActionPerformer, actperf_table, properties={
+    'person': orm.relation (Person, backref=orm.backref("action_performs",   cascade="all"), uselist=False),
+    'action': orm.relation (Action, backref=orm.backref("action_performers", cascade="all"), uselist=False),
+})
+orm.mapper(OrderPerformer, orderperf_table, properties={
+    'person': orm.relation (Person, backref=orm.backref("order_performs",   cascade="all"), uselist=False),
+    'order' : orm.relation (Order,  backref=orm.backref("order_performers", cascade="all"), uselist=False),
+})
 orm.mapper(Action, actions_table, properties={
-    'performers': orm.relation (Person, secondary=actperf_table, backref=orm.backref("actions", cascade=None), cascade="all"),
     'division'  : orm.relation (Division, cascade=None, uselist=False),
-    'status'    : orm.relation (Status, cascade=None, uselist=False)
+    'status'    : orm.relation (Status, cascade=None, uselist=False),
 })
 orm.mapper(Division, divisions_table, properties={
    'people' : orm.relation(Person, backref=orm.backref("division", uselist=False, cascade=None), cascade=None), 

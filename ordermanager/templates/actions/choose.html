@@ -22,19 +22,27 @@ ${h.form(h.url_for(controller='action', action='act', id=request.urlvars['id']),
 <tr class="field">
 <td class="label" valign="top"><span class="required">*</span><label>Исполнители</label></td>
 <td class="field" colspan="2" valign="top"><div id="perfs">
+<table>
+<tr><th>Исполнитель</th><th>Общая трудоёмкость за заявку</th></tr>
 % for performer in c.performers:
-${h.checkbox('performers', value=performer[0], checked=(performer[0] in c.curperfs), label=performer[1])}<br/>
+<tr><td><%
+ap_with_wl = filter(lambda p: p.person_id == performer[0], c.order.order_performers)
+workload = ap_with_wl[0].workload if len(ap_with_wl) else 0.00
+performing = performer[0] in map(lambda x: x.person_id, filter(lambda x: x.current, c.order.order_performers))
+disabled = 'disabled="disabled"' if not performing else ""
+%>
+${h.checkbox('performers', value=performer[0], checked=performing, label=performer[1])}
+</td><td>
+<input maxlength="5" name="workloads" min="${workload}" max="999.99" step="0.1" type="number" value="${workload}" ${disabled} />
+</td></tr>
 % endfor
+</table>
 </div>
 </td>
 </tr>
 <tr class="field">
 <td class="label" valign="top"><label>Комментарий</label></td>
 <td class="field" colspan="2" valign="top">${h.textarea(name="description", maxlen=250, cols=80, rows=5)}</td>
-</tr>
-<tr class="field">
-<td class="label" valign="top"><label>Трудоёмкость</label></td>
-<td class="field" colspan="2" valign="top">${h.text(name="workload", maxlength="10", value=c.order.workload)}</td>
 </tr>
 <tr class="field">
 <td class="label" valign="top"><label>Инвентарные номера</label></td>
@@ -61,7 +69,7 @@ ${h.end_form()}
 <td>${entry.created.strftime('%Y.%m.%d %H:%M')}</td>\
 <td>${entry.status.title}</td>\
 <td>${entry.division.title}</td>\
-<td>${", ".join([h.name(person) for person in entry.performers])}</td>\
+<td>${", ".join(["%s (%s)"%(h.name(ap.person), ap.workload) for ap in entry.action_performers])}</td>\
 <td>${entry.description}</td>\
 </tr>
 % endfor

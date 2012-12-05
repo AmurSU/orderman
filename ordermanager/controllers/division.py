@@ -107,9 +107,9 @@ class DivisionController(BaseController):
             filter_by(deleted=False).order_by(model.Person.surname).all()
         # Учёт количества сделанных заявок
         thismonday = datetime.combine(date.today(), time(0, 0)) - timedelta(date.today().weekday())
-        last = meta.Session.query(model.Person.id, func.count(model.Order.id), func.sum(model.Order.workload)).\
-            join(model.Order.performers).filter(model.Person.div_id==id).\
-            group_by(model.Person.id)
+        last = meta.Session.query(model.Person.id, func.count(model.Order.id), func.sum(model.OrderPerformer.workload)).\
+            join(model.Person.order_performs, model.OrderPerformer.order).\
+            filter(model.Person.div_id==id).filter(model.OrderPerformer.current==True).group_by(model.Person.id)
         last30d = last.filter(model.Order.doneAt > datetime.now()-timedelta(30)).all()
         thisweek = last.filter(model.Order.doneAt >= thismonday).all()
         prevweek = last.filter(model.Order.doneAt < thismonday).filter(model.Order.doneAt >= thismonday-timedelta(7)).all()
@@ -127,7 +127,7 @@ class DivisionController(BaseController):
           SELECT
                o."doneAt"::date AS done_date,
                (o."doneAt"::date - (SELECT a.created::date FROM actions a WHERE a.order_id = o.id AND a.status_id = 2 ORDER BY a.created DESC LIMIT 1) + 1) AS days,
-               o.workload
+               op.workload
           FROM   people p 
             JOIN orderperformers op ON p.id = op.person_id
             JOIN orders o ON op.order_id = o.id

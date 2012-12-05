@@ -497,3 +497,28 @@ table.tablesorter thead tr .headerSortDown {
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
   background-color: blue;
 }
+
+/* Workload per performer */
+
+#perfs > table {
+    width: auto;
+    border: none;
+}
+
+#perfs > table td, #perfs > table th {
+    padding: 0.2em 0.5em;
+    border: none;
+}
+
+#perfs > table th {
+    background: transparent;
+    color: black;
+}
+
+#perfs > table td:last-child {
+    text-align: right;
+}
+
+#perfs .not_final {
+    color: gray;
+}

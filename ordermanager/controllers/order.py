@@ -83,7 +83,6 @@ class OrderForm (formencode.Schema):
     place = formencode.validators.String()
     # TODO: Сделать валидацию (по OneOf) инвентарных номеров!
     inventories = formencode.foreach.ForEach(formencode.validators.Int())
-    workload = formencode.validators.Number()
     urgent = formencode.validators.Bool()
     chained_validators = [MatchedCategories()]
 
@@ -91,7 +90,6 @@ class TakeForm(formencode.Schema):
     allow_extra_fields = True
     filter_extra_fields = True
     performers = formencode.foreach.ForEach(formencode.validators.Int())
-    workload = formencode.validators.Number()
     chained_validators = [ValidPerformers()]
 
 class GoTo(formencode.Schema):
@@ -212,7 +210,6 @@ class OrderController(BaseController):
         for i in upcategory:
             c.upcategory.append([i.id, i.title])
         c.curcat = c.curwork = c.upcat = []
-        c.workload = 1.0
         return render ("/orders/add.html")
 
     @validate(schema=OrderForm, form="add")
@@ -348,16 +345,14 @@ class OrderController(BaseController):
         act.order_id = order.id
         act.status = meta.Session.query(model.Status).get(2)
         act.div_id = session['division']
-        #act.performer = self.form_result['performer']
+        # Заполним исполнителей заявки
         for pid in self.form_result['performers']:
             perf = meta.Session.query(model.Person).get(pid)
             act.performers.append(perf)
+            order.order_performers.append(model.OrderPerformer(person=perf, current=True))
         order.status = meta.Session.query(model.Status).get(2)
         order.perf_id = session['division']
-        order.workload = self.form_result['workload']
         meta.Session.add(act)
-        # Обновляем исполнителей заявки
-        order.performers = act.performers;
         # Готово!
         meta.Session.commit()
         h.flashmsg (u"Вы взяли заявку № " + h.strong(order.id) + u" для выполнения себе. Исполнители: %s"%(u", ".join([h.name(x) for x in act.performers])))
