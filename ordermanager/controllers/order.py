@@ -3,6 +3,7 @@ import logging
 
 from pylons import request, response, session, tmpl_context as c
 from pylons.controllers.util import abort, redirect_to
+from routes import url_for
 import ordermanager.lib.helpers as h
 from ordermanager.lib.base import BaseController, render
 
@@ -164,6 +165,7 @@ class OrderController(BaseController):
         c.mcat = [['any', u' -- Все -- ']] + [[x.url_text, x.title] for x in mcat.all()]
         mwork = meta.Session.query(model.Work).filter_by(deleted=False).order_by(model.Work.id).all()
         c.mwork = [['any', u' -- Все -- ']] + [[x.url_text, x.title] for x in mwork]
+        session['last_orders_list_url'] = url_for()
         return render ("/orders/list.html")
 
     def listownorders (self, type="performing", **kwargs):
@@ -180,6 +182,7 @@ class OrderController(BaseController):
             items_per_page = (session.get('preferences') or {}).get('ordersinpage', 15),
         )
         c.ordercount = qorder.count()
+        session['last_orders_list_url'] = url_for()
         return render ("/orders/list.html")
         
     def filter(self, **kwargs):
