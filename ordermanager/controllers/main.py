@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 class MainController(BaseController):
 
     def index(self):
-        qorder = meta.Session.query(model.Order)
+        qorder = meta.Session.query(model.Order).filter_by(deleted=False)
         # Filter old orders (more than 1 year old)
         max_age = request.params.get('max_age_in_days', '365')
         if len(max_age) and max_age != 'unlimited':
