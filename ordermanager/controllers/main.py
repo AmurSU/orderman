@@ -24,10 +24,10 @@ class MainController(BaseController):
         if len(max_age) and max_age != 'unlimited':
             qorder = qorder.filter("age(orders.created) < interval ':age days'").params(age=int(max_age))
         freeorders = qorder.filter_by(status_id=1)  # .limit(10) #
-        c.numfree = freeorders.count()
         if (session.get('preferences') or dict()).get('upcat') is not None:
-            upcat = meta.Session.query(model.UpperCategory).filter_by(url_text=session['preferences']['upcat']).one()
-            freeorders = freeorders.filter_by(upcat_id=upcat.id)
+            c.upcat = meta.Session.query(model.UpperCategory).filter_by(url_text=session['preferences']['upcat']).one()
+            freeorders = freeorders.filter_by(upcat_id=c.upcat.id)
+        c.numfree = freeorders.count()
         c.freeorders = freeorders.order_by(model.sql.desc(model.Order.created))[:10]
         if session.has_key('division') and h.have_role('performer'): #session.has_key('performer') and session['performer']:
             # Заявки, выполняемые моим подразделением

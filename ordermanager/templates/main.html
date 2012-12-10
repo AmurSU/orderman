@@ -27,7 +27,11 @@ ${h.tr(i)}<td>${order.id}</td><td>${h.link(controller="order", action='view', id
 \
 <h3>Новые заявки</h3>
 % if c.freeorders:
-<p class="ordertablesummary"><a href="${h.url_for(controller='order', action='list', upcat=(session.get('preferences') or dict()).get('upcat'), cat='any', work='any', status=1)}">Всего ${h.get_plural(c.numfree, (u"свободная заявка", u"свободных заявки", u"свободных заявок"))}</a></p>
+<p class="ordertablesummary"><a href="${h.url_for(controller='order', action='list', upcat=(session.get('preferences') or dict()).get('upcat'), cat='any', work='any', status=1)}">Всего ${h.get_plural(c.numfree, (u"свободная заявка", u"свободных заявки", u"свободных заявок"))}</a>\
+% if c.upcat:
+ в категории ${c.upcat.title}
+% endif
+</p>
 ${self.orderstable(c.freeorders)}
 % else:
 <p>Хорошо! Непринятых заявок нет.</p>
