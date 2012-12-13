@@ -52,7 +52,7 @@ ${h.tr(i)}\
 <td>${entry.status.title}</td>\
 <td>${entry.created.strftime('%Y.%m.%d %H:%M')}</td>\
 % if sum(map(lambda x: x.workload, entry.action_performers)):
-<td>${h.literal(", ".join([h.literal("%s (%s)"%(h.link(controller="usercontrol", action="view", id=ap.person.id, text=h.name(ap.person)), ap.workload)) for ap in entry.action_performers]))}</td>\
+<td>${h.literal(", ".join([h.literal("%s (%+.2f)"%(h.link(controller="usercontrol", action="view", id=ap.person.id, text=h.name(ap.person)), ap.workload)) for ap in entry.action_performers]))}</td>\
 % else:
 <td>${h.literal(", ".join([h.link(controller="usercontrol", action="view", id=ap.person.id, text=h.name(ap.person)) for ap in entry.action_performers]))}</td>\
 % endif

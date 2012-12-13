@@ -175,7 +175,7 @@ class ActionController(BaseController):
                 workload = Decimal(self.form_result['workloads'][index])
                 if perf in order.performers:
                     workload -= filter(lambda x: x.person_id == p_id, order.order_performers)[0].workload
-                    if workload < 0: workload = 0
+                    if workload < 0 and not h.have_role('admin'): workload = 0
                 act.action_performers.append(model.ActionPerformer(person=perf, workload=workload))
             # Обновляем исполнителей заявки
             if status.redirects == 1:

@@ -33,7 +33,7 @@ disabled = 'disabled="disabled"' if not performing else ""
 %>
 ${h.checkbox('performers', value=performer[0], checked=performing, label=performer[1])}
 </td><td>
-<input maxlength="5" name="workloads" min="${workload}" max="999.99" step="0.1" type="number" value="${workload}" ${disabled} />
+<input maxlength="5" name="workloads" min="${workload if not h.have_role('admin') else 0}" max="999.99" step="0.1" type="number" value="${workload}" ${disabled} />
 </td></tr>
 % endfor
 </table>
@@ -69,7 +69,7 @@ ${h.end_form()}
 <td>${entry.created.strftime('%Y.%m.%d %H:%M')}</td>\
 <td>${entry.status.title}</td>\
 <td>${entry.division.title}</td>\
-<td>${", ".join(["%s (%s)"%(h.name(ap.person), ap.workload) for ap in entry.action_performers])}</td>\
+<td>${", ".join(["%s (%+.2f)"%(h.name(ap.person), ap.workload) for ap in entry.action_performers])}</td>\
 <td>${entry.description}</td>\
 </tr>
 % endfor
