@@ -37,7 +37,7 @@ perfs = sorted([((not op.current), h.name(op.person), op.workload, op.person_id)
 % for not_final, name, workload, p_id in perfs:
 <tr ${h.literal('class="not_final"') if not_final else ""}>\
 <td>${h.link(controller="usercontrol", action="view", id=p_id, text=name)}</td>\
-<td>${workload} часов</td>\
+<td>${h.literal(h.get_plural_for_decimal(workload, (u"час&ensp;&ensp;", u"часа&ensp;", u"часов", u"часа&ensp;")))}</td>\
 </tr>
 % endfor
 </table></div>

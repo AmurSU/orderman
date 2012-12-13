@@ -22,7 +22,9 @@ import ordermanager.model as model
 import ordermanager.model.meta as meta
 
 import pytils
+from pytils import utils
 from pytils.numeral import get_plural
+from pytils.numeral import choose_plural
 
 def now():
     return datetime.datetime.now()
@@ -264,3 +266,11 @@ def ago (time):
         return u"Только что"'''
     return pytils.dt.distance_of_time_in_words(now()-diff, accuracy=2)
 
+def get_plural_for_decimal (decimal, variants, absence=None):
+    if isinstance(variants, unicode):
+        variants = utils.split_values(variants)
+    utils.check_length(variants, 4)
+    if int(decimal) == decimal:
+        return u"%d %s&ensp;&ensp;&ensp;" % (decimal, choose_plural(int(decimal), variants[0:-1]))
+    else:
+        return u"%.2f %s" % (decimal, variants[-1])
