@@ -135,7 +135,7 @@ class ActionController(BaseController):
         statuses = meta.Session.query(model.Status).order_by(model.Status.gui_priority)
         if h.have_role('admin'): excluded_statuses = [1, 4, 6, 11, 12, 14]
         else: excluded_statuses = [1, 2, 4, 6, 11, 12, 14]
-        c.statuses = [[status.id, status.title] for status in statuses if status.id not in excluded_statuses]
+        c.statuses = [["", u" -- выберите -- "]] + [[status.id, status.title] for status in statuses if status.id not in excluded_statuses]
         # Люди-исполнители
         performers = meta.Session.query(model.Person).filter_by(deleted=False).filter_by(performer=True).order_by(model.Person.surname, model.Person.name, model.Person.name)
         if h.have_role('admin') and lastaction is not None:

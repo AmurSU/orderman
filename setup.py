@@ -17,7 +17,7 @@ setup(
         "Pylons>=0.9.7",
         "SQLAlchemy>=0.5,<=0.5.9",
         "PyTils>=0.2.3",
-        "FormEncode>=1.2.1",
+        "FormEncode>=1.2.6",
         "WebHelpers>=1.3,<2.0"
     ],
     setup_requires=["PasteScript>=1.6.3"],
