@@ -169,40 +169,43 @@ class ActionController(BaseController):
         act.status = status
         act.div_id = session['division']
         act.description = self.form_result['description']
-        if status.id != 16: # Пояснение делает только сам пользователь и никто другой!
-            for index, p_id in enumerate(self.form_result['performers']):
-                perf = meta.Session.query(model.Person).get(p_id)
-                workload = Decimal(self.form_result['workloads'][index])
-                if perf in order.performers:
-                    workload -= filter(lambda x: x.person_id == p_id, order.order_performers)[0].workload
-                    if workload < 0 and not h.have_role('admin'): workload = 0
-                act.action_performers.append(model.ActionPerformer(person=perf, workload=workload))
-            # Обновляем исполнителей заявки
-            if status.redirects == 1:
-                # «Очищаем» список исполнителей, если заявка становится свободной
-                for op in order.order_performers:
-                    op.current = False
-            else:
-                new_performers  = list(set(act.performers) - set(order.performers))
-                ex_performers   = list(set(order.performers) - set(act.performers))
-                same_performers = list(set(act.performers) & set(order.performers))
-                for op in order.order_performers:
-                    # Устанавливаем новую трудоёмкость существующим исполнителям
-                    if op.person in same_performers:
-                        ap = filter(lambda p: p.person_id == op.person_id, act.action_performers)[0]
-                        op.workload += ap.workload
-                        op.current = True
-                    # Снимаем флаг участия с бывших исполнителей
-                    elif op.person in ex_performers:
-                        op.current = False
-                # Добавляем новых исполнителей
-                for ap in act.action_performers:
-                    if ap.person in new_performers:
-                        order.order_performers.append(model.OrderPerformer(person=ap.person, workload=ap.workload))
-                # Update a workload of entire order
-                order.workload = sum(map(lambda x: x.workload, order.order_performers))
+        current_user = meta.Session.query(model.Person).get(int(session['id']))
+        current_user_is_acting = current_user.id in map(lambda x: int(x), self.form_result['performers'])
+        if status.id == 16 and not current_user_is_acting: # Пояснение делает сам пользователь вне зависимости от того, кому даётся трудоёмкость!
+            act.action_performers = [model.ActionPerformer(person=current_user, workload=Decimal('0.0'))]
+        for index, p_id in enumerate(self.form_result['performers']):
+            perf = meta.Session.query(model.Person).get(p_id)
+            workload = Decimal(self.form_result['workloads'][index])
+            if perf in order.performers:
+                workload -= filter(lambda x: x.person_id == p_id, order.order_performers)[0].workload
+                if workload < 0 and not h.have_role('admin'): workload = 0
+            act.action_performers.append(model.ActionPerformer(person=perf, workload=workload))
+        # Обновляем исполнителей заявки
+        if status.redirects == 1:
+            # «Очищаем» список исполнителей, если заявка становится свободной
+            for op in order.order_performers:
+                op.current = False
         else:
-          act.performers = [meta.Session.query(model.Person).get(int(session['id']))]
+            new_performers  = list(set(act.performers) - set(order.performers))
+            ex_performers   = list(set(order.performers) - set(act.performers))
+            same_performers = list(set(act.performers) & set(order.performers))
+            for op in order.order_performers:
+                if status.id == 16 and op.person.id == current_user.id and not current_user_is_acting:
+                    op.current = False
+                # Устанавливаем новую трудоёмкость существующим исполнителям
+                elif op.person in same_performers:
+                    ap = filter(lambda p: p.person_id == op.person_id, act.action_performers)[0]
+                    op.workload += ap.workload
+                    op.current = True
+                # Снимаем флаг участия с бывших исполнителей
+                elif op.person in ex_performers:
+                    op.current = False
+            # Добавляем новых исполнителей
+            for ap in act.action_performers:
+                if ap.person in new_performers:
+                    order.order_performers.append(model.OrderPerformer(person=ap.person, workload=ap.workload))
+            # Update a workload of entire order
+            order.workload = sum(map(lambda x: x.workload, order.order_performers))
         meta.Session.add(act)
         # Если указан перевод состояния заявки - переводим в него. Иначе оставляем как есть.
         if status.redirects:
