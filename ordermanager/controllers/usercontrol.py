@@ -309,10 +309,12 @@ class UsercontrolController(BaseController):
         session['flash'] = u"Вы вышли из системы"
         session.save()
         redirect_to(h.url_for(controller="main", action="index", id=None))
-
+    # Вьюха для людей честных
     def view(self, id=None):
         c.person = h.checkuser(id)
         c.today = date.today()
+        
+        #c.person.reaction = 
         return render("/users/view.html")
 
     def add(self):

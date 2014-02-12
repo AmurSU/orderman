@@ -122,6 +122,8 @@ people_table = schema.Table ('people', meta.metadata,
     schema.Column('admin', types.Boolean, default="false"), # Может администрировать всё
     # Здесь хранятся настройки
     schema.Column('preferences', types.PickleType()),
+    # Эффективность человека (Реактивность и тормознутость)
+    # schema.Column('reaction', types.Integer),
     # Служебные данные о записи
     schema.Column('deleted', types.Boolean, default=False),
     schema.Column('created', types.DateTime(), default=now),
