@@ -34,27 +34,30 @@ ${self.actmenu()}
 <table id="division_personnel" class="tablesorter">
 <thead>
 <tr><th rowspan="3">Сотрудник</th><th colspan="10">Выполнено заявок</th></tr>
-<tr><th colspan="2">за сегодня</th><th colspan="2">за эту неделю</th><th colspan="2">за прошлую неделю</th><th colspan="2">за 30 дней</th><th colspan="2">всего</th></tr>
+<tr><th colspan="2">за 30 дней</th><th colspan="2">за прошлую неделю</th><th colspan="2">за эту неделю</th><th colspan="2">всего</th><th colspan="2">эффективность</th></tr>
 <tr>
-% for i in [1,2,3,4,5]:
+% for i in [1,2,3,4]:
 <th>Кол-во</th><th>Трудоёмк.</th>
 % endfor
+<th>Реактивность</th>
 </tr>
 </thead>
 <tbody>
 % for user in c.personnel:
 <tr>
 <td>${h.link_to(h.name(user), h.url_for(controller="usercontrol", action="view", id=user.id))}</td>
-<td>${(c.today.get(user.id) or [0,0])[0]}</td>
-<td>${(c.today.get(user.id) or [0,0])[1]}</td>
-<td>${(c.thisweek.get(user.id) or [0,0])[0]}</td>
-<td>${(c.thisweek.get(user.id) or [0,0])[1]}</td>
-<td>${(c.prevweek.get(user.id) or [0,0])[0]}</td>
-<td>${(c.prevweek.get(user.id) or [0,0])[1]}</td>
+##<td>${(c.today.get(user.id) or [0,0])[0]}</td>
+##<td>${(c.today.get(user.id) or [0,0])[1]}</td>
 <td>${(c.lastmonth.get(user.id) or [0,0])[0]}</td>
 <td>${(c.lastmonth.get(user.id) or [0,0])[1]}</td>
+<td>${(c.prevweek.get(user.id) or [0,0])[0]}</td>
+<td>${(c.prevweek.get(user.id) or [0,0])[1]}</td>
+<td>${(c.thisweek.get(user.id) or [0,0])[0]}</td>
+<td>${(c.thisweek.get(user.id) or [0,0])[1]}</td>
 <td>${(c.total.get(user.id) or [0,0])[0]}</td>
 <td>${(c.total.get(user.id) or [0,0])[1]}</td>
+##Реактивность и тормознутость
+<td>${c.reacts.get(user.id) or ''}</td>
 </tr>
 % endfor
 </tbody>
