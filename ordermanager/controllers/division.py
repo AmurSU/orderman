@@ -114,74 +114,6 @@ class DivisionController(BaseController):
         thisweek = last.filter(model.Order.doneAt >= thismonday).all()
         prevweek = last.filter(model.Order.doneAt < thismonday).filter(model.Order.doneAt >= thismonday-timedelta(7)).all()
         last1d = last.filter(model.Order.doneAt > datetime.combine(date.today(), time(0, 0))).all()
-        # Реактивность и тормознутость
-
-        reacts_q = """
-        SELECT people.id, actions.created, orders.created
-            FROM people JOIN actionperformers ap ON people.id = ap.person_id
-            JOIN actions ON ap.action_id = actions.id
-            JOIN orders ON actions.order_id = orders.id
-            WHERE people.id IN (SELECT id FROM people WHERE div_id = %d)
-            AND actions.created BETWEEN (now() - '1 month'::interval)::timestamp AND now()            
-            AND actions.status_id = 2
-            ORDER BY people.id
-        """
-        reacts = meta.Session.execute(reacts_q % c.division.id)
-
-        count_of_actions = 0
-        temp = 0
-        first = True
-        reaction = []
-        thour = 0
-        tminute = 0
-        tsecond = 0
-
-        for row in reacts:
-            if first:
-                lastid = row[0]
-                first = False
-            if row[0] != lastid:
-                temp = float(temp)/count_of_actions
-                thour = int(temp)
-                tminute = int((temp-thour)*60)
-                tsecond = int(((temp-thour)*60-tminute)*60)
-                reaction.append([lastid, '%dh %dm %ds'%(thour,tminute,tsecond)])
-                temp = 0
-                lastid = row[0]
-                count_of_actions = 0
-            fromdate = row[2]
-            todate = row[1]
-            daygenerator = (fromdate.date() + timedelta(x) for x in range((todate.date() - fromdate.date()).days))
-            res_d = sum(1 for day in daygenerator if day.weekday() < 5)
-            fromtime = fromdate.time()
-            totime = todate.time()
-            res_m = (totime.minute - fromtime.minute)
-            res_s = (totime.second - fromtime.second)
-            if res_d == 0:
-                res_h = (totime.hour - fromtime.hour)
-                if fromtime.hour < 12 and totime.hour > 13:
-                    res_h -= 1
-            else:
-                res_d -= 1
-                res_h = 9-fromtime.hour+totime.hour
-                if fromtime.hour < 12:
-                    res_h -= 1
-                if totime.hour > 13:
-                    res_h -= 1
-            if res_s < 0:
-                res_m -= 1 
-                res_s = 60 + res_s
-            if res_m < 0:
-                res_h -= 1
-                res_m = 60 + res_m
-            temp += 8*res_d + res_h + float(res_m)/60 + float(res_s)/3600
-            count_of_actions +=1 
-        temp = float(temp)/count_of_actions 
-        thour = int(temp)
-        tminute = int((temp-thour)*60)
-        tsecond = int(((temp-thour)*60-tminute)*60)
-        reaction.append([lastid, '%d:%d:%d'%(thour,tminute,tsecond)])
-
         # Учёт по дням количества сделанных заявок
         dates = meta.Session.execute
         dates_q = """
@@ -214,14 +146,12 @@ class DivisionController(BaseController):
             if start_idx < 0: start_idx = 0
             for idx in range(start_idx, stop_idx):
               c.graph_data[user_idx][idx] += float(row[2])/(row[1]+2)
-
         # Подготовка к отображению шаблона
         c.lastmonth = dict([[record[0], record[1:]] for record in last30d])
         c.prevweek = dict([[record[0], record[1:]] for record in prevweek])
         c.thisweek = dict([[record[0], record[1:]] for record in thisweek])
         c.today = dict([[record[0], record[1:]] for record in last1d])
         c.total = dict([[record[0], record[1:]] for record in last.all()])
-        c.reacts = dict([[record[0], record[1]] for record in reaction])
         return render("/divisions/view.html")
 
     def add(self):
