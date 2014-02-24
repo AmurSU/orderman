@@ -141,7 +141,10 @@ class DivisionController(BaseController):
                 lastid = row[0]
                 first = False
             if row[0] != lastid:
-                temp = float(temp)/count_of_actions
+                if count_of_actions != 0:
+                    temp = float(temp)/count_of_actions
+                else
+                    temp = 0 
                 thour = int(temp)
                 tminute = int((temp-thour)*60)
                 tsecond = int(((temp-thour)*60-tminute)*60)
@@ -176,11 +179,14 @@ class DivisionController(BaseController):
                 res_m = 60 + res_m
             temp += 8*res_d + res_h + float(res_m)/60 + float(res_s)/3600
             count_of_actions +=1 
-        temp = float(temp)/count_of_actions 
+        if count_of_actions != 0:
+            temp = float(temp)/count_of_actions
+        else
+            temp = 0  
         thour = int(temp)
         tminute = int((temp-thour)*60)
         tsecond = int(((temp-thour)*60-tminute)*60)
-        reaction.append([lastid, '%d:%d:%d'%(thour,tminute,tsecond)])
+        reaction.append([lastid, '%dh %dm %ds'%(thour,tminute,tsecond)])
 
         # Учёт по дням количества сделанных заявок
         dates = meta.Session.execute
