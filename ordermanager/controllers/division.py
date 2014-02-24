@@ -143,7 +143,7 @@ class DivisionController(BaseController):
             if row[0] != lastid:
                 if count_of_actions != 0:
                     temp = float(temp)/count_of_actions
-                else
+                else:
                     temp = 0 
                 thour = int(temp)
                 tminute = int((temp-thour)*60)
@@ -181,7 +181,7 @@ class DivisionController(BaseController):
             count_of_actions +=1 
         if count_of_actions != 0:
             temp = float(temp)/count_of_actions
-        else
+        else:
             temp = 0  
         thour = int(temp)
         tminute = int((temp-thour)*60)
