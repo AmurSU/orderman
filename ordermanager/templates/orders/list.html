@@ -14,9 +14,14 @@
 <button type="submit">Показать</button>
 </form>
 % endif
-<form action="${h.url_for(controller='order', action='goto')}" method="post">
+<table>
+<td class="ghost"><form action="${h.url_for(controller='order', action='goto')}" method="post">
 <p>Перейти к заявке № <input type="text" name="id" id="id" /> <button type="submit">Перейти</button></p>
-</form>
+</form></td>
+<td class="ghost" align="right"><form action="${h.url_for(controller='order', action='find')}" method="post">
+<p>Поиск: <input type="text" name="searchvalue" /> <button type="submit">Найти</button></p>
+</form></td>
+</table>
 % if len(c.paginator):
 <p>${c.paginator.pager(u'$link_first $link_previous от $first_item до $last_item из $item_count $link_next $link_last')}</p>
 ${self.orderstable([order for order,urgent in c.paginator])}
