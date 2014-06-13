@@ -135,6 +135,7 @@ class DivisionController(BaseController):
         thour = 0
         tminute = 0
         tsecond = 0
+        lastid = None
 
         for row in reacts:
             if first:
